@@ -1,8 +1,8 @@
 {
   "name": "biomass-admin",
   "version": "3.9.2",
-  "description": "生物质管理平台",
-  "author": "Biomass Admin",
+  "description": "BiomassAdmin",
+  "author": "BiomassAdmin",
   "license": "MIT",
   "scripts": {
     "dev": "vue-cli-service serve",

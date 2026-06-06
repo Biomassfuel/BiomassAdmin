@@ -1,6 +1,6 @@
-# Biomass Admin
+# BiomassAdmin
 
-生物质管理平台，基于 Vue2、Element UI、Spring Boot、Spring Security、Redis、JWT 的前后端分离后台管理系统。
+BiomassAdmin 是基于 Vue2、Element UI、Spring Boot、Spring Security、Redis、JWT 的前后端分离后台管理系统。
 
 ## 改造目标
 
@@ -42,4 +42,4 @@ mvn -DskipTests package
 
 ## 说明
 
-当前项目仍保留 RuoYi 的成熟后台基础能力与接口兼容性，但默认产品呈现已调整为 `生物质管理平台 / Biomass Admin`。
+当前项目仍保留 RuoYi 的成熟后台基础能力与接口兼容性，但默认产品呈现已调整为 `BiomassAdmin`。

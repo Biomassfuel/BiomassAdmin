@@ -128,9 +128,9 @@ export default {
   height: 56px;
   overflow: hidden;
   position: relative;
-  background: #fff;
-  border-bottom: 1px solid #edf1f7;
-  box-shadow: 0 4px 16px rgba(31, 35, 41, 0.03);
+  background: #ffffff;
+  border-bottom: 1px solid #e5e7eb;
+  box-shadow: none;
   display: flex;
   align-items: center;
   padding: 0 18px 0 10px;
@@ -149,7 +149,7 @@ export default {
     border-radius: 8px;
 
     &:hover {
-      background: #f5f7fb
+      background: #f3f4f6
     }
   }
 
@@ -200,7 +200,7 @@ export default {
         transition: background .3s;
 
         &:hover {
-          background: #f5f7fb
+          background: #f3f4f6
         }
       }
     }
@@ -221,7 +221,7 @@ export default {
           cursor: pointer;
           width: 30px;
           height: 30px;
-          border: 1px solid #edf1f7;
+          border: 1px solid #e5e7eb;
           border-radius: 50%;
         }
 
@@ -229,7 +229,7 @@ export default {
           position: static;
           font-size: 14px;
           font-weight: 600;
-          color: #1f2329;
+          color: #111827;
         }
 
         .el-icon-caret-bottom {

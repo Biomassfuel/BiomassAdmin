@@ -1,22 +1,13 @@
 <template>
   <div class="login">
-    <section class="login-hero">
+    <section class="login-aside">
       <div class="brand-lockup">
         <div class="brand-mark">B</div>
-        <div>
-          <div class="brand-name">Biomass Admin</div>
-          <div class="brand-subtitle">生物质管理平台</div>
-        </div>
+        <div class="brand-name">BiomassAdmin</div>
       </div>
-      <div class="hero-copy">
-        <h1>统一运营、权限与数据管理</h1>
-        <p>面向生产环境的现代化后台工作台，保留若依 RBAC 能力并重塑为 SaaS 控制台体验。</p>
-      </div>
-      <div class="hero-metrics">
-        <div v-for="item in metrics" :key="item.label" class="metric-item">
-          <span>{{ item.value }}</span>
-          <label>{{ item.label }}</label>
-        </div>
+      <div class="aside-copy">
+        <h1>BiomassAdmin</h1>
+        <p>清晰处理权限、配置、日志与开发工具。</p>
       </div>
     </section>
 
@@ -24,7 +15,7 @@
       <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form">
         <div class="form-heading">
           <h2>{{ title }}</h2>
-          <p>登录控制台继续管理业务与系统权限</p>
+          <p>欢迎回来，请登录。</p>
         </div>
 
         <el-form-item prop="username">
@@ -32,7 +23,7 @@
             v-model="loginForm.username"
             type="text"
             auto-complete="off"
-            placeholder="请输入账号"
+            placeholder="账号"
           >
             <svg-icon slot="prefix" icon-class="user" class="el-input__icon input-icon" />
           </el-input>
@@ -43,7 +34,7 @@
             v-model="loginForm.password"
             type="password"
             auto-complete="off"
-            placeholder="请输入密码"
+            placeholder="密码"
             show-password
             @keyup.enter.native="handleLogin"
           >
@@ -69,7 +60,7 @@
 
         <div class="login-options">
           <el-checkbox v-model="loginForm.rememberMe">记住登录信息</el-checkbox>
-          <span>企业内控访问</span>
+          <span>仅限授权用户</span>
         </div>
 
         <el-button
@@ -79,7 +70,7 @@
           type="primary"
           @click.native.prevent="handleLogin"
         >
-          <span v-if="!loading">登录控制台</span>
+          <span v-if="!loading">登录</span>
           <span v-else>登录中...</span>
         </el-button>
       </el-form>
@@ -101,14 +92,9 @@ export default {
   name: "Login",
   data() {
     return {
-      title: process.env.VUE_APP_TITLE,
+      title: 'BiomassAdmin',
       footerContent: defaultSettings.footerContent,
       codeUrl: "",
-      metrics: [
-        { value: "RBAC", label: "权限体系" },
-        { value: "Vue2", label: "稳定技术栈" },
-        { value: "SaaS", label: "现代体验" }
-      ],
       loginForm: {
         username: "",
         password: "",
@@ -195,100 +181,63 @@ export default {
 <style lang="scss" scoped>
 .login {
   display: grid;
-  grid-template-columns: minmax(420px, 1fr) 480px;
+  grid-template-columns: minmax(420px, 1fr) 460px;
   min-height: 100%;
-  background:
-    radial-gradient(circle at 12% 16%, rgba(22, 119, 255, 0.16), transparent 30%),
-    linear-gradient(135deg, #f7faff 0%, #eef4ff 45%, #ffffff 100%);
+  background: #f3f4f6;
 }
 
-.login-hero {
+.login-aside {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  padding: 56px 72px;
+  min-height: 100vh;
+  padding: 52px 68px;
+  background: #111827;
+  color: #ffffff;
 }
 
 .brand-lockup {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 12px;
 }
 
 .brand-mark {
   display: grid;
   place-items: center;
-  width: 44px;
-  height: 44px;
-  border-radius: 12px;
-  color: #fff;
-  background: linear-gradient(135deg, #1677ff, #00a3ff);
-  box-shadow: 0 14px 28px rgba(22, 119, 255, 0.22);
-  font-size: 22px;
+  width: 38px;
+  height: 38px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 9px;
+  background: #1f2937;
+  color: #ffffff;
+  font-size: 18px;
   font-weight: 700;
 }
 
 .brand-name {
-  color: #1f2329;
-  font-size: 18px;
+  color: #ffffff;
+  font-size: 17px;
   font-weight: 700;
   line-height: 24px;
 }
 
-.brand-subtitle {
-  color: #646a73;
-  font-size: 13px;
-  line-height: 20px;
-}
-
-.hero-copy {
-  max-width: 640px;
+.aside-copy {
+  max-width: 520px;
 
   h1 {
-    margin: 0 0 20px;
-    color: #111827;
-    font-size: 44px;
+    margin: 0 0 16px;
+    color: #ffffff;
+    font-size: 42px;
     font-weight: 700;
     line-height: 1.18;
   }
 
   p {
     margin: 0;
-    color: #56606f;
-    font-size: 16px;
-    line-height: 28px;
-  }
-}
-
-.hero-metrics {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 16px;
-  max-width: 620px;
-}
-
-.metric-item {
-  padding: 18px;
-  border: 1px solid rgba(22, 119, 255, 0.12);
-  border-radius: 14px;
-  background: rgba(255, 255, 255, 0.72);
-  box-shadow: 0 10px 30px rgba(31, 35, 41, 0.06);
-  backdrop-filter: blur(12px);
-
-  span {
-    display: block;
-    color: #1677ff;
-    font-size: 22px;
-    font-weight: 700;
-    line-height: 28px;
-  }
-
-  label {
-    display: block;
-    margin-top: 6px;
-    color: #646a73;
-    font-size: 13px;
-    font-weight: 500;
+    color: #aeb8c6;
+    font-size: 15px;
+    line-height: 26px;
   }
 }
 
@@ -297,65 +246,65 @@ export default {
   flex-direction: column;
   justify-content: center;
   padding: 40px;
-  background: rgba(255, 255, 255, 0.92);
-  box-shadow: -16px 0 48px rgba(31, 35, 41, 0.08);
+  background: #f9fafb;
 }
 
 .login-form {
   width: 100%;
-  padding: 36px;
-  border: 1px solid #edf1f7;
-  border-radius: 18px;
-  background: #fff;
-  box-shadow: 0 18px 48px rgba(31, 35, 41, 0.08);
+  max-width: 380px;
+  padding: 32px;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  background: #ffffff;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
 
   .el-input {
-    height: 44px;
+    height: 42px;
 
     ::v-deep input {
-      height: 44px;
-      border-radius: 10px;
+      height: 42px;
+      border-radius: 8px;
     }
   }
 
   .input-icon {
     width: 15px;
-    height: 44px;
+    height: 42px;
     margin-left: 4px;
-    color: #8f959e;
+    color: #9ca3af;
   }
 }
 
 .form-heading {
-  margin-bottom: 28px;
+  margin-bottom: 26px;
 
   h2 {
     margin: 0;
-    color: #1f2329;
+    color: #111827;
     font-size: 24px;
     font-weight: 700;
     line-height: 32px;
   }
 
   p {
-    margin: 8px 0 0;
-    color: #646a73;
-    font-size: 14px;
+    margin: 6px 0 0;
+    color: #6b7280;
+    font-size: 13px;
   }
 }
 
 .captcha-row {
   display: grid;
-  grid-template-columns: 1fr 116px;
-  gap: 12px;
+  grid-template-columns: minmax(0, 1fr) 112px;
+  gap: 10px;
 }
 
 .login-code {
-  height: 44px;
+  height: 42px;
   padding: 0;
-  border: 1px solid #e5e8ef;
-  border-radius: 10px;
-  background: #f7f9fc;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: #f3f4f6;
   cursor: pointer;
   overflow: hidden;
 }
@@ -363,7 +312,7 @@ export default {
 .login-code-img {
   display: block;
   width: 100%;
-  height: 44px;
+  height: 42px;
   object-fit: cover;
 }
 
@@ -372,21 +321,21 @@ export default {
   align-items: center;
   justify-content: space-between;
   margin: 2px 0 22px;
-  color: #8f959e;
+  color: #6b7280;
   font-size: 13px;
 }
 
 .login-submit {
   width: 100%;
-  height: 44px;
-  border-radius: 10px;
-  font-size: 15px;
+  height: 42px;
+  border-radius: 8px;
+  font-size: 14px;
   font-weight: 600;
 }
 
 .el-login-footer {
   margin-top: 22px;
-  color: #8f959e;
+  color: #9ca3af;
   text-align: center;
   font-size: 12px;
 }
@@ -396,17 +345,54 @@ export default {
     grid-template-columns: 1fr;
   }
 
-  .login-hero {
+  .login-aside {
     display: none;
   }
 
   .login-panel {
+    align-items: center;
+    overflow-x: hidden;
     min-height: 100vh;
     padding: 24px;
   }
 
   .login-form {
+    width: calc(100vw - 48px);
+    max-width: 360px;
     padding: 28px;
+  }
+
+  .captcha-row {
+    grid-template-columns: minmax(0, 1fr) 96px;
+  }
+
+  .login-options {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 8px;
+  }
+}
+
+@media (max-width: 420px) {
+  .login-panel {
+    padding: 18px;
+  }
+
+  .login-form {
+    width: calc(100vw - 36px);
+    max-width: 100%;
+    padding: 24px;
+  }
+
+  .captcha-row {
+    grid-template-columns: minmax(0, 1fr) 92px;
+    gap: 8px;
+  }
+
+  .login-options {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 8px;
   }
 }
 </style>

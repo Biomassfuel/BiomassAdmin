@@ -3,7 +3,7 @@
     <div class="saas-page-header">
       <div>
         <h1 class="saas-page-title">${functionName}管理</h1>
-        <div class="saas-page-desc">以层级结构维护${functionName}数据，支持快速检索、展开折叠和权限化操作。</div>
+        <div class="saas-page-desc">维护${functionName}层级数据。</div>
       </div>
     </div>
 

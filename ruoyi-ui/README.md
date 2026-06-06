@@ -1,4 +1,4 @@
-# Biomass Admin UI
+# BiomassAdmin UI
 
 Vue2 + Element UI 前端控制台，已统一为现代 SaaS 后台风格。
 

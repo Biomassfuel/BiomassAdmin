@@ -110,25 +110,26 @@
 
     // theme-dark 深色主题
     &.theme-dark {
-      box-shadow: 2px 0 8px rgba(0, 0, 0, 0.4);
+      box-shadow: 4px 0 18px rgba(15, 23, 42, 0.16);
       border-right: none;
 
       .el-menu-item.is-active {
         position: relative;
+        background-color: #1f2937 !important;
 
         &::before {
           content: '';
           position: absolute;
           inset: 0;
-          background-color: var(--current-color-dark-bg, rgba(64, 158, 255, 0.2));
-          border-right: 3px solid var(--current-color, #409eff);
+          background-color: transparent;
+          border-right: none;
           pointer-events: none;
           z-index: 1;
         }
       }
 
       .el-submenu.is-active > .el-submenu__title {
-        color: var(--current-color, #409eff) !important;
+        color: #ffffff !important;
       }
 
       .el-menu-item:not(.is-active),
@@ -147,7 +148,7 @@
         }
 
         &:hover::before {
-          background-color: var(--current-color-dark-bg, rgba(64, 158, 255, 0.2));
+          background-color: rgba(255, 255, 255, 0.06);
         }
       }
     }

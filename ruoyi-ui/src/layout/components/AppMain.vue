@@ -51,7 +51,7 @@ export default {
   width: 100%;
   position: relative;
   overflow: hidden;
-  background: #f5f7fb;
+  background: #f3f4f6;
 
   &:fullscreen,
   &:-webkit-full-screen,

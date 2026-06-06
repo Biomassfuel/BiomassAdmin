@@ -3,7 +3,7 @@
     <div class="saas-page-header">
       <div>
         <h1 class="saas-page-title">生成配置</h1>
-        <div class="saas-page-desc">维护字段、权限、菜单和生成策略，输出统一现代化控制台页面。</div>
+        <div class="saas-page-desc">配置字段、菜单与生成策略。</div>
       </div>
       <el-button icon="el-icon-back" @click="close">返回列表</el-button>
     </div>

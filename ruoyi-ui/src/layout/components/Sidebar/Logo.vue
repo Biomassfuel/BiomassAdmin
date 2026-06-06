@@ -56,10 +56,10 @@ export default {
   position: relative;
   height: 56px;
   line-height: 56px;
-  background: #fff;
+  background: #111827;
   text-align: left;
   overflow: hidden;
-  border-bottom: 1px solid #edf1f7;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 
   & .sidebar-logo-link {
     display: flex;
@@ -77,8 +77,9 @@ export default {
       height: 32px;
       border-radius: 9px;
       color: #fff;
-      background: linear-gradient(135deg, #1677ff, #00a3ff);
-      box-shadow: 0 8px 18px rgba(22, 119, 255, 0.22);
+      background: #1f2937;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      box-shadow: none;
       font-size: 17px;
       font-weight: 700;
       line-height: 32px;
@@ -89,7 +90,7 @@ export default {
       margin: 0;
       max-width: 138px;
       overflow: hidden;
-      color: #1f2329;
+      color: #ffffff;
       font-weight: 700;
       line-height: 56px;
       font-size: 15px;

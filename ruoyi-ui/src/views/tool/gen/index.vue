@@ -3,7 +3,7 @@
     <div class="saas-page-header gen-page__header">
       <div>
         <h1 class="saas-page-title">代码生成</h1>
-        <div class="saas-page-desc">导入数据库表结构，生成统一 SaaS 风格的 Vue2 管理页面与后端代码。</div>
+        <div class="saas-page-desc">导入数据库表结构，生成前后端代码。</div>
       </div>
       <div class="gen-page__summary">
         <span>{{ total }}</span>

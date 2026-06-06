@@ -3,7 +3,7 @@
     <div class="saas-page-header">
       <div>
         <h1 class="saas-page-title">${functionName}管理</h1>
-        <div class="saas-page-desc">统一查询、维护和导出${functionName}数据，保持后台页面风格一致。</div>
+        <div class="saas-page-desc">查询、维护和导出${functionName}数据。</div>
       </div>
     </div>
 

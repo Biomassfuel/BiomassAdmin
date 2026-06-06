@@ -9,7 +9,7 @@
     <version>3.9.2</version>
 
     <name>biomass-admin</name>
-    <description>生物质管理平台</description>
+    <description>BiomassAdmin</description>
     
     <properties>
         <ruoyi.version>3.9.2</ruoyi.version>
