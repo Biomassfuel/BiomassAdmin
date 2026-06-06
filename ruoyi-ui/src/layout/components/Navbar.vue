@@ -12,19 +12,7 @@
       <template v-if="device!=='mobile'">
         <search id="header-search" class="right-menu-item" />
 
-        <el-tooltip content="源码地址" effect="dark" placement="bottom">
-          <ruo-yi-git id="ruoyi-git" class="right-menu-item hover-effect" />
-        </el-tooltip>
-
-        <el-tooltip content="文档地址" effect="dark" placement="bottom">
-          <ruo-yi-doc id="ruoyi-doc" class="right-menu-item hover-effect" />
-        </el-tooltip>
-
         <screenfull id="screenfull" class="right-menu-item hover-effect" />
-
-        <el-tooltip content="布局大小" effect="dark" placement="bottom">
-          <size-select id="size-select" class="right-menu-item hover-effect" />
-        </el-tooltip>
 
         <el-tooltip content="消息通知" effect="dark" placement="bottom">
           <header-notice id="header-notice" class="right-menu-item hover-effect" />
@@ -64,10 +52,7 @@ import TopBar from './TopBar'
 import Logo from './Sidebar/Logo'
 import Hamburger from '@/components/Hamburger'
 import Screenfull from '@/components/Screenfull'
-import SizeSelect from '@/components/SizeSelect'
 import Search from '@/components/HeaderSearch'
-import RuoYiGit from '@/components/RuoYi/Git'
-import RuoYiDoc from '@/components/RuoYi/Doc'
 import HeaderNotice from './HeaderNotice'
 
 export default {
@@ -78,10 +63,7 @@ export default {
     TopBar,
     Hamburger,
     Screenfull,
-    SizeSelect,
     Search,
-    RuoYiGit,
-    RuoYiDoc,
     HeaderNotice
   },
   computed: {
@@ -143,18 +125,19 @@ export default {
 }
 
 .navbar {
-  height: 50px;
+  height: 56px;
   overflow: hidden;
   position: relative;
   background: #fff;
-  box-shadow: 0 1px 4px rgba(0,21,41,.08);
+  border-bottom: 1px solid #edf1f7;
+  box-shadow: 0 4px 16px rgba(31, 35, 41, 0.03);
   display: flex;
   align-items: center;
-  // padding: 0 8px;
+  padding: 0 18px 0 10px;
   box-sizing: border-box;
 
   .hamburger-container {
-    line-height: 46px;
+    line-height: 56px;
     height: 100%;
     cursor: pointer;
     transition: background .3s;
@@ -162,10 +145,11 @@ export default {
     display: flex;
     align-items: center;
     flex-shrink: 0;
-    margin-right: 8px;
+    margin-right: 10px;
+    border-radius: 8px;
 
     &:hover {
-      background: rgba(0, 0, 0, .025)
+      background: #f5f7fb
     }
   }
 
@@ -189,7 +173,7 @@ export default {
 
   .right-menu {
     height: 100%;
-    line-height: 50px;
+    line-height: 56px;
     display: flex;
     align-items: center;
     margin-left: auto;
@@ -200,10 +184,15 @@ export default {
 
     .right-menu-item {
       display: inline-block;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 36px;
       padding: 0 8px;
-      height: 100%;
+      height: 36px;
+      border-radius: 8px;
       font-size: 18px;
-      color: #5a5e66;
+      color: #56606f;
       vertical-align: text-bottom;
 
       &.hover-effect {
@@ -211,7 +200,7 @@ export default {
         transition: background .3s;
 
         &:hover {
-          background: rgba(0, 0, 0, .025)
+          background: #f5f7fb
         }
       }
     }
@@ -221,7 +210,10 @@ export default {
       padding-right: 0px;
 
       .avatar-wrapper {
-        margin-top: 10px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-top: 0;
         right: 8px;
         position: relative;
 
@@ -229,15 +221,15 @@ export default {
           cursor: pointer;
           width: 30px;
           height: 30px;
+          border: 1px solid #edf1f7;
           border-radius: 50%;
         }
 
         .user-nickname{
-          position: relative;
-          bottom: 10px;
-          left: 2px;
+          position: static;
           font-size: 14px;
-          font-weight: bold;
+          font-weight: 600;
+          color: #1f2329;
         }
 
         .el-icon-caret-bottom {

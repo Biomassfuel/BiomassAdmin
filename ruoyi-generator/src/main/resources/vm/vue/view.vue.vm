@@ -1,7 +1,10 @@
 <template>
-  <el-drawer title="${functionName}详情" :visible.sync="visible" direction="rtl" size="60%" append-to-body :before-close="handleClose" custom-class="detail-drawer">
+  <el-drawer title="${functionName}详情" :visible.sync="visible" direction="rtl" size="60%" append-to-body :before-close="handleClose" custom-class="detail-drawer generated-detail-drawer">
     <div v-loading="loading" class="drawer-content">
-      <h4 class="section-header">基本信息</h4>
+      <div class="drawer-summary">
+        <h4>基本信息</h4>
+        <p>查看${functionName}的关键字段与业务属性。</p>
+      </div>
 #set($i = 0)
 #foreach($column in $columns)
 #if(!$column.pk && $column.list)
@@ -84,3 +87,48 @@ export default {
   }
 }
 </script>
+
+<style lang="scss" scoped>
+.drawer-content {
+  padding: 24px;
+}
+
+.drawer-summary {
+  margin-bottom: 20px;
+  padding: 18px 20px;
+  border: 1px solid #e5e8ef;
+  border-radius: 12px;
+  background: #ffffff;
+  box-shadow: 0 6px 18px rgba(31, 35, 41, 0.06);
+
+  h4 {
+    margin: 0;
+    color: #1f2329;
+    font-size: 16px;
+    font-weight: 600;
+  }
+
+  p {
+    margin: 6px 0 0;
+    color: #646a73;
+    font-size: 13px;
+  }
+}
+
+.info-item {
+  min-height: 44px;
+  padding: 12px 14px;
+  border: 1px solid #edf1f7;
+  border-radius: 10px;
+  background: #fbfcfe;
+}
+
+.info-label {
+  color: #646a73;
+  font-weight: 500;
+}
+
+.info-value {
+  color: #1f2329;
+}
+</style>

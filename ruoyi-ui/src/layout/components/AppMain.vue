@@ -47,10 +47,11 @@ export default {
 <style lang="scss" scoped>
 .app-main {
   /* 50= navbar  50  */
-  min-height: calc(100vh - 50px);
+  min-height: calc(100vh - 56px);
   width: 100%;
   position: relative;
   overflow: hidden;
+  background: #f5f7fb;
 
   &:fullscreen,
   &:-webkit-full-screen,
@@ -64,7 +65,7 @@ export default {
 .fixed-header + .app-main {
   overflow-y: auto;
   scrollbar-gutter: auto;
-  height: calc(100vh - 50px);
+  height: calc(100vh - 56px);
   min-height: 0px;
 }
 
@@ -73,18 +74,18 @@ export default {
 }
 
 .fixed-header + .app-main {
-  margin-top: 50px;
+  margin-top: 56px;
 }
 
 .hasTagsView {
   .app-main {
-    /* 84 = navbar + tags-view = 50 + 34 */
-    min-height: calc(100vh - 84px);
+    /* 90 = navbar + tags-view = 56 + 34 */
+    min-height: calc(100vh - 90px);
   }
 
   .fixed-header + .app-main {
-    margin-top: 84px;
-    height: calc(100vh - 84px);
+    margin-top: 90px;
+    height: calc(100vh - 90px);
     min-height: 0px;
   }
 }

@@ -1,5 +1,14 @@
 <template>
-  <el-card>
+  <div class="app-container gen-edit-page">
+    <div class="saas-page-header">
+      <div>
+        <h1 class="saas-page-title">生成配置</h1>
+        <div class="saas-page-desc">维护字段、权限、菜单和生成策略，输出统一现代化控制台页面。</div>
+      </div>
+      <el-button icon="el-icon-back" @click="close">返回列表</el-button>
+    </div>
+
+    <el-card class="gen-edit-card" shadow="never">
     <el-tabs v-model="activeName">
       <el-tab-pane label="基本信息" name="basic">
         <basic-info-form ref="basicInfo" :info="info" />
@@ -112,13 +121,14 @@
         <gen-info-form ref="genInfo" :info="info" :tables="tables" :menus="menus"/>
       </el-tab-pane>
     </el-tabs>
-    <el-form label-width="100px">
-      <el-form-item style="text-align: center;margin-left:-100px;margin-top:10px;">
-        <el-button type="primary" @click="submitForm()">提交</el-button>
-        <el-button @click="close()">返回</el-button>
+    <el-form label-width="100px" class="gen-edit-actions">
+      <el-form-item>
+        <el-button type="primary" icon="el-icon-check" @click="submitForm()">提交</el-button>
+        <el-button icon="el-icon-close" @click="close()">取消</el-button>
       </el-form-item>
     </el-form>
-  </el-card>
+    </el-card>
+  </div>
 </template>
 
 <script>
@@ -228,3 +238,46 @@ export default {
   }
 }
 </script>
+
+<style lang="scss" scoped>
+.gen-edit-page {
+  min-height: 100%;
+}
+
+.gen-edit-card {
+  border: 1px solid #e5e8ef;
+  border-radius: 12px;
+  box-shadow: 0 6px 18px rgba(31, 35, 41, 0.06);
+
+  ::v-deep .el-card__body {
+    padding: 0;
+  }
+
+  ::v-deep .el-tabs__header {
+    margin: 0;
+    padding: 0 24px;
+    background: #ffffff;
+    border-bottom: 1px solid #edf1f7;
+  }
+
+  ::v-deep .el-tabs__content {
+    padding: 24px;
+  }
+}
+
+.gen-edit-actions {
+  margin: 0;
+  padding: 16px 24px 20px;
+  border-top: 1px solid #edf1f7;
+  background: #fbfcfe;
+  text-align: right;
+
+  ::v-deep .el-form-item {
+    margin-bottom: 0;
+  }
+
+  ::v-deep .el-form-item__content {
+    margin-left: 0 !important;
+  }
+}
+</style>

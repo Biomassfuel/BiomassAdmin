@@ -1,30 +1,25 @@
+# Biomass Admin UI
+
+Vue2 + Element UI 前端控制台，已统一为现代 SaaS 后台风格。
+
 ## 开发
 
 ```bash
-# 克隆项目
-git clone https://gitee.com/y_project/RuoYi-Vue
-
-# 进入项目目录
-cd ruoyi-ui
-
-# 安装依赖
-npm install
-
-# 建议不要直接使用 cnpm 安装依赖，会有各种诡异的 bug。可以通过如下操作解决 npm 下载速度慢的问题
-npm install --registry=https://registry.npmmirror.com
-
-# 启动服务
+npm install --legacy-peer-deps
 npm run dev
 ```
 
-浏览器访问 http://localhost:80
+默认访问：
 
-## 发布
+```text
+http://localhost:80
+```
+
+## 构建
 
 ```bash
-# 构建测试环境
-npm run build:stage
-
-# 构建生产环境
+$env:NODE_OPTIONS='--openssl-legacy-provider'
 npm run build:prod
 ```
+
+Node 18 以上运行 Vue CLI 4 时建议保留 `NODE_OPTIONS` 设置。

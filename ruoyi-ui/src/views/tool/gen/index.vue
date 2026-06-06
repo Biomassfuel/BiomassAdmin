@@ -1,5 +1,16 @@
 <template>
-  <div class="app-container">
+  <div class="app-container gen-page">
+    <div class="saas-page-header gen-page__header">
+      <div>
+        <h1 class="saas-page-title">代码生成</h1>
+        <div class="saas-page-desc">导入数据库表结构，生成统一 SaaS 风格的 Vue2 管理页面与后端代码。</div>
+      </div>
+      <div class="gen-page__summary">
+        <span>{{ total }}</span>
+        <label>已导入表</label>
+      </div>
+    </div>
+
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
       <el-form-item label="表名称" prop="tableName">
         <el-input
@@ -151,7 +162,7 @@
       @pagination="getList"
     />
     <!-- 预览界面 -->
-    <el-dialog :title="preview.title" :visible.sync="preview.open" width="80%" top="5vh" append-to-body class="scrollbar">
+    <el-dialog :title="preview.title" :visible.sync="preview.open" width="80%" top="5vh" append-to-body class="scrollbar gen-preview-dialog">
       <el-tabs v-model="preview.activeName">
         <el-tab-pane
           v-for="(value, key) in preview.data"
@@ -267,7 +278,7 @@ export default {
           this.$modal.msgSuccess("成功生成到自定义路径：" + row.genPath)
         })
       } else {
-        const zipName = Array.isArray(tableNames) ? "ruoyi.zip" : tableNames + ".zip"
+        const zipName = Array.isArray(tableNames) ? "biomass.zip" : tableNames + ".zip"
         this.$download.zip("/tool/gen/batchGenCode?tables=" + tableNames, zipName)
       }
     },
@@ -347,3 +358,59 @@ export default {
   }
 }
 </script>
+
+<style lang="scss" scoped>
+.gen-page {
+  min-height: 100%;
+}
+
+.gen-page__header {
+  align-items: center;
+}
+
+.gen-page__summary {
+  min-width: 132px;
+  padding: 14px 18px;
+  border: 1px solid #e5e8ef;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #ffffff 0%, #f6f9ff 100%);
+  box-shadow: 0 6px 18px rgba(31, 35, 41, 0.06);
+  text-align: right;
+
+  span {
+    display: block;
+    color: #1677ff;
+    font-size: 26px;
+    font-weight: 700;
+    line-height: 1;
+  }
+
+  label {
+    display: block;
+    margin-top: 6px;
+    color: #646a73;
+    font-size: 12px;
+    font-weight: 500;
+  }
+}
+
+::v-deep .gen-preview-dialog {
+  .el-dialog__body {
+    background: #f5f7fb;
+  }
+
+  .hljs {
+    border: 1px solid #e5e8ef;
+    border-radius: 10px;
+    background: #ffffff;
+    line-height: 1.7;
+  }
+}
+
+@media (max-width: 768px) {
+  .gen-page__summary {
+    margin-top: 16px;
+    text-align: left;
+  }
+}
+</style>

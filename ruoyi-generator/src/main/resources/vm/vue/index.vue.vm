@@ -1,5 +1,12 @@
 <template>
-  <div class="app-container">
+  <div class="app-container generated-page">
+    <div class="saas-page-header">
+      <div>
+        <h1 class="saas-page-title">${functionName}管理</h1>
+        <div class="saas-page-desc">统一查询、维护和导出${functionName}数据，保持后台页面风格一致。</div>
+      </div>
+    </div>
+
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
 #foreach($column in $columns)
 #if($column.query)
@@ -658,3 +665,13 @@ export default {
   }
 }
 </script>
+
+<style lang="scss" scoped>
+.generated-page {
+  min-height: 100%;
+}
+
+::v-deep .el-dialog .el-form {
+  padding-top: 4px;
+}
+</style>
