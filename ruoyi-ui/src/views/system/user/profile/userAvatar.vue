@@ -171,8 +171,8 @@ export default {
   right: 0;
   top: 0;
   bottom: 0;
-  color: #eee;
-  background: rgba(0, 0, 0, 0.5);
+  color: #ffffff;
+  background: rgba(36, 104, 242, 0.48);
   font-size: 24px;
   font-style: normal;
   -webkit-font-smoothing: antialiased;

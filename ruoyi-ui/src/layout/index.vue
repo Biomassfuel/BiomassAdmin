@@ -2,7 +2,7 @@
   <div :class="classObj" class="app-wrapper" :style="{'--current-color': theme, '--current-color-light': theme + '1a', '--current-color-dark-bg': theme + '33'}">
     <div v-if="device==='mobile'&&sidebar.opened" class="drawer-bg" @click="handleClickOutside"/>
     <sidebar v-if="!sidebar.hide" class="sidebar-container"/>
-    <div :class="{hasTagsView:needTagsView,sidebarHide:sidebar.hide}" class="main-container">
+    <div :class="{hasTagsView:needTagsView,sidebarHide:sidebar.hide,hasFixedHeader:fixedHeader}" class="main-container">
       <div :class="{'fixed-header':fixedHeader}">
         <navbar @setLayout="setLayout"/>
         <tags-view v-if="needTagsView"/>
@@ -77,14 +77,13 @@ export default {
     }
   }
 
-  .main-container:has(.fixed-header) {
+  .main-container.hasFixedHeader {
     height: 100vh;
     overflow: hidden;
   }
 
   .drawer-bg {
-    background: #000;
-    opacity: 0.3;
+    background: rgba(15, 23, 42, 0.32);
     width: 100%;
     top: 0;
     height: 100%;
@@ -102,7 +101,7 @@ export default {
   }
 
   .hideSidebar .fixed-header {
-    width: calc(100% - 54px);
+    width: calc(100% - 64px);
   }
 
   .sidebarHide .fixed-header {

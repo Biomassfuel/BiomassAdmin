@@ -110,7 +110,7 @@
                   :label="dict.dictName"
                   :value="dict.dictType">
                   <span style="float: left">{{ dict.dictName }}</span>
-                  <span style="float: right; color: #8492a6; font-size: 13px">{{ dict.dictType }}</span>
+                  <span style="float: right; color: #6b7280; font-size: 13px">{{ dict.dictType }}</span>
               </el-option>
               </el-select>
             </template>
@@ -245,9 +245,9 @@ export default {
 }
 
 .gen-edit-card {
-  border: 1px solid #e5e8ef;
-  border-radius: 12px;
-  box-shadow: 0 6px 18px rgba(31, 35, 41, 0.06);
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.035);
 
   ::v-deep .el-card__body {
     padding: 0;
@@ -257,7 +257,7 @@ export default {
     margin: 0;
     padding: 0 24px;
     background: #ffffff;
-    border-bottom: 1px solid #edf1f7;
+    border-bottom: 1px solid #e5e7eb;
   }
 
   ::v-deep .el-tabs__content {
@@ -268,8 +268,8 @@ export default {
 .gen-edit-actions {
   margin: 0;
   padding: 16px 24px 20px;
-  border-top: 1px solid #edf1f7;
-  background: #fbfcfe;
+  border-top: 1px solid #e5e7eb;
+  background: #f9fafb;
   text-align: right;
 
   ::v-deep .el-form-item {

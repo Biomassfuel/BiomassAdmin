@@ -45,7 +45,7 @@ export default {
   },
   zip(url, name) {
     var url = baseURL + url
-    downloadLoadingInstance = Loading.service({ text: "正在下载数据，请稍候", spinner: "el-icon-loading", background: "rgba(0, 0, 0, 0.7)", })
+    downloadLoadingInstance = Loading.service({ text: "正在下载数据，请稍候", spinner: "el-icon-loading", background: "rgba(245, 247, 251, 0.78)", })
     axios({
       method: 'get',
       url: url,
@@ -76,4 +76,3 @@ export default {
     Message.error(errMsg)
   }
 }
-

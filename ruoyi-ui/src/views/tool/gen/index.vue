@@ -371,15 +371,15 @@ export default {
 .gen-page__summary {
   min-width: 132px;
   padding: 14px 18px;
-  border: 1px solid #e5e8ef;
-  border-radius: 12px;
-  background: linear-gradient(135deg, #ffffff 0%, #f6f9ff 100%);
-  box-shadow: 0 6px 18px rgba(31, 35, 41, 0.06);
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: #ffffff;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.035);
   text-align: right;
 
   span {
     display: block;
-    color: #1677ff;
+    color: #2563eb;
     font-size: 26px;
     font-weight: 700;
     line-height: 1;
@@ -388,7 +388,7 @@ export default {
   label {
     display: block;
     margin-top: 6px;
-    color: #646a73;
+    color: #6b7280;
     font-size: 12px;
     font-weight: 500;
   }
@@ -396,12 +396,12 @@ export default {
 
 ::v-deep .gen-preview-dialog {
   .el-dialog__body {
-    background: #f5f7fb;
+    background: #f3f4f6;
   }
 
   .hljs {
-    border: 1px solid #e5e8ef;
-    border-radius: 10px;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
     background: #ffffff;
     line-height: 1.7;
   }

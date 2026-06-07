@@ -59,12 +59,12 @@ export default {
           splitNumber: 8,
           splitArea: {
             areaStyle: {
-              color: 'rgba(127,95,132,.3)',
+              color: ['rgba(36, 104, 242, .08)', 'rgba(0, 168, 112, .04)'],
               opacity: 1,
-              shadowBlur: 45,
-              shadowColor: 'rgba(0,0,0,.5)',
+              shadowBlur: 18,
+              shadowColor: 'rgba(36, 104, 242, .10)',
               shadowOffsetX: 0,
-              shadowOffsetY: 15
+              shadowOffsetY: 8
             }
           },
           indicator: [
@@ -86,10 +86,10 @@ export default {
           symbolSize: 0,
           areaStyle: {
             normal: {
-              shadowBlur: 13,
-              shadowColor: 'rgba(0,0,0,.2)',
+              shadowBlur: 10,
+              shadowColor: 'rgba(36, 104, 242, .12)',
               shadowOffsetX: 0,
-              shadowOffsetY: 10,
+              shadowOffsetY: 6,
               opacity: 1
             }
           },

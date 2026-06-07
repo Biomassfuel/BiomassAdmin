@@ -1,15 +1,15 @@
 <template>
   <div class="top-right-btn" :style="style">
     <el-row>
-      <el-tooltip class="item" effect="dark" :content="showSearch ? '隐藏搜索' : '显示搜索'" placement="top" v-if="search">
+      <el-tooltip class="item" effect="light" :content="showSearch ? '隐藏搜索' : '显示搜索'" placement="top" v-if="search">
         <el-button size="mini" circle icon="el-icon-search" @click="toggleSearch()" />
       </el-tooltip>
-      <el-tooltip class="item" effect="dark" content="刷新" placement="top">
+      <el-tooltip class="item" effect="light" content="刷新" placement="top">
         <el-button size="mini" circle icon="el-icon-refresh" @click="refresh()" />
       </el-tooltip>
-      <el-tooltip class="item" effect="dark" content="显隐列" placement="top" v-if="Object.keys(columns).length > 0">
+      <el-tooltip class="item" effect="light" content="显隐列" placement="top" v-if="Object.keys(columns).length > 0">
         <el-button size="mini" circle icon="el-icon-menu" @click="showColumn()" v-if="showColumnsType == 'transfer'"/>
-        <el-dropdown trigger="click" :hide-on-click="false" style="padding-left: 12px" v-if="showColumnsType == 'checkbox'">
+        <el-dropdown trigger="click" :hide-on-click="false" class="column-dropdown" v-if="showColumnsType == 'checkbox'">
           <el-button size="mini" circle icon="el-icon-menu" />
           <el-dropdown-menu slot="dropdown">
             <!-- 全选/反选 按钮 -->
@@ -235,8 +235,41 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.top-right-btn {
+  display: inline-flex;
+  align-items: center;
+}
+
+::v-deep .el-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+::v-deep .el-button.is-circle {
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border-radius: 8px;
+  border-color: #e5e8ef;
+  color: #4e5969;
+  background: #ffffff;
+
+  &:hover,
+  &:focus {
+    border-color: #b8c7e6;
+    color: #2468f2;
+    background: #f7fbff;
+  }
+}
+
+.column-dropdown {
+  display: inline-flex;
+  padding-left: 0;
+}
+
 ::v-deep .el-transfer__button {
-  border-radius: 50%;
+  border-radius: 8px;
   padding: 12px;
   display: block;
   margin-left: 0px;
@@ -247,7 +280,7 @@ export default {
 .check-line {
   width: 90%;
   height: 1px;
-  background-color: #ccc;
+  background-color: #edf1f7;
   margin: 3px auto;
 }
 </style>

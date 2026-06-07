@@ -73,7 +73,7 @@ export default {
       lock: true,
       text: content,
       spinner: "el-icon-loading",
-      background: "rgba(0, 0, 0, 0.7)",
+      background: "rgba(245, 247, 251, 0.78)",
     })
   },
   // 关闭遮罩层

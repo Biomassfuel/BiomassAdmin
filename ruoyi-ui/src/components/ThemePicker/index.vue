@@ -1,14 +1,14 @@
 <template>
   <el-color-picker
     v-model="theme"
-    :predefine="['#409EFF', '#1890ff', '#304156','#212121','#11a983', '#13c2c2', '#6959CD', '#f5222d', ]"
+    :predefine="['#2468f2', '#1677ff', '#00a870', '#13c2c2', '#7b61ff', '#ff7d00', '#f53f3f']"
     class="theme-picker"
     popper-class="theme-picker-dropdown"
   />
 </template>
 
 <script>
-const ORIGINAL_THEME = '#409EFF' // default color
+const ORIGINAL_THEME = '#409EFF' // element-ui default color used as replacement baseline
 
 export default {
   data() {

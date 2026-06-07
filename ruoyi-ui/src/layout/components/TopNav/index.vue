@@ -121,7 +121,7 @@ export default {
     // 根据宽度计算设置显示栏数
     setVisibleNumber() {
       const width = document.body.getBoundingClientRect().width / 3
-      this.visibleNumber = parseInt(width / 85)
+      this.visibleNumber = Math.max(1, parseInt(width / 92))
     },
     // 菜单选择事件
     handleSelect(key, keyPath) {
@@ -167,27 +167,65 @@ export default {
 </script>
 
 <style lang="scss">
+.topmenu-container.el-menu--horizontal {
+  display: flex;
+  align-items: center;
+  height: 58px;
+  border-bottom: none;
+  background: transparent;
+}
+
 .topmenu-container.el-menu--horizontal > .el-menu-item {
   float: left;
-  height: 50px !important;
-  line-height: 50px !important;
-  color: #303133 !important;
-  padding: 0 5px !important;
-  margin: 0 10px !important;
+  height: 34px !important;
+  margin: 0 4px !important;
+  padding: 0 12px !important;
+  border-bottom: none !important;
+  border-radius: 8px;
+  color: #4e5969 !important;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 34px !important;
+  transition: background 0.16s ease, color 0.16s ease;
+
+  .svg-icon {
+    margin-right: 6px;
+  }
+
+  &:hover,
+  &:focus {
+    background: #f4f7fb !important;
+    color: #1d2129 !important;
+    box-shadow: inset 0 0 0 1px #edf1f7;
+  }
 }
 
 .topmenu-container.el-menu--horizontal > .el-menu-item.is-active, .el-menu--horizontal > .el-submenu.is-active .el-submenu__title {
-  border-bottom: 2px solid #{'var(--theme)'} !important;
-  color: #303133;
+  border-bottom: none !important;
+  background: #edf4ff !important;
+  color: #{'var(--theme)'} !important;
+  font-weight: 600;
+  box-shadow: inset 0 0 0 1px #d7e6ff;
 }
 
 /* submenu item */
 .topmenu-container.el-menu--horizontal > .el-submenu .el-submenu__title {
   float: left;
-  height: 50px !important;
-  line-height: 50px !important;
-  color: #303133 !important;
-  padding: 0 5px !important;
-  margin: 0 10px !important;
+  height: 34px !important;
+  margin: 0 4px !important;
+  padding: 0 12px !important;
+  border-bottom: none !important;
+  border-radius: 8px;
+  color: #4e5969 !important;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 34px !important;
+
+  &:hover,
+  &:focus {
+    background: #f4f7fb !important;
+    color: #1d2129 !important;
+    box-shadow: inset 0 0 0 1px #edf1f7;
+  }
 }
 </style>

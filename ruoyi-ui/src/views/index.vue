@@ -1,7 +1,7 @@
 <template>
   <div class="dashboard-page">
     <div class="dashboard-hero">
-      <div>
+      <div class="hero-copy">
         <h1>BiomassAdmin</h1>
         <p>系统运行概览、公告与最近操作</p>
       </div>
@@ -10,7 +10,7 @@
 
     <el-row :gutter="16" class="metric-grid">
       <el-col v-for="item in metricCards" :key="item.label" :xs="24" :sm="12" :lg="6">
-        <section class="metric-card" :class="{ clickable: item.path }" @click="go(item.path)">
+        <section class="metric-card" :class="{ clickable: item.path }" :style="metricStyle(item)" @click="go(item.path)">
           <div class="metric-top">
             <span>{{ item.label }}</span>
             <i :class="item.icon" />
@@ -92,7 +92,7 @@
         <section class="saas-card list-card">
           <div class="card-heading compact">
             <h3>最近操作</h3>
-            <el-button type="text" @click="go('/monitor/operlog')">审计</el-button>
+            <el-button type="text" @click="go('/system/log/operlog')">审计</el-button>
           </div>
           <panel-list :state="panels.operlog" empty-text="暂无操作日志">
             <div v-for="item in panels.operlog.rows" :key="item.operId" class="timeline-row">
@@ -110,7 +110,7 @@
         <section class="saas-card list-card">
           <div class="card-heading compact">
             <h3>登录记录</h3>
-            <el-button type="text" @click="go('/monitor/logininfor')">日志</el-button>
+            <el-button type="text" @click="go('/system/log/logininfor')">日志</el-button>
           </div>
           <panel-list :state="panels.logininfor" empty-text="暂无登录记录">
             <div v-for="item in panels.logininfor.rows" :key="item.infoId" class="plain-row">
@@ -204,6 +204,8 @@ export default {
           hint: this.metricHint('online', '当前登录会话'),
           error: !!this.panels.online.error,
           icon: 'el-icon-user',
+          accent: '#2563eb',
+          soft: '#eff6ff',
           path: '/monitor/online'
         },
         {
@@ -211,7 +213,9 @@ export default {
           value: this.metricValue('notice', this.panels.notice.unreadCount),
           hint: this.metricHint('notice', '来自通知公告'),
           error: !!this.panels.notice.error,
-          icon: 'el-icon-message'
+          icon: 'el-icon-message',
+          accent: '#059669',
+          soft: '#e8fff5'
         },
         {
           label: '定时任务',
@@ -219,6 +223,8 @@ export default {
           hint: this.metricHint('job', '启用 / 总数'),
           error: !!this.panels.job.error,
           icon: 'el-icon-alarm-clock',
+          accent: '#d97706',
+          soft: '#fff7e8',
           path: '/monitor/job'
         },
         {
@@ -227,6 +233,8 @@ export default {
           hint: this.metricHint('cache', '当前缓存数量'),
           error: !!this.panels.cache.error,
           icon: 'el-icon-coin',
+          accent: '#7b61ff',
+          soft: '#f2efff',
           path: '/monitor/cache'
         }
       ]
@@ -412,6 +420,12 @@ export default {
       if (this.panels[key].loading) return '正在加载'
       return this.panels[key].error || fallback
     },
+    metricStyle(item) {
+      return {
+        '--metric-accent': item.accent || '#2563eb',
+        '--metric-soft': item.soft || '#eff6ff'
+      }
+    },
     panelLoading(key) {
       return this.panels[key] && this.panels[key].loading
     },
@@ -453,30 +467,46 @@ export default {
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  margin-bottom: 18px;
-  padding: 20px 22px;
+  margin-bottom: 16px;
+  padding: 22px 24px;
   border: 1px solid #e5e7eb;
   border-radius: 10px;
-  background: #151b26;
-  color: #ffffff;
+  background:
+    linear-gradient(135deg, rgba(37, 99, 235, 0.07), rgba(5, 150, 105, 0.04) 42%, rgba(255, 255, 255, 0) 78%),
+    #ffffff;
+  color: #111827;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+
+  .hero-copy {
+    min-width: 0;
+  }
 
   h1 {
     margin: 0;
+    color: #111827;
     font-size: 24px;
-    font-weight: 700;
+    font-weight: 750;
     line-height: 32px;
   }
 
   p {
-    margin: 4px 0 0;
-    color: #aeb8c6;
+    margin: 6px 0 0;
+    color: #4b5563;
     font-size: 13px;
+    line-height: 20px;
   }
 
   ::v-deep .el-button {
-    color: #1f2937;
-    border-color: #ffffff;
+    flex: 0 0 auto;
+    border-color: #bfdbfe;
+    color: #2563eb;
     background: #ffffff;
+
+    &:hover,
+    &:focus {
+      border-color: #2563eb;
+      background: #eff6ff;
+    }
   }
 }
 
@@ -485,20 +515,23 @@ export default {
 }
 
 .metric-card {
-  min-height: 128px;
+  min-height: 124px;
   margin-bottom: 16px;
-  padding: 18px;
+  padding: 18px 18px 16px;
   border: 1px solid #e5e7eb;
-  border-radius: 10px;
+  border-radius: 8px;
   background: #ffffff;
   box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+  transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
 
   &.clickable {
     cursor: pointer;
   }
 
   &:hover {
-    border-color: #cbd5e1;
+    border-color: rgba(37, 99, 235, 0.28);
+    box-shadow: 0 8px 24px rgba(29, 33, 41, 0.08);
+    transform: translateY(-1px);
   }
 
   strong {
@@ -506,7 +539,7 @@ export default {
     margin: 14px 0 6px;
     color: #111827;
     font-size: 28px;
-    font-weight: 700;
+    font-weight: 750;
     line-height: 34px;
   }
 
@@ -514,6 +547,7 @@ export default {
     margin: 0;
     color: #6b7280;
     font-size: 12px;
+    line-height: 18px;
 
     &.error {
       color: #dc2626;
@@ -533,8 +567,14 @@ export default {
   }
 
   i {
-    color: #111827;
-    font-size: 18px;
+    display: inline-grid;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    color: var(--metric-accent);
+    background: var(--metric-soft);
+    font-size: 17px;
   }
 }
 
@@ -542,6 +582,7 @@ export default {
 .list-card {
   margin-bottom: 16px;
   padding: 18px;
+  border-radius: 8px;
 }
 
 .card-heading {
@@ -555,7 +596,7 @@ export default {
     margin: 0;
     color: #111827;
     font-size: 15px;
-    font-weight: 700;
+    font-weight: 650;
     line-height: 22px;
   }
 
@@ -563,6 +604,7 @@ export default {
     margin: 4px 0 0;
     color: #6b7280;
     font-size: 12px;
+    line-height: 18px;
   }
 
   &.compact {
@@ -591,9 +633,9 @@ export default {
 .system-item {
   min-height: 104px;
   padding: 14px;
-  border: 1px solid #eef0f3;
-  border-radius: 9px;
-  background: #fafafa;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: #f8fafc;
 
   span,
   em {
@@ -601,6 +643,7 @@ export default {
     color: #6b7280;
     font-size: 12px;
     font-style: normal;
+    line-height: 18px;
   }
 
   strong {
@@ -608,13 +651,13 @@ export default {
     margin: 10px 0 6px;
     color: #111827;
     font-size: 22px;
-    font-weight: 700;
+    font-weight: 750;
   }
 
   em.good { color: #059669; }
   em.warning { color: #d97706; }
   em.danger { color: #dc2626; }
-  em.muted { color: #9ca3af; }
+  em.muted { color: #6b7280; }
 }
 
 .panel-list {
@@ -631,7 +674,7 @@ export default {
   font-size: 13px;
 
   &.muted {
-    color: #9ca3af;
+    color: #6b7280;
   }
 }
 
@@ -643,7 +686,7 @@ export default {
   justify-content: space-between;
   gap: 12px;
   padding: 12px 0;
-  border-bottom: 1px solid #eef0f3;
+  border-bottom: 1px solid #e5e7eb;
 
   &:last-child {
     border-bottom: none;
@@ -676,7 +719,8 @@ export default {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: #111827;
+  background: #2563eb;
+  box-shadow: 0 0 0 4px #eff6ff;
 }
 
 @media (max-width: 1200px) {
@@ -693,6 +737,7 @@ export default {
   .dashboard-hero {
     align-items: flex-start;
     flex-direction: column;
+    padding: 18px;
   }
 
   .system-grid {

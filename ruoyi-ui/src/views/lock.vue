@@ -3,33 +3,39 @@
     <!-- 动态粒子背景 -->
     <canvas ref="particleCanvas" class="particle-bg"></canvas>
 
-    <!-- 时钟 -->
-    <div class="lock-time">{{ currentTime }}</div>
-    <div class="lock-date">{{ currentDate }}</div>
-
-    <!-- 锁屏卡片 -->
-    <div class="lock-card">
-      <div class="avatar-wrap">
-        <img :src="avatar" class="lock-avatar" @error="onAvatarError" />
-        <div class="lock-icon">🔒</div>
-      </div>
-      <div class="lock-username">{{ nickName }}</div>
-      <div class="lock-hint">系统已锁定，请输入密码解锁</div>
-
-      <div class="input-wrap" :class="{ shake: isShaking }">
-        <input ref="passwordInput" v-model="password" type="password" placeholder="请输入登录密码" class="lock-input" @keydown.enter="handleUnlock" autocomplete="off" />
-        <button class="unlock-btn" @click="handleUnlock" :disabled="loading">
-          <span v-if="!loading">→</span>
-          <span v-else class="loading-dot">···</span>
-        </button>
+    <section class="lock-shell">
+      <div class="lock-time-panel">
+        <div class="brand-lockup">
+          <span class="brand-mark">B</span>
+          <span class="brand-name">BiomassAdmin</span>
+        </div>
+        <div class="lock-time">{{ currentTime }}</div>
+        <div class="lock-date">{{ currentDate }}</div>
       </div>
 
-      <div v-if="errorMsg" class="error-msg">{{ errorMsg }}</div>
+      <div class="lock-card">
+        <div class="avatar-wrap">
+          <img :src="avatar" class="lock-avatar" @error="onAvatarError" />
+          <div class="lock-icon"><i class="el-icon-lock"></i></div>
+        </div>
+        <div class="lock-username">{{ nickName }}</div>
+        <div class="lock-hint">系统已锁定，请输入密码解锁</div>
 
-      <div class="lock-footer">
-        <a href="/login" @click.prevent="goLogin">退出重新登录</a>
+        <div class="input-wrap" :class="{ shake: isShaking }">
+          <input ref="passwordInput" v-model="password" type="password" placeholder="请输入登录密码" class="lock-input" @keydown.enter="handleUnlock" autocomplete="off" />
+          <button class="unlock-btn" @click="handleUnlock" :disabled="loading">
+            <i v-if="!loading" class="el-icon-right"></i>
+            <span v-else class="loading-dot">···</span>
+          </button>
+        </div>
+
+        <div v-if="errorMsg" class="error-msg">{{ errorMsg }}</div>
+
+        <div class="lock-footer">
+          <a href="/login" @click.prevent="goLogin">退出重新登录</a>
+        </div>
       </div>
-    </div>
+    </section>
   </div>
 </template>
 
@@ -97,13 +103,25 @@ export default {
         await this.$store.dispatch('lock/unlockScreen')
         this.$router.replace(lockPath)
       } catch (err) {
-        const msg = err.message || err.toString()
-        this.showError(msg)
+        this.showError(this.normalizeUnlockError(err))
         this.password = ''
         this.$refs.passwordInput && this.$refs.passwordInput.focus()
       } finally {
         this.loading = false
       }
+    },
+    normalizeUnlockError(err) {
+      const msg = String((err && err.message) || err || '')
+      if (msg.includes('No static resource') || msg.includes('404')) {
+        return '解锁接口不可用，请刷新后重试'
+      }
+      if (msg.includes('401') || msg.includes('认证失败') || msg.includes('会话')) {
+        return '登录状态已过期，请重新登录'
+      }
+      if (msg.includes('密码')) {
+        return msg
+      }
+      return msg || '解锁失败，请稍后重试'
     },
     showError(msg) {
       this.errorMsg = msg
@@ -143,7 +161,7 @@ export default {
         this.particles.forEach(p => {
           ctx.beginPath()
           ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2)
-          ctx.fillStyle = `rgba(255,255,255,${p.alpha})`
+          ctx.fillStyle = `rgba(37,99,235,${p.alpha * 0.30})`
           ctx.fill()
           p.x += p.dx
           p.y += p.dy
@@ -159,7 +177,7 @@ export default {
               ctx.beginPath()
               ctx.moveTo(a.x, a.y)
               ctx.lineTo(b.x, b.y)
-              ctx.strokeStyle = `rgba(255,255,255,${0.15 * (1 - dist / 120)})`
+              ctx.strokeStyle = `rgba(37,99,235,${0.08 * (1 - dist / 120)})`
               ctx.lineWidth = 0.5
               ctx.stroke()
             }
@@ -177,13 +195,15 @@ export default {
 .lock-container {
   position: fixed;
   inset: 0;
-  background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+  background:
+    linear-gradient(135deg, rgba(37, 99, 235, 0.10), transparent 34%),
+    linear-gradient(180deg, #f9fafb 0%, #f3f4f6 100%);
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
   z-index: 9999;
-  font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  padding: 42px;
+  font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
   overflow: hidden;
 }
 
@@ -191,43 +211,88 @@ export default {
   position: absolute;
   inset: 0;
   z-index: 0;
+  opacity: .82;
+}
+
+.lock-shell {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: minmax(360px, 1fr) 380px;
+  gap: 28px;
+  align-items: stretch;
+  width: min(940px, 100%);
+}
+
+.lock-time-panel,
+.lock-card {
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, .92);
+  box-shadow: 0 12px 34px rgba(15, 23, 42, 0.08);
+  backdrop-filter: blur(10px);
+}
+
+.lock-time-panel {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 420px;
+  padding: 34px;
+}
+
+.brand-lockup {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.brand-mark {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #2563eb 0%, #10b981 100%);
+  color: #ffffff;
+  font-size: 18px;
+  font-weight: 750;
+  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.22);
+}
+
+.brand-name {
+  color: #111827;
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 24px;
 }
 
 .lock-time {
   position: relative;
-  z-index: 1;
   font-size: 72px;
-  font-weight: 200;
-  color: #fff;
-  letter-spacing: 4px;
-  text-shadow: 0 0 40px rgba(255,255,255,0.3);
-  margin-bottom: 8px;
+  font-weight: 750;
+  color: #111827;
+  letter-spacing: 0;
+  line-height: 1;
   font-variant-numeric: tabular-nums;
 }
 
 .lock-date {
   position: relative;
-  z-index: 1;
+  margin-top: 16px;
+  color: #4b5563;
   font-size: 15px;
-  color: rgba(255,255,255,0.6);
-  margin-bottom: 48px;
-  letter-spacing: 2px;
+  line-height: 24px;
 }
 
 .lock-card {
   position: relative;
-  z-index: 1;
-  background: rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: 24px;
-  padding: 40px 48px;
-  width: 360px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  box-shadow: 0 25px 60px rgba(0,0,0,0.4);
+  justify-content: center;
+  min-height: 420px;
+  padding: 38px 36px;
 }
 
 .avatar-wrap {
@@ -239,16 +304,18 @@ export default {
   width: 80px;
   height: 80px;
   border-radius: 50%;
-  border: 3px solid rgba(255,255,255,0.3);
+  border: 3px solid #ffffff;
   object-fit: cover;
   display: block;
+  box-shadow: 0 10px 24px rgba(29, 33, 41, .12);
 }
 
 .lock-icon {
   position: absolute;
   bottom: -4px;
   right: -4px;
-  background: rgba(255,255,255,0.15);
+  background: #eff6ff;
+  color: #2563eb;
   border-radius: 50%;
   width: 26px;
   height: 26px;
@@ -256,19 +323,18 @@ export default {
   align-items: center;
   justify-content: center;
   font-size: 13px;
-  backdrop-filter: blur(8px);
+  box-shadow: 0 4px 10px rgba(37, 99, 235, .16);
 }
 
 .lock-username {
-  color: #fff;
+  color: #111827;
   font-size: 18px;
   font-weight: 600;
   margin-bottom: 6px;
-  letter-spacing: 1px;
 }
 
 .lock-hint {
-  color: rgba(255,255,255,0.5);
+  color: #6b7280;
   font-size: 13px;
   margin-bottom: 28px;
 }
@@ -277,16 +343,17 @@ export default {
   width: 100%;
   display: flex;
   align-items: center;
-  background: rgba(255,255,255,0.1);
-  border: 1px solid rgba(255,255,255,0.2);
-  border-radius: 50px;
+  background: #f9fafb;
+  border: 1px solid #d7dde7;
+  border-radius: 8px;
   padding: 4px 4px 4px 20px;
-  transition: border-color 0.3s;
+  transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
 }
 
 .input-wrap:focus-within {
-  border-color: rgba(255,255,255,0.6);
-  background: rgba(255,255,255,0.13);
+  border-color: #2563eb;
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, .12);
 }
 
 .input-wrap.shake {
@@ -306,25 +373,25 @@ export default {
   background: transparent;
   border: none;
   outline: none;
-  color: #fff;
+  color: #111827;
   font-size: 15px;
   padding: 10px 0;
 }
 
 .lock-input::placeholder {
-  color: rgba(255,255,255,0.35);
+  color: #a6afbd;
 }
 
 .unlock-btn {
   width: 42px;
   height: 42px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  border-radius: 7px;
+  background: #2563eb;
   border: none;
   color: #fff;
   font-size: 18px;
   cursor: pointer;
-  transition: transform 0.2s, opacity 0.2s;
+  transition: transform 0.2s, opacity 0.2s, background 0.2s;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -333,6 +400,7 @@ export default {
 
 .unlock-btn:hover:not(:disabled) {
   transform: scale(1.08);
+  background: #1d4ed8;
 }
 
 .unlock-btn:disabled {
@@ -347,7 +415,7 @@ export default {
 
 .error-msg {
   margin-top: 14px;
-  color: #ff7675;
+  color: #dc2626;
   font-size: 13px;
   text-align: center;
   animation: fadeIn 0.3s ease;
@@ -363,13 +431,46 @@ export default {
 }
 
 .lock-footer a {
-  color: rgba(255,255,255,0.4);
+  color: #4b5563;
   font-size: 13px;
   text-decoration: none;
   transition: color 0.2s;
 }
 
 .lock-footer a:hover {
-  color: rgba(255,255,255,0.8);
+  color: #2563eb;
+}
+
+@media (max-width: 820px) {
+  .lock-container {
+    padding: 22px;
+  }
+
+  .lock-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .lock-time-panel {
+    min-height: 220px;
+  }
+
+  .lock-time {
+    font-size: 52px;
+  }
+}
+
+@media (max-width: 460px) {
+  .lock-container {
+    padding: 16px;
+  }
+
+  .lock-time-panel,
+  .lock-card {
+    padding: 26px 22px;
+  }
+
+  .lock-time {
+    font-size: 42px;
+  }
 }
 </style>

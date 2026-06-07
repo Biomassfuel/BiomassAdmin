@@ -75,106 +75,103 @@ export default {
   margin-top: 18px;
 
   .card-panel-col {
-    margin-bottom: 32px;
+    margin-bottom: 16px;
   }
 
   .card-panel {
-    height: 108px;
-    cursor: pointer;
-    font-size: 12px;
     position: relative;
+    display: flex;
+    align-items: center;
+    min-height: 116px;
+    padding: 18px;
     overflow: hidden;
-    color: #666;
-    background: #fff;
-    box-shadow: 4px 4px 40px rgba(0, 0, 0, .05);
-    border-color: rgba(0, 0, 0, .05);
+    border: 1px solid #edf1f7;
+    border-radius: 8px;
+    background: #ffffff;
+    color: #1d2129;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+    cursor: pointer;
+    transition: border-color .18s ease, box-shadow .18s ease, transform .18s ease;
 
     &:hover {
-      .card-panel-icon-wrapper {
-        color: #fff;
-      }
-
-      .icon-people {
-        background: #40c9c6;
-      }
-
-      .icon-message {
-        background: #36a3f7;
-      }
-
-      .icon-money {
-        background: #f4516c;
-      }
-
-      .icon-shopping {
-        background: #34bfa3
-      }
+      border-color: rgba(36, 104, 242, .28);
+      box-shadow: 0 8px 24px rgba(29, 33, 41, 0.08);
+      transform: translateY(-1px);
     }
 
     .icon-people {
-      color: #40c9c6;
+      color: #2468f2;
+      background: #edf4ff;
     }
 
     .icon-message {
-      color: #36a3f7;
+      color: #00a870;
+      background: #e8fff5;
     }
 
     .icon-money {
-      color: #f4516c;
+      color: #ff7d00;
+      background: #fff7e8;
     }
 
     .icon-shopping {
-      color: #34bfa3
+      color: #7b61ff;
+      background: #f2efff;
     }
 
     .card-panel-icon-wrapper {
-      float: left;
-      margin: 14px 0 0 14px;
-      padding: 16px;
-      transition: all 0.38s ease-out;
-      border-radius: 6px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex: 0 0 auto;
+      width: 48px;
+      height: 48px;
+      margin: 0;
+      border-radius: 8px;
+      transition: color .18s ease, background .18s ease;
     }
 
     .card-panel-icon {
-      float: left;
-      font-size: 48px;
+      width: 22px;
+      height: 22px;
+      font-size: 22px;
     }
 
     .card-panel-description {
-      float: right;
-      font-weight: bold;
-      margin: 26px;
-      margin-left: 0px;
+      min-width: 0;
+      margin: 0 0 0 16px;
 
       .card-panel-text {
-        line-height: 18px;
-        color: rgba(0, 0, 0, 0.45);
-        font-size: 16px;
-        margin-bottom: 12px;
+        margin-bottom: 8px;
+        color: #4e5969;
+        font-size: 13px;
+        font-weight: 600;
+        line-height: 20px;
       }
 
       .card-panel-num {
-        font-size: 20px;
+        color: #1d2129;
+        font-size: 24px;
+        font-weight: 750;
+        line-height: 30px;
       }
     }
   }
 }
 
 @media (max-width:550px) {
-  .card-panel-description {
-    display: none;
-  }
+  .panel-group {
+    margin-top: 12px;
 
-  .card-panel-icon-wrapper {
-    float: none !important;
-    width: 100%;
-    height: 100%;
-    margin: 0 !important;
+    .card-panel {
+      min-height: 106px;
+      padding: 14px;
+      flex-direction: column;
+      align-items: flex-start;
 
-    .svg-icon {
-      display: block;
-      margin: 14px auto !important;
-      float: none !important;
+      .card-panel-description {
+        margin: 12px 0 0;
+      }
     }
   }
 }

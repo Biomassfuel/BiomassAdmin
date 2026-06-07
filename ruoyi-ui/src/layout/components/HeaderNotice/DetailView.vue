@@ -138,7 +138,7 @@ export default {
   align-items: center;
   gap: 5px;
   padding: 3px 12px;
-  border-radius: 2px;
+  border-radius: 999px;
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 1px;
@@ -149,22 +149,22 @@ export default {
 .type-notify {
   background: #fff8e6;
   color: #b7791f;
-  border-left: 3px solid #d97706;
+  box-shadow: inset 0 0 0 1px rgba(217, 119, 6, .18);
 }
 
 .type-announce {
   background: #e8f5e9;
   color: #276749;
-  border-left: 3px solid #38a169;
+  box-shadow: inset 0 0 0 1px rgba(56, 161, 105, .18);
 }
 
 .notice-title {
   font-size: 22px;
   font-weight: 700;
-  color: #1a202c;
+  color: #1d2129;
   line-height: 1.45;
   margin: 0 0 16px;
-  letter-spacing: -0.2px;
+  letter-spacing: 0;
 }
 
 .notice-meta {
@@ -173,8 +173,8 @@ export default {
   flex-wrap: wrap;
   gap: 16px;
   padding: 12px 0;
-  border-top: 1px solid #e9ecef;
-  border-bottom: 1px solid #e9ecef;
+  border-top: 1px solid #edf1f7;
+  border-bottom: 1px solid #edf1f7;
   margin-bottom: 28px;
 }
 
@@ -219,28 +219,29 @@ export default {
   content: '';
   flex: 1;
   height: 1px;
-  background: linear-gradient(to right, transparent, #dee2e6, transparent);
+  background: linear-gradient(to right, transparent, #e5e8ef, transparent);
 }
 
 .notice-divider-dot {
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: #cbd5e0;
+  background: #c9d6f2;
 }
 
 .notice-body {
-  background: #fff;
-  border-radius: 6px;
+  border: 1px solid #edf1f7;
+  border-radius: 8px;
+  background: #ffffff;
   padding: 28px 32px;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06), 0 0 0 1px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
   min-height: 120px;
 }
 
 .notice-content {
   font-size: 14px;
   line-height: 1.85;
-  color: #2d3748;
+  color: #1d2129;
   word-break: break-word;
 }
 
@@ -252,7 +253,7 @@ export default {
 .notice-content ::v-deep h2,
 .notice-content ::v-deep h3 {
   font-weight: 700;
-  color: #1a202c;
+  color: #1d2129;
   margin: 1.4em 0 0.6em;
 }
 
@@ -269,17 +270,17 @@ export default {
 }
 
 .notice-content ::v-deep a {
-  color: #3182ce;
+  color: #2468f2;
   text-decoration: underline;
 }
 
 .notice-content ::v-deep a:hover {
-  color: #2b6cb0;
+  color: #1d5bd7;
 }
 
 .notice-content ::v-deep img {
   max-width: 100%;
-  border-radius: 4px;
+  border-radius: 8px;
   margin: 8px 0;
 }
 
@@ -294,11 +295,11 @@ export default {
 }
 
 .notice-content ::v-deep blockquote {
-  border-left: 3px solid #cbd5e0;
+  border-left: 3px solid #2468f2;
   margin: 1em 0;
   padding: 6px 16px;
-  color: #718096;
-  background: #f7fafc;
+  color: #4e5969;
+  background: #f8fafc;
 }
 
 .notice-content ::v-deep table {
@@ -310,12 +311,12 @@ export default {
 
 .notice-content ::v-deep table th,
 .notice-content ::v-deep table td {
-  border: 1px solid #e2e8f0;
+  border: 1px solid #edf1f7;
   padding: 7px 12px;
 }
 
 .notice-content ::v-deep table th {
-  background: #f7fafc;
+  background: #f8fafc;
   font-weight: 600;
 }
 
@@ -344,13 +345,13 @@ export default {
   .el-drawer__header {
     margin-bottom: 0;
     padding: 16px 20px;
-    border-bottom: 1px solid #ebeef5;
+    border-bottom: 1px solid #edf1f7;
     font-size: 16px;
     font-weight: 600;
-    color: #303133;
+    color: #1d2129;
   }
   .el-drawer__body {
-    background: #f5f6f8;
+    background: #f5f7fb;
   }
 }
 

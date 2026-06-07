@@ -1,22 +1,21 @@
 <template>
   <div class="navbar" :class="'nav' + navType">
-    <hamburger id="hamburger-container" :is-active="sidebar.opened" class="hamburger-container" @toggleClick="toggleSideBar" />
-
-    <breadcrumb v-if="navType == 1" id="breadcrumb-container" class="breadcrumb-container" />
-    <top-nav v-if="navType == 2" id="topmenu-container" class="topmenu-container" />
-    <template v-if="navType == 3">
-      <logo v-show="showLogo" :collapse="false"></logo>
-      <top-bar id="topbar-container" class="topbar-container" />
-    </template>
+    <div class="nav-left">
+      <hamburger id="hamburger-container" :is-active="sidebar.opened" class="hamburger-container" @toggleClick="toggleSideBar" />
+      <breadcrumb v-if="navType == 1" id="breadcrumb-container" class="breadcrumb-container" />
+      <top-nav v-if="navType == 2" id="topmenu-container" class="topmenu-container" />
+      <template v-if="navType == 3">
+        <logo v-show="showLogo" :collapse="false"></logo>
+        <top-bar id="topbar-container" class="topbar-container" />
+      </template>
+    </div>
     <div class="right-menu">
       <template v-if="device!=='mobile'">
         <search id="header-search" class="right-menu-item" />
 
         <screenfull id="screenfull" class="right-menu-item hover-effect" />
 
-        <el-tooltip content="消息通知" effect="dark" placement="bottom">
-          <header-notice id="header-notice" class="right-menu-item hover-effect" />
-        </el-tooltip>
+        <header-notice id="header-notice" class="right-menu-item hover-effect" />
 
       </template>
 
@@ -125,31 +124,44 @@ export default {
 }
 
 .navbar {
-  height: 56px;
+  height: 58px;
   overflow: hidden;
   position: relative;
-  background: #ffffff;
-  border-bottom: 1px solid #e5e7eb;
-  box-shadow: none;
   display: flex;
   align-items: center;
-  padding: 0 18px 0 10px;
   box-sizing: border-box;
+  padding: 0 20px 0 14px;
+  border-bottom: 1px solid #e5e7eb;
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 1px 0 rgba(15, 23, 42, 0.025);
 
-  .hamburger-container {
-    line-height: 56px;
-    height: 100%;
-    cursor: pointer;
-    transition: background .3s;
-    -webkit-tap-highlight-color:transparent;
+  .nav-left {
     display: flex;
     align-items: center;
+    min-width: 0;
+    height: 100%;
+  }
+
+  .hamburger-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     flex-shrink: 0;
+    width: 34px;
+    height: 34px;
     margin-right: 10px;
     border-radius: 8px;
+    color: #4b5563;
+    line-height: 34px;
+    cursor: pointer;
+    transition: background .18s ease, color .18s ease, box-shadow .18s ease;
+    -webkit-tap-highlight-color:transparent;
 
     &:hover {
-      background: #f3f4f6
+      background: #f3f4f6;
+      color: #111827;
+      box-shadow: inset 0 0 0 1px #e5e7eb;
     }
   }
 
@@ -173,7 +185,7 @@ export default {
 
   .right-menu {
     height: 100%;
-    line-height: 56px;
+    line-height: 58px;
     display: flex;
     align-items: center;
     margin-left: auto;
@@ -187,20 +199,22 @@ export default {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      min-width: 36px;
+      min-width: 34px;
+      height: 34px;
       padding: 0 8px;
-      height: 36px;
       border-radius: 8px;
-      font-size: 18px;
-      color: #56606f;
+      font-size: 17px;
+      color: #4b5563;
       vertical-align: text-bottom;
 
       &.hover-effect {
         cursor: pointer;
-        transition: background .3s;
+        transition: background .18s ease, color .18s ease, box-shadow .18s ease;
 
         &:hover {
-          background: #f3f4f6
+          background: #f3f4f6;
+          color: #111827;
+          box-shadow: inset 0 0 0 1px #e5e7eb;
         }
       }
     }
@@ -214,22 +228,35 @@ export default {
         align-items: center;
         gap: 8px;
         margin-top: 0;
-        right: 8px;
+        right: 0;
         position: relative;
+        height: 34px;
+        padding: 0 8px 0 4px;
+        border-radius: 999px;
+        transition: background .18s ease, box-shadow .18s ease;
+
+        &:hover {
+          background: #f3f4f6;
+          box-shadow: inset 0 0 0 1px #e5e7eb;
+        }
 
         .user-avatar {
           cursor: pointer;
-          width: 30px;
-          height: 30px;
+          width: 28px;
+          height: 28px;
           border: 1px solid #e5e7eb;
           border-radius: 50%;
         }
 
         .user-nickname{
           position: static;
-          font-size: 14px;
-          font-weight: 600;
+          max-width: 120px;
+          overflow: hidden;
           color: #111827;
+          font-size: 13px;
+          font-weight: 600;
+          text-overflow: ellipsis;
+          white-space: nowrap;
         }
 
         .el-icon-caret-bottom {

@@ -181,9 +181,11 @@ export default {
 <style lang="scss" scoped>
 .login {
   display: grid;
-  grid-template-columns: minmax(420px, 1fr) 460px;
+  grid-template-columns: minmax(460px, 1fr) 480px;
+  width: 100%;
   min-height: 100%;
   background: #f3f4f6;
+  overflow-x: hidden;
 }
 
 .login-aside {
@@ -191,9 +193,12 @@ export default {
   flex-direction: column;
   justify-content: space-between;
   min-height: 100vh;
-  padding: 52px 68px;
-  background: #111827;
-  color: #ffffff;
+  padding: 54px 72px;
+  border-right: 1px solid rgba(148, 163, 184, .14);
+  background:
+    linear-gradient(135deg, rgba(37, 99, 235, .28), transparent 38%),
+    linear-gradient(180deg, #111827 0%, #0f172a 100%);
+  color: #f8fafc;
 }
 
 .brand-lockup {
@@ -207,16 +212,16 @@ export default {
   place-items: center;
   width: 38px;
   height: 38px;
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  border-radius: 9px;
-  background: #1f2937;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #2563eb 0%, #10b981 100%);
   color: #ffffff;
   font-size: 18px;
   font-weight: 700;
+  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.24);
 }
 
 .brand-name {
-  color: #ffffff;
+  color: #f8fafc;
   font-size: 17px;
   font-weight: 700;
   line-height: 24px;
@@ -227,17 +232,18 @@ export default {
 
   h1 {
     margin: 0 0 16px;
-    color: #ffffff;
-    font-size: 42px;
-    font-weight: 700;
+    color: #f8fafc;
+    font-size: 44px;
+    font-weight: 750;
     line-height: 1.18;
   }
 
   p {
     margin: 0;
-    color: #aeb8c6;
+    max-width: 420px;
+    color: #cbd5e1;
     font-size: 15px;
-    line-height: 26px;
+    line-height: 28px;
   }
 }
 
@@ -245,25 +251,32 @@ export default {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding: 40px;
-  background: #f9fafb;
+  align-items: center;
+  width: 100%;
+  min-width: 0;
+  padding: 42px;
+  background: #f3f4f6;
+  overflow-x: hidden;
 }
 
 .login-form {
   width: 100%;
-  max-width: 380px;
-  padding: 32px;
+  max-width: 386px;
+  min-width: 0;
+  padding: 34px;
   border: 1px solid #e5e7eb;
   border-radius: 10px;
   background: #ffffff;
-  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+  box-shadow: 0 12px 34px rgba(15, 23, 42, 0.08);
 
   .el-input {
+    width: 100%;
+    min-width: 0;
     height: 42px;
 
     ::v-deep input {
       height: 42px;
-      border-radius: 8px;
+      border-radius: 7px;
     }
   }
 
@@ -272,6 +285,10 @@ export default {
     height: 42px;
     margin-left: 4px;
     color: #9ca3af;
+  }
+
+  ::v-deep .el-form-item__content {
+    min-width: 0;
   }
 }
 
@@ -297,14 +314,20 @@ export default {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 112px;
   gap: 10px;
+
+  > * {
+    min-width: 0;
+  }
 }
 
 .login-code {
+  width: 100%;
+  min-width: 0;
   height: 42px;
   padding: 0;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-  background: #f3f4f6;
+  border: 1px solid #d7dde7;
+  border-radius: 7px;
+  background: #f9fafb;
   cursor: pointer;
   overflow: hidden;
 }
@@ -321,21 +344,21 @@ export default {
   align-items: center;
   justify-content: space-between;
   margin: 2px 0 22px;
-  color: #6b7280;
+  color: #4b5563;
   font-size: 13px;
 }
 
 .login-submit {
   width: 100%;
   height: 42px;
-  border-radius: 8px;
+  border-radius: 7px;
   font-size: 14px;
   font-weight: 600;
 }
 
 .el-login-footer {
   margin-top: 22px;
-  color: #9ca3af;
+  color: #6b7280;
   text-align: center;
   font-size: 12px;
 }
@@ -350,15 +373,16 @@ export default {
   }
 
   .login-panel {
-    align-items: center;
+    align-items: stretch;
     overflow-x: hidden;
     min-height: 100vh;
     padding: 24px;
   }
 
   .login-form {
-    width: calc(100vw - 48px);
-    max-width: 360px;
+    width: 100%;
+    max-width: 420px;
+    margin: 0 auto;
     padding: 28px;
   }
 
@@ -375,17 +399,18 @@ export default {
 
 @media (max-width: 420px) {
   .login-panel {
+    align-items: stretch;
     padding: 18px;
   }
 
   .login-form {
-    width: calc(100vw - 36px);
+    width: 100%;
     max-width: 100%;
     padding: 24px;
   }
 
   .captcha-row {
-    grid-template-columns: minmax(0, 1fr) 92px;
+    grid-template-columns: minmax(0, 1fr) 82px;
     gap: 8px;
   }
 

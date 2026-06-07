@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="header-notice" v-popover:noticePopover @mouseenter="onNoticeEnter" @mouseleave="onNoticeLeave">
     <el-popover ref="noticePopover" placement="bottom-end" width="320" trigger="manual" :value="noticeVisible" popper-class="notice-popover">
       <div class="notice-header">
         <span class="notice-title">通知公告</span>
@@ -18,7 +18,7 @@
       </div>
     </el-popover>
 
-    <div v-popover:noticePopover class="right-menu-item hover-effect notice-trigger" @mouseenter="onNoticeEnter" @mouseleave="onNoticeLeave">
+    <div class="notice-trigger">
       <svg-icon icon-class="bell" />
       <span v-if="unreadCount > 0" class="notice-badge">{{ unreadCount }}</span>
     </div>
@@ -102,12 +102,16 @@ export default {
 <style lang="scss" scoped>
 .notice-trigger {
   position: relative;
-  transform: translateX(-6px);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
   .svg-icon { width: 1.2em; height: 1.2em; vertical-align: -0.2em; }
   .notice-badge {
     position: absolute;
-    top: 7px;
-    right: -3px;
+    top: 3px;
+    right: -2px;
     background: #f56c6c;
     color: #fff;
     border-radius: 10px;
@@ -121,32 +125,38 @@ export default {
     pointer-events: none;
   }
 }
+</style>
+
+<style lang="scss">
 .notice-popover {
   padding: 0 !important;
+  border: 1px solid #edf1f7 !important;
+  border-radius: 10px !important;
+  box-shadow: 0 18px 46px rgba(29, 33, 41, 0.14) !important;
 }
 .notice-popover .notice-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 10px 14px;
-  background: #f7f9fb;
-  border-bottom: 1px solid #eee;
+  background: #f8fafc;
+  border-bottom: 1px solid #edf1f7;
   font-size: 13px;
   font-weight: 600;
-  color: #333;
+  color: #1d2129;
 }
 .notice-popover .notice-mark-all {
   font-size: 12px;
-  color: #409EFF;
+  color: #2468f2;
   font-weight: normal;
   cursor: pointer;
 }
-.notice-popover .notice-mark-all:hover { color: #2b7cc1; }
+.notice-popover .notice-mark-all:hover { color: #1d5bd7; }
 .notice-popover .notice-loading,
 .notice-popover .notice-empty {
   padding: 24px;
   text-align: center;
-  color: #bbb;
+  color: #86909c;
   font-size: 12px;
   line-height: 1.8;
 }
@@ -155,20 +165,20 @@ export default {
   align-items: center;
   gap: 8px;
   padding: 10px 14px;
-  border-bottom: 1px solid #f5f5f5;
+  border-bottom: 1px solid #edf1f7;
   cursor: pointer;
   transition: background 0.15s;
 }
 .notice-popover .notice-item:last-child { border-bottom: none; }
-.notice-popover .notice-item:hover { background: #f7f9fb; }
+.notice-popover .notice-item:hover { background: #f4f7fb; }
 .notice-popover .notice-item.is-read .notice-tag,
 .notice-popover .notice-item.is-read .notice-item-title,
-.notice-popover .notice-item.is-read .notice-item-date { opacity: 0.45; filter: grayscale(1); color: #999; }
+.notice-popover .notice-item.is-read .notice-item-date { opacity: 0.55; filter: grayscale(1); color: #86909c; }
 .notice-popover .notice-tag { flex-shrink: 0; }
 .notice-popover .notice-item-title {
   flex: 1;
   font-size: 12px;
-  color: #333;
+  color: #1d2129;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
@@ -176,6 +186,6 @@ export default {
 .notice-popover .notice-item-date {
   flex-shrink: 0;
   font-size: 11px;
-  color: #bbb;
+  color: #86909c;
 }
 </style>

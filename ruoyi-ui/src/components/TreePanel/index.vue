@@ -136,7 +136,7 @@ export default {
     // 收起时的宽度
     collapsedWidth: {
       type: Number,
-      default: 20
+      default: 40
     },
     // 最小宽度
     minWidth: {
@@ -500,8 +500,10 @@ export default {
 .tree-sidebar {
   flex-shrink: 0;
   width: 220px;
-  background: #fff;
-  border-right: 1px solid #e8eaed;
+  background: #ffffff;
+  border: 1px solid #edf1f7;
+  border-radius: 8px;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -538,11 +540,11 @@ export default {
   transition: background 0.2s;
   
   &:hover {
-    background: rgba(64, 158, 255, 0.3);
+    background: rgba(36, 104, 242, 0.18);
   }
   
   &.active {
-    background: rgba(64, 158, 255, 0.5);
+    background: rgba(36, 104, 242, 0.35);
   }
 }
 
@@ -555,17 +557,19 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 15px;
-  height: 20px;
+  width: 18px;
+  height: 28px;
   background: #fff;
-  border-radius: 0 4px 4px 0;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border: 1px solid #edf1f7;
+  border-right: none;
+  border-radius: 8px 0 0 8px;
+  box-shadow: 0 6px 14px rgba(29, 33, 41, 0.08);
   transition: all 0.2s ease;
   
   .tree-sidebar.collapsed & {
     right: 0;
-    background: #f7f8fa;
-    border-radius: 0 4px 4px 0;
+    background: #ffffff;
+    border-radius: 8px 0 0 8px;
   }
   
   .tree-sidebar.resizing & {
@@ -575,15 +579,15 @@ export default {
 
 .collapse-button {
   font-size: 14px;
-  color: #909399;
+  color: #86909c;
   cursor: pointer;
   padding: 4px;
-  border-radius: 4px;
+  border-radius: 6px;
   transition: all 0.2s;
   
   &:hover {
-    color: #409eff;
-    background: #ecf5ff;
+    color: #2468f2;
+    background: #edf4ff;
   }
 }
 
@@ -591,16 +595,16 @@ export default {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 10px;
-  height: 40px;
-  border-bottom: 1px solid #e8eaed;
-  background: #f7f8fa;
+  padding: 0 12px;
+  height: 46px;
+  border-bottom: 1px solid #edf1f7;
+  background: #f8fafc;
   flex-shrink: 0;
 
   .tree-title {
     font-size: 13px;
     font-weight: 600;
-    color: #303133;
+    color: #1d2129;
     white-space: nowrap;
     overflow: hidden;
     display: flex;
@@ -608,7 +612,7 @@ export default {
     gap: 5px;
 
     i {
-      color: #409eff;
+      color: #2468f2;
       font-size: 14px;
     }
   }
@@ -623,15 +627,15 @@ export default {
 
 .tree-action-icon {
   font-size: 14px;
-  color: #909399;
+  color: #86909c;
   cursor: pointer;
   padding: 4px;
-  border-radius: 4px;
+  border-radius: 6px;
   transition: all 0.2s;
 
   &:hover {
-    color: #409eff;
-    background: #ecf5ff;
+    color: #2468f2;
+    background: #edf4ff;
   }
 }
 
@@ -654,31 +658,31 @@ export default {
   }
 
   &::-webkit-scrollbar-thumb {
-    background: #dcdfe6;
-    border-radius: 4px;
+    background: #c8d0dc;
+    border-radius: 999px;
     
     &:hover {
-      background: #c0c4cc;
+      background: #aeb8c8;
     }
   }
 
   ::v-deep .el-tree-node__content {
     height: 32px;
-    border-radius: 4px;
+    border-radius: 7px;
     margin-bottom: 1px;
 
     &:hover {
-      background: #f0f7ff;
+      background: #edf4ff;
     }
   }
 
   ::v-deep .el-tree-node.is-current > .el-tree-node__content {
-    background: #e6f0fd;
-    color: #409eff;
+    background: #edf4ff;
+    color: #2468f2;
     font-weight: 600;
 
     .node-icon {
-      color: #409eff !important;
+      color: #2468f2 !important;
     }
   }
 }
@@ -692,7 +696,7 @@ export default {
 
   .node-icon {
     font-size: 14px;
-    color: #f5a623;
+    color: #ff7d00;
     flex-shrink: 0;
   }
 
@@ -704,6 +708,6 @@ export default {
 }
 
 ::v-deep .el-icon-document.node-icon {
-  color: #909399 !important;
+  color: #86909c !important;
 }
 </style>

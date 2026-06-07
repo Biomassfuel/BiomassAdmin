@@ -41,7 +41,7 @@ export default {
   display: inline-block;
   position: relative;
   cursor: default;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 8px 24px rgba(29, 33, 41, 0.10);
 }
 
 .pan-info-roles-container {
@@ -61,26 +61,13 @@ export default {
   transition: all 0.3s ease-in-out;
 }
 
-/* .pan-thumb:after {
-  content: '';
-  width: 8px;
-  height: 8px;
-  position: absolute;
-  border-radius: 50%;
-  top: 40%;
-  left: 95%;
-  margin: -4px 0 0 -4px;
-  background: radial-gradient(ellipse at center, rgba(14, 14, 14, 1) 0%, rgba(125, 126, 125, 1) 100%);
-  box-shadow: 0 0 1px rgba(255, 255, 255, 0.9);
-} */
-
 .pan-info {
   position: absolute;
   width: inherit;
   height: inherit;
   border-radius: 50%;
   overflow: hidden;
-  box-shadow: inset 0 0 0 5px rgba(0, 0, 0, 0.05);
+  box-shadow: inset 0 0 0 5px rgba(36, 104, 242, 0.08);
 }
 
 .pan-info h3 {
@@ -93,7 +80,7 @@ export default {
   padding: 22px 0 0 0;
   height: 85px;
   font-family: 'Open Sans', Arial, sans-serif;
-  text-shadow: 0 0 1px #fff, 0 1px 2px rgba(0, 0, 0, 0.3);
+  text-shadow: none;
 }
 
 .pan-info p {

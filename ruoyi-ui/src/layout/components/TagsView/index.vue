@@ -105,7 +105,7 @@ export default {
     },
     chromeVars() {
       if (this.tagsViewStyle !== 'chrome') return {}
-      const primary = this.theme || '#409EFF'
+      const primary = this.theme || '#2468f2'
       return {
         '--chrome-tab-active-bg': this.mixHexWithWhite(primary, 0.15),
         '--chrome-tab-text-active': primary,
@@ -162,11 +162,7 @@ export default {
       return route.path === this.$route.path
     },
     tagActiveStyle(tag) {
-      if (!this.isActive(tag) || this.tagsViewStyle !== 'card') return {}
-      return {
-        "background-color": this.theme,
-        "border-color": this.theme
-      }
+      return {}
     },
     isAffix(tag) {
       return tag && tag.meta && tag.meta.affix
@@ -389,34 +385,34 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-$tags-bar-height: 34px;
+$tags-bar-height: 38px;
 
 .tags-view-container {
-  height: $tags-bar-height;
-  width: 100%;
-  background: #fff;
-  border-bottom: 1px solid #d8dce5;
   display: flex;
   align-items: center;
+  width: 100%;
+  height: $tags-bar-height;
   overflow: hidden;
+  border-bottom: 1px solid #e5e7eb;
+  background: #ffffff;
 
-  $btn-width: 28px;
-  $btn-color: #71717a;
-  $btn-hover-bg: #f0f2f5;
-  $btn-hover-color: #303133;
-  $btn-disabled-color: #c0c4cc;
-  $divider: 1px solid #d8dce5;
+  $btn-width: 34px;
+  $btn-color: #6b7280;
+  $btn-hover-bg: #f3f4f6;
+  $btn-hover-color: #111827;
+  $btn-disabled-color: #d1d5db;
+  $divider: 1px solid #e5e7eb;
 
   .tags-nav-btn {
-    flex-shrink: 0;
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-shrink: 0;
     width: $btn-width;
     height: $tags-bar-height;
-    cursor: pointer;
     color: $btn-color;
     font-size: 13px;
+    cursor: pointer;
     user-select: none;
     transition: background 0.15s, color 0.15s;
 
@@ -430,7 +426,7 @@ $tags-bar-height: 34px;
       cursor: not-allowed;
     }
 
-    &--left  { border-right: $divider; }
+    &--left { border-right: $divider; }
     &--right { border-left: $divider; }
   }
 
@@ -440,47 +436,48 @@ $tags-bar-height: 34px;
     height: 100%;
 
     .tags-view-item {
-      display: inline-block;
+      display: inline-flex;
+      align-items: center;
       position: relative;
-      cursor: pointer;
-      height: 26px;
-      line-height: 26px;
-      border: 1px solid #d8dce5;
-      color: #495060;
-      background: #fff;
-      padding: 0 8px;
+      height: 28px;
+      margin-left: 6px;
+      padding: 0 10px;
+      border: 1px solid transparent;
+      border-radius: 7px;
+      background: transparent;
+      color: #4b5563;
       font-size: 12px;
-      margin-left: 5px;
-      border-radius: 3px;
+      font-weight: 500;
+      line-height: 28px;
+      cursor: pointer;
+      transition: color 0.16s, background 0.16s, border-color 0.16s;
 
-      &:first-of-type { margin-left: 6px; }
-      &:last-of-type  { margin-right: 15px; }
+      &:first-of-type { margin-left: 10px; }
+      &:last-of-type { margin-right: 12px; }
+
+      &:hover {
+        background: #f3f4f6;
+        color: #111827;
+      }
     }
   }
+
   &:not(.tags-view-container--chrome) .tags-view-wrapper .tags-view-item.active {
-    background-color: #42b983;
-    color: #fff;
-    border-color: #42b983;
+    color: #2563eb;
+    border-color: #bfdbfe;
+    background: #eff6ff;
+    font-weight: 600;
+
     &::before {
       content: '';
-      background: #fff;
-      display: inline-block;
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      position: relative;
-      margin-right: 2px;
+      display: none;
     }
-  }
-
-  &:not(.tags-view-container--chrome) .tags-view-wrapper .tags-view-item.active.has-icon::before {
-    content: none !important;
   }
 
   .tags-action-dropdown {
-    flex-shrink: 0;
     display: flex;
     align-items: center;
+    flex-shrink: 0;
   }
 
   .tags-action-btn {
@@ -489,10 +486,10 @@ $tags-bar-height: 34px;
     justify-content: center;
     width: $btn-width;
     height: $tags-bar-height;
-    cursor: pointer;
+    border-left: $divider;
     color: $btn-color;
     font-size: 13px;
-    border-left: $divider;
+    cursor: pointer;
     user-select: none;
     transition: background 0.15s, color 0.15s;
 
@@ -503,28 +500,32 @@ $tags-bar-height: 34px;
   }
 
   .tags-refresh-btn {
-    width: 60px;
+    width: 64px;
+    gap: 3px;
   }
 
   .contextmenu {
-    margin: 0;
-    background: #fff;
-    z-index: 3000;
     position: fixed;
+    z-index: 3000;
+    margin: 0;
+    padding: 6px;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    background: #fff;
+    color: #111827;
     list-style-type: none;
-    padding: 5px 0;
-    border-radius: 4px;
+    box-shadow: 0 12px 32px rgba(29, 33, 41, 0.12);
     font-size: 12px;
     font-weight: 400;
-    color: #333;
-    box-shadow: 2px 2px 3px 0 rgba(0, 0, 0, .3);
 
     li {
       margin: 0;
-      padding: 7px 16px;
+      padding: 8px 12px;
+      border-radius: 6px;
       cursor: pointer;
+
       &:hover {
-        background: #eee;
+        background: #f3f4f6;
       }
     }
   }
@@ -621,7 +622,7 @@ $tags-bar-height: 34px;
           background: var(--chrome-tab-active-bg) !important;
           border: none !important;
           border-radius: var(--chrome-wing-r) var(--chrome-wing-r) 0 0;
-          box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+          box-shadow: 0 1px 4px rgba(29, 33, 41, 0.06);
 
           &::before {
             box-shadow: calc(var(--chrome-wing-r) * 0.5) calc(var(--chrome-wing-r) * 0.5) 0 calc(var(--chrome-wing-r) * 0.5) var(--chrome-tab-active-bg);
@@ -651,7 +652,7 @@ $tags-bar-height: 34px;
   }
 
   .el-scrollbar__wrap {
-    height: 34px !important;
+    height: 38px !important;
     display: flex;
     align-items: center;
     overflow-x: auto;
@@ -673,12 +674,12 @@ $tags-bar-height: 34px;
       }
       
       &::-webkit-scrollbar-thumb {
-        background-color: rgba(0, 0, 0, 0.2);
+          background-color: rgba(134, 144, 156, 0.35);
         border-radius: 3px;
         transition: background-color 0.2s;
         
         &:hover {
-          background-color: rgba(0, 0, 0, 0.4);
+          background-color: rgba(134, 144, 156, 0.55);
         }
       }
     }
@@ -747,14 +748,14 @@ $tags-bar-height: 34px;
 
 .main-container.fullscreen-mode .app-main {
   position: fixed;
-  top: 34px;
+  top: 38px;
   left: 0;
   right: 0;
   bottom: 0;
   margin: 0 !important;
   padding: 0 !important;
-  height: calc(100vh - 34px) !important;
-  min-height: calc(100vh - 34px) !important;
+  height: calc(100vh - 38px) !important;
+  min-height: calc(100vh - 38px) !important;
   overflow: auto;
 }
 </style>

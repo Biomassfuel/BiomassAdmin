@@ -92,10 +92,28 @@ export default {
 <style lang="scss" scoped>
 .app-breadcrumb.el-breadcrumb {
   display: inline-block;
-  font-size: 14px;
-  line-height: 50px;
+  color: #86909c;
+  font-size: 13px;
+  line-height: 58px;
+
+  ::v-deep .el-breadcrumb__separator {
+    margin: 0 7px;
+    color: #c9cdd4;
+    font-weight: 400;
+  }
+
+  a {
+    color: #4e5969;
+    font-weight: 500;
+
+    &:hover {
+      color: #2468f2;
+    }
+  }
+
   .no-redirect {
-    color: #97a8be;
+    color: #1d2129;
+    font-weight: 600;
     cursor: text;
   }
 }

@@ -40,7 +40,7 @@ public class SysIndexController
     /**
      * 解锁屏幕
      */
-    @PostMapping("/unlockscreen")
+    @PostMapping({ "/unlockscreen", "/dev-api/unlockscreen", "/prod-api/unlockscreen", "/stage-api/unlockscreen" })
     public AjaxResult unlockScreen(@RequestBody Map<String, String> body)
     {
         String password = body.get("password");

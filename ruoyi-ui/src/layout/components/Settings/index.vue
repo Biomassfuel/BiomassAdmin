@@ -1,5 +1,5 @@
 <template>
-  <el-drawer size="280px" :visible="showSettings" :with-header="false" :append-to-body="true" :before-close="closeSetting" :lock-scroll="false">
+  <el-drawer size="320px" :visible="showSettings" :with-header="false" :append-to-body="true" :before-close="closeSetting" :lock-scroll="false">
     <div class="drawer-container">
       <div>
         <div class="setting-drawer-content">
@@ -28,19 +28,10 @@
             <h3 class="drawer-title">主题风格设置</h3>
           </div>
           <div class="setting-drawer-block-checbox">
-            <div class="setting-drawer-block-checbox-item" @click="handleTheme('theme-dark')">
-              <img src="@/assets/images/dark.svg" alt="dark">
-              <div v-if="sideTheme === 'theme-dark'" class="setting-drawer-block-checbox-selectIcon" style="display: block;">
-                <i aria-label="图标: check" class="anticon anticon-check">
-                  <svg viewBox="64 64 896 896" data-icon="check" width="1em" height="1em" :fill="theme" aria-hidden="true" focusable="false" class="">
-                    <path d="M912 190h-69.9c-9.8 0-19.1 4.5-25.1 12.2L404.7 724.5 207 474a32 32 0 0 0-25.1-12.2H112c-6.7 0-10.4 7.7-6.3 12.9l273.9 347c12.8 16.2 37.4 16.2 50.3 0l488.4-618.9c4.1-5.1.4-12.8-6.3-12.8z"/>
-                  </svg>
-                </i>
-              </div>
-            </div>
-            <div class="setting-drawer-block-checbox-item" @click="handleTheme('theme-light')">
+            <div class="setting-drawer-block-checbox-item light-preview is-active" @click="handleTheme('theme-light')">
               <img src="@/assets/images/light.svg" alt="light">
-              <div v-if="sideTheme === 'theme-light'" class="setting-drawer-block-checbox-selectIcon" style="display: block;">
+              <span>浅色工作台</span>
+              <div class="setting-drawer-block-checbox-selectIcon" style="display: block;">
                 <i aria-label="图标: check" class="anticon anticon-check">
                   <svg viewBox="64 64 896 896" data-icon="check" width="1em" height="1em" :fill="theme" aria-hidden="true" focusable="false" class="">
                     <path d="M912 190h-69.9c-9.8 0-19.1 4.5-25.1 12.2L404.7 724.5 207 474a32 32 0 0 0-25.1-12.2H112c-6.7 0-10.4 7.7-6.3 12.9l273.9 347c12.8 16.2 37.4 16.2 50.3 0l488.4-618.9c4.1-5.1.4-12.8-6.3-12.8z"/>
@@ -245,6 +236,7 @@ export default {
       this.theme = val
     },
     handleTheme(val) {
+      val = 'theme-light'
       this.$store.dispatch('settings/changeSetting', {
         key: 'sideTheme',
         value: val
@@ -281,7 +273,7 @@ export default {
             "sidebarLogo":${this.sidebarLogo},
             "dynamicTitle":${this.dynamicTitle},
             "footerVisible":${this.footerVisible},
-            "sideTheme":"${this.sideTheme}",
+            "sideTheme":"theme-light",
             "theme":"${this.theme}"
           }`
       )
@@ -300,69 +292,133 @@ export default {
 <style lang="scss" scoped>
 .setting-drawer-content {
   .setting-drawer-title {
-    margin-bottom: 12px;
-    color: rgba(0, 0, 0, .85);
+    margin-bottom: 10px;
+    color: #1d2129;
     font-size: 14px;
     line-height: 22px;
-    font-weight: bold;
+    font-weight: 650;
   }
 
   .setting-drawer-block-checbox {
     display: flex;
     justify-content: flex-start;
     align-items: center;
-    margin-top: 10px;
-    margin-bottom: 20px;
+    gap: 12px;
+    margin: 10px 0 20px;
 
     .setting-drawer-block-checbox-item {
       position: relative;
-      margin-right: 16px;
-      border-radius: 2px;
+      width: 142px;
+      height: 72px;
+      overflow: hidden;
+      border: 1px solid #edf1f7;
+      border-radius: 8px;
+      background: #f8fafc;
       cursor: pointer;
+      transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
+
+      &:hover {
+        border-color: #b8c7e6;
+        box-shadow: 0 8px 20px rgba(29, 33, 41, 0.08);
+        transform: translateY(-1px);
+      }
 
       img {
-        width: 48px;
+        width: 100%;
         height: 48px;
+        object-fit: cover;
+      }
+
+      span {
+        display: block;
+        padding: 2px 10px 0;
+        color: #4e5969;
+        font-size: 12px;
+        font-weight: 600;
+        line-height: 18px;
+      }
+
+      &.is-active {
+        border-color: #b8c7e6;
+        background: #ffffff;
       }
 
       .setting-drawer-block-checbox-selectIcon {
         position: absolute;
-        top: 0;
-        right: 0;
-        width: 100%;
-        height: 100%;
-        padding-top: 15px;
-        padding-left: 24px;
-        color: #1890ff;
+        right: 6px;
+        bottom: 5px;
+        width: 18px;
+        height: 18px;
+        padding: 0;
+        border-radius: 50%;
+        background: #ffffff;
+        color: #2468f2;
         font-weight: 700;
-        font-size: 14px;
+        font-size: 12px;
+        line-height: 18px;
+        text-align: center;
+        box-shadow: 0 4px 10px rgba(29, 33, 41, 0.12);
       }
     }
   }
 }
 
 .drawer-container {
-  padding: 20px;
+  min-height: 100%;
+  padding: 22px;
+  background: #ffffff;
+  color: #1d2129;
   font-size: 14px;
   line-height: 1.5;
   word-wrap: break-word;
 
   .drawer-title {
-    margin-bottom: 12px;
-    color: rgba(0, 0, 0, .85);
+    margin: 0 0 12px;
+    color: #1d2129;
     font-size: 14px;
     line-height: 22px;
+    font-weight: 650;
   }
 
   .drawer-item {
-    color: rgba(0, 0, 0, .65);
-    font-size: 14px;
-    padding: 12px 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 42px;
+    padding: 9px 0;
+    color: #4e5969;
+    font-size: 13px;
+
+    span {
+      color: #4e5969;
+      font-weight: 500;
+    }
   }
 
   .drawer-switch {
-    float: right
+    float: none;
+    flex: 0 0 auto;
   }
+}
+
+::v-deep .el-divider {
+  margin: 18px 0;
+  background-color: #edf1f7;
+}
+
+::v-deep .el-radio-button__inner {
+  padding: 7px 10px;
+  border-color: #e5e8ef;
+  font-size: 12px;
+}
+
+::v-deep .el-switch.is-checked .el-switch__core {
+  border-color: #2468f2;
+  background-color: #2468f2;
+}
+
+::v-deep .el-button {
+  margin: 0 8px 8px 0;
 }
 
 // 导航模式
@@ -370,22 +426,30 @@ export default {
   display: flex;
   justify-content: flex-start;
   align-items: center;
-  margin-top: 10px;
-  margin-bottom: 20px;
+  gap: 12px;
+  margin: 10px 0 20px;
 
   .activeItem {
-    border: 2px solid #{'var(--theme)'} !important;
+    border-color: #{'var(--theme)'} !important;
+    box-shadow: 0 8px 18px rgba(36, 104, 242, 0.12);
   }
 
   .item {
     position: relative;
-    margin-right: 16px;
-    cursor: pointer;
     width: 56px;
     height: 48px;
-    border-radius: 4px;
-    background: #f0f2f5;
-    border: 2px solid transparent;
+    margin-right: 0;
+    border: 1px solid #edf1f7;
+    border-radius: 8px;
+    background: #f8fafc;
+    cursor: pointer;
+    transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
+
+    &:hover {
+      border-color: #b8c7e6;
+      box-shadow: 0 8px 20px rgba(29, 33, 41, 0.08);
+      transform: translateY(-1px);
+    }
   }
 
   .left {
@@ -393,37 +457,38 @@ export default {
       display: block;
       height: 30%;
       background: #fff;
+      border-bottom: 1px solid #edf1f7;
     }
     b:last-child {
       width: 30%;
-      background: #1b2a47;
+      background: #2468f2;
       position: absolute;
       height: 100%;
       top: 0;
-      border-radius: 4px 0 0 4px;
+      border-radius: 8px 0 0 8px;
     }
   }
   .mix {
     b:first-child {
-      border-radius: 4px 4px 0 0;
+      border-radius: 8px 8px 0 0;
       display: block;
       height: 30%;
-      background: #1b2a47;
+      background: #2468f2;
     }
     b:last-child {
       width: 30%;
-      background: #1b2a47;
+      background: #2468f2;
       position: absolute;
       height: 70%;
-      border-radius: 0 0 0 4px;
+      border-radius: 0 0 0 8px;
     }
   }
   .top {
     b:first-child {
       display: block;
       height: 30%;
-      background: #1b2a47;
-      border-radius: 4px 4px 0 0;
+      background: #2468f2;
+      border-radius: 8px 8px 0 0;
     }
   }
 }

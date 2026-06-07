@@ -2,6 +2,7 @@
   <div class="header-search">
     <svg-icon class-name="search-icon" icon-class="search" @click.stop="click" />
     <el-dialog
+      class="header-search-dialog"
       :visible.sync="show"
       width="600px"
       @close="close"
@@ -245,12 +246,25 @@ export default {
 
 <style lang='scss' scoped>
 ::v-deep {
+  .header-search-dialog {
+    .el-dialog {
+      overflow: hidden;
+      border: 1px solid #edf1f7;
+      border-radius: 10px;
+      box-shadow: 0 22px 60px rgba(29, 33, 41, 0.16);
+    }
+
+    .el-dialog__body {
+      padding: 16px 16px 0 !important;
+    }
+  }
+
   .el-dialog__header {
-    padding: 6px !important;
+    display: none;
   }
 
   .highlight {
-    color: red;
+    color: #2468f2;
     font-weight: 600;
   }
 
@@ -265,70 +279,105 @@ export default {
     cursor: pointer;
     font-size: 18px;
     vertical-align: middle;
+    transition: color 0.18s ease;
+
+    &:hover {
+      color: #2468f2;
+    }
   }
 }
 
 .result-count {
-  padding: 6px 16px 0;
+  padding: 10px 2px 0;
   font-size: 12px;
-  color: #aaa;
+  color: #86909c;
 
   strong {
-    color: red;
+    color: #2468f2;
     font-weight: 600;
   }
 }
 
 .result-wrap {
-  height: 280px;
-  margin: 4px 0;
+  height: 310px;
+  margin: 10px 0 0;
 
   .search-item {
     display: flex;
-    height: 48px;
     align-items: center;
-    padding-right: 10px;
-    border-radius: 4px;
-    transition: background 0.15s;
+    min-height: 54px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    color: #1d2129;
+    transition: background 0.15s, color 0.15s;
 
     .left {
-      width: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      margin-right: 10px;
+      border-radius: 8px;
+      background: #f4f7fb;
+      color: #4e5969;
       text-align: center;
       flex-shrink: 0;
 
       .menu-icon {
-        width: 18px;
-        height: 18px;
+        width: 16px;
+        height: 16px;
       }
     }
 
     .search-info {
-      padding-left: 5px;
-      margin-top: 10px;
-      width: 100%;
       display: flex;
       flex-direction: column;
       justify-content: flex-start;
       flex: 1;
+      width: 100%;
       overflow: hidden;
+      padding-left: 0;
+      margin-top: 0;
 
       .menu-title,
       .menu-path {
-        height: 20px;
-        white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .menu-title {
+        height: 22px;
+        color: inherit;
+        font-size: 13px;
+        font-weight: 600;
+        line-height: 22px;
       }
 
       .menu-path {
-        color: #ccc;
-        font-size: 10px;
+        height: 18px;
+        color: #86909c;
+        font-size: 12px;
+        line-height: 18px;
       }
     }
   }
 
   .search-item:hover {
+    background: #f4f7fb;
     cursor: pointer;
+  }
+
+  .search-item.is-active {
+    .left {
+      background: rgba(255, 255, 255, 0.18);
+      color: #fff;
+    }
+
+    .menu-path {
+      color: rgba(255, 255, 255, 0.78);
+    }
   }
 
   .empty-state {
@@ -340,23 +389,23 @@ export default {
 
     .empty-icon {
       font-size: 42px;
-      color: #e0e0e0;
+      color: #c9d6f2;
       margin-bottom: 14px;
     }
 
     .empty-text {
       font-size: 14px;
-      color: #999;
+      color: #4e5969;
       margin: 0 0 6px;
 
       strong {
-        color: #666;
+        color: #1d2129;
       }
     }
 
     .empty-tip {
       font-size: 12px;
-      color: #bbb;
+      color: #86909c;
       margin: 0;
     }
   }
@@ -365,10 +414,12 @@ export default {
 .search-footer {
   display: flex;
   align-items: center;
-  gap: 28px;
-  padding: 10px 20px;
-  border-top: 1px solid #f0f0f0;
-  color: #999;
+  gap: 18px;
+  margin: 0 -16px;
+  padding: 10px 16px;
+  border-top: 1px solid #edf1f7;
+  background: #f8fafc;
+  color: #86909c;
   font-size: 12px;
 
   .shortcut-item {
@@ -384,14 +435,25 @@ export default {
     min-width: 20px;
     height: 20px;
     padding: 0 5px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    background: #f7f7f7;
-    color: #555;
+    border: 1px solid #e5e8ef;
+    border-radius: 5px;
+    background: #ffffff;
+    color: #4e5969;
     font-size: 11px;
     font-family: inherit;
     line-height: 1;
-    box-shadow: 0 1px 0 #ccc;
+    box-shadow: 0 1px 0 #dfe4ec;
+  }
+}
+
+@media (max-width: 640px) {
+  ::v-deep .header-search-dialog .el-dialog {
+    width: calc(100vw - 32px) !important;
+  }
+
+  .search-footer {
+    gap: 10px;
+    flex-wrap: wrap;
   }
 }
 </style>
