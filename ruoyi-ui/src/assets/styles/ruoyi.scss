@@ -304,7 +304,7 @@
   color: var(--saas-text, #1d2129);
   border-bottom: 1px solid var(--saas-border-light, #edf1f7);
 }
-.detail-card-title i { margin-right: 5px; color: var(--saas-primary, #2563eb); }
+.detail-card-title i { margin-right: 5px; color: var(--saas-primary, #1890ff); }
 
 .detail-row { padding: 0 8px; }
 
@@ -362,7 +362,7 @@
 }
 .code-action .el-button:hover { 
   background: #ffffff;
-  border-color: var(--saas-primary, #2563eb);
+  border-color: var(--saas-primary, #1890ff);
 }
 .code-pre {
   margin: 0;
@@ -478,7 +478,7 @@
 .sortable-ghost {
   opacity: .8;
   color: #fff !important;
-  background: var(--saas-primary, #2563eb) !important;
+  background: var(--saas-primary, #1890ff) !important;
 }
 
 .top-right-btn {

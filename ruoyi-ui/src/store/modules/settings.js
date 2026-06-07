@@ -14,7 +14,7 @@ const loadStorageSetting = () => {
 const storageSetting = loadStorageSetting()
 const state = {
   title: '',
-  theme: storageSetting.theme || '#2563eb',
+  theme: storageSetting.theme || '#1890ff',
   sideTheme: 'theme-light',
   showSettings: showSettings,
   navType: storageSetting.navType === undefined ? navType : storageSetting.navType,

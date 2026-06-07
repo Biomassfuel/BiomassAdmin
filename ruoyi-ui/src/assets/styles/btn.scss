@@ -86,7 +86,7 @@
   line-height: 1;
   white-space: nowrap;
   cursor: pointer;
-  background: var(--saas-primary, #2563eb);
+  background: var(--saas-primary, #1890ff);
   color: #ffffff;
   -webkit-appearance: none;
   text-align: center;
@@ -95,9 +95,9 @@
   margin: 0;
   padding: 10px 15px;
   font-size: 14px;
-  border: 1px solid var(--saas-primary, #2563eb);
+  border: 1px solid var(--saas-primary, #1890ff);
   border-radius: 7px;
-  box-shadow: 0 6px 14px rgba(36, 104, 242, .18);
+  box-shadow: 0 6px 14px rgba(24, 144, 255, .18);
   transition: background .16s ease, border-color .16s ease, box-shadow .16s ease;
 
   &:hover,

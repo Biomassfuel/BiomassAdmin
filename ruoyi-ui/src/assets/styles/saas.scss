@@ -1,8 +1,8 @@
 :root {
-  --saas-primary: #2563eb;
-  --saas-primary-hover: #1d4ed8;
-  --saas-primary-active: #1e40af;
-  --saas-primary-soft: #eff6ff;
+  --saas-primary: #1890ff;
+  --saas-primary-hover: #40a9ff;
+  --saas-primary-active: #096dd9;
+  --saas-primary-soft: #e6f7ff;
   --saas-success: #059669;
   --saas-warning: #d97706;
   --saas-danger: #dc2626;
@@ -20,7 +20,7 @@
   --saas-radius-lg: 10px;
   --saas-shadow: 0 1px 2px rgba(15, 23, 42, 0.035);
   --saas-shadow-hover: 0 8px 22px rgba(15, 23, 42, 0.08);
-  --saas-focus: 0 0 0 3px rgba(37, 99, 235, .12);
+  --saas-focus: 0 0 0 3px rgba(24, 144, 255, .12);
 }
 
 body,
@@ -219,7 +219,7 @@ body,
 .el-button--primary {
   background: var(--saas-primary);
   border-color: var(--saas-primary);
-  box-shadow: 0 6px 14px rgba(37, 99, 235, 0.16);
+  box-shadow: 0 6px 14px rgba(24, 144, 255, 0.16);
 }
 
 .el-button--primary:hover,

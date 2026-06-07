@@ -77,8 +77,8 @@ export default {
       height: 34px;
       border-radius: 8px;
       color: #ffffff;
-      background: linear-gradient(135deg, #2563eb 0%, #10b981 100%);
-      box-shadow: 0 8px 18px rgba(37, 99, 235, 0.24);
+      background: linear-gradient(135deg, #1890ff 0%, #36cfc9 100%);
+      box-shadow: 0 8px 18px rgba(24, 144, 255, 0.22);
       font-size: 16px;
       font-weight: 700;
       line-height: 1;
