@@ -5,9 +5,9 @@ module.exports = {
   title: process.env.VUE_APP_TITLE,
 
   /**
-   * 侧边栏主题 深色主题theme-dark，浅色主题theme-light
+   * 侧边栏主题，当前重构统一使用浅色后台风格
    */
-  sideTheme: 'theme-dark',
+  sideTheme: 'theme-light',
 
   /**
    * 系统布局配置
@@ -37,7 +37,7 @@ module.exports = {
   /**
    * 标签页样式：card 卡片（默认）、chrome 谷歌浏览器风格
    */
-  tagsViewStyle: 'chrome',
+  tagsViewStyle: 'card',
 
   /**
    * 是否固定头部

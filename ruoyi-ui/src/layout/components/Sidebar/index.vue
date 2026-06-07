@@ -1,14 +1,14 @@
 <template>
-    <div :class="['sidebar-theme-wrapper', {'has-logo':showLogo}, settings.sideTheme]" :style="{ backgroundColor: settings.sideTheme === 'theme-dark' ? variables.menuBackground : variables.menuLightBackground }">
+    <div :class="['sidebar-theme-wrapper', {'has-logo':showLogo}, sideTheme]" :style="{ backgroundColor: menuBackground }">
         <logo v-if="showLogo" :collapse="isCollapse" />
-        <el-scrollbar :class="settings.sideTheme" wrap-class="scrollbar-wrapper">
+        <el-scrollbar :class="sideTheme" wrap-class="scrollbar-wrapper">
             <el-menu
                 :default-active="activeMenu"
                 :collapse="isCollapse"
-                :background-color="settings.sideTheme === 'theme-dark' ? variables.menuBackground : variables.menuLightBackground"
-                :text-color="settings.sideTheme === 'theme-dark' ? variables.menuColor : variables.menuLightColor"
+                :background-color="menuBackground"
+                :text-color="menuTextColor"
                 :unique-opened="true"
-                :active-text-color="settings.theme"
+                :active-text-color="activeTextColor"
                 :collapse-transition="false"
                 mode="vertical"
             >
@@ -51,6 +51,18 @@ export default {
         },
         isCollapse() {
             return !this.sidebar.opened
+        },
+        sideTheme() {
+            return this.$store.state.settings.sideTheme || 'theme-light'
+        },
+        menuBackground() {
+            return this.sideTheme === 'theme-light' ? variables.menuLightBackground : variables.menuBackground
+        },
+        menuTextColor() {
+            return this.sideTheme === 'theme-light' ? variables.menuLightColor : variables.menuColor
+        },
+        activeTextColor() {
+            return this.sideTheme === 'theme-light' ? this.settings.theme : variables.menuColorActive
         }
     }
 }

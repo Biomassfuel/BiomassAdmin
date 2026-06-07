@@ -1,12 +1,12 @@
 <template>
-  <div class="sidebar-logo-container" :class="{'collapse':collapse}" :style="{ backgroundColor: sideTheme === 'theme-dark' && navType !== 3 ? variables.menuBackground : variables.menuLightBackground }">
+  <div class="sidebar-logo-container" :class="{'collapse':collapse}">
     <transition name="sidebarLogoFade">
       <router-link v-if="collapse" key="collapse" class="sidebar-logo-link" to="/">
         <span class="sidebar-logo-mark">B</span>
       </router-link>
       <router-link v-else key="expand" class="sidebar-logo-link" to="/">
         <span class="sidebar-logo-mark">B</span>
-        <h1 class="sidebar-title" :style="{ color: sideTheme === 'theme-dark' && navType !== 3 ? variables.logoTitleColor : variables.logoLightTitleColor }">{{ title }} </h1>
+        <h1 class="sidebar-title">{{ title }}</h1>
       </router-link>
     </transition>
   </div>
@@ -44,7 +44,7 @@ export default {
 
 <style lang="scss" scoped>
 .sidebarLogoFade-enter-active {
-  transition: opacity 1.5s;
+  transition: opacity .24s ease;
 }
 
 .sidebarLogoFade-enter,
@@ -54,50 +54,48 @@ export default {
 
 .sidebar-logo-container {
   position: relative;
-  height: 56px;
-  line-height: 56px;
-  background: #111827;
+  height: 60px;
+  background: #ffffff;
   text-align: left;
   overflow: hidden;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid #edf1f7;
 
   & .sidebar-logo-link {
-    display: flex;
+    display: flex !important;
     align-items: center;
-    gap: 10px;
+    gap: 11px;
     height: 100%;
     width: 100%;
-    padding: 0 18px;
+    padding: 0 18px 0 20px;
+    line-height: 1;
 
     & .sidebar-logo-mark {
       display: inline-grid;
       place-items: center;
       flex: 0 0 auto;
-      width: 32px;
-      height: 32px;
-      border-radius: 9px;
-      color: #fff;
-      background: #1f2937;
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      box-shadow: none;
-      font-size: 17px;
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      color: #ffffff;
+      background: linear-gradient(135deg, #2563eb 0%, #10b981 100%);
+      box-shadow: 0 8px 18px rgba(37, 99, 235, 0.24);
+      font-size: 16px;
       font-weight: 700;
-      line-height: 32px;
+      line-height: 1;
     }
 
     & .sidebar-title {
-      display: inline-block;
+      display: block;
       margin: 0;
-      max-width: 138px;
+      max-width: 152px;
       overflow: hidden;
-      color: #ffffff;
+      color: #1f2329;
       font-weight: 700;
-      line-height: 56px;
+      line-height: 20px;
       font-size: 15px;
       font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", PingFang SC, Microsoft YaHei, sans-serif;
       text-overflow: ellipsis;
       white-space: nowrap;
-      vertical-align: middle;
     }
   }
 
