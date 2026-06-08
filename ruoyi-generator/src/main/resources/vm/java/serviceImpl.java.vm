@@ -12,6 +12,8 @@ import org.springframework.stereotype.Service;
 #if($table.sub)
 import java.util.ArrayList;
 import com.ruoyi.common.utils.StringUtils;
+#end
+#if($table.sub || $table.subDetail)
 import org.springframework.transaction.annotation.Transactional;
 import ${packageName}.domain.${subClassName};
 #end
@@ -111,13 +113,13 @@ public class ${ClassName}ServiceImpl implements I${ClassName}Service
      * @param ${pkColumn.javaField}s 需要删除的${functionName}主键
      * @return 结果
      */
-#if($table.sub)
+#if($table.sub || $table.subDetail)
     @Transactional
 #end
     @Override
     public int delete${ClassName}By${pkColumn.capJavaField}s(${pkColumn.javaType}[] ${pkColumn.javaField}s)
     {
-#if($table.sub)
+#if($table.sub || $table.subDetail)
         ${className}Mapper.delete${subClassName}By${subTableFkClassName}s(${pkColumn.javaField}s);
 #end
         return ${className}Mapper.delete${ClassName}By${pkColumn.capJavaField}s(${pkColumn.javaField}s);
@@ -129,13 +131,13 @@ public class ${ClassName}ServiceImpl implements I${ClassName}Service
      * @param ${pkColumn.javaField} ${functionName}主键
      * @return 结果
      */
-#if($table.sub)
+#if($table.sub || $table.subDetail)
     @Transactional
 #end
     @Override
     public int delete${ClassName}By${pkColumn.capJavaField}(${pkColumn.javaType} ${pkColumn.javaField})
     {
-#if($table.sub)
+#if($table.sub || $table.subDetail)
         ${className}Mapper.delete${subClassName}By${subTableFkClassName}(${pkColumn.javaField});
 #end
         return ${className}Mapper.delete${ClassName}By${pkColumn.capJavaField}(${pkColumn.javaField});
@@ -164,6 +166,71 @@ public class ${ClassName}ServiceImpl implements I${ClassName}Service
                 ${className}Mapper.batch${subClassName}(list);
             }
         }
+    }
+#end
+#if($table.subDetail)
+
+    /**
+     * 查询${subTable.functionName}列表
+     *
+     * @param ${subTableFkclassName} ${functionName}主键
+     * @return ${subTable.functionName}
+     */
+    @Override
+    public List<${subClassName}> select${subClassName}ListBy${subTableFkClassName}(${pkColumn.javaType} ${subTableFkclassName})
+    {
+        return ${className}Mapper.select${subClassName}ListBy${subTableFkClassName}(${subTableFkclassName});
+    }
+
+    /**
+     * 查询${subTable.functionName}
+     *
+     * @param ${subTable.pkColumn.javaField} ${subTable.functionName}主键
+     * @return ${subTable.functionName}
+     */
+    @Override
+    public ${subClassName} select${subClassName}By${subTable.pkColumn.capJavaField}(${subTable.pkColumn.javaType} ${subTable.pkColumn.javaField})
+    {
+        return ${className}Mapper.select${subClassName}By${subTable.pkColumn.capJavaField}(${subTable.pkColumn.javaField});
+    }
+
+    /**
+     * 新增${subTable.functionName}
+     *
+     * @param ${pkColumn.javaField} ${functionName}主键
+     * @param ${subclassName} ${subTable.functionName}
+     * @return 结果
+     */
+    @Override
+    public int insert${subClassName}(${pkColumn.javaType} ${pkColumn.javaField}, ${subClassName} ${subclassName})
+    {
+        ${subclassName}.set${subTableFkClassName}(${pkColumn.javaField});
+        return ${className}Mapper.insert${subClassName}(${subclassName});
+    }
+
+    /**
+     * 修改${subTable.functionName}
+     *
+     * @param ${subclassName} ${subTable.functionName}
+     * @return 结果
+     */
+    @Override
+    public int update${subClassName}(${subClassName} ${subclassName})
+    {
+        ${subclassName}.set${subTableFkClassName}(null);
+        return ${className}Mapper.update${subClassName}(${subclassName});
+    }
+
+    /**
+     * 批量删除${subTable.functionName}
+     *
+     * @param ${subTable.pkColumn.javaField}s 需要删除的${subTable.functionName}主键
+     * @return 结果
+     */
+    @Override
+    public int delete${subClassName}By${subTable.pkColumn.capJavaField}s(${subTable.pkColumn.javaType}[] ${subTable.pkColumn.javaField}s)
+    {
+        return ${className}Mapper.delete${subClassName}By${subTable.pkColumn.capJavaField}s(${subTable.pkColumn.javaField}s);
     }
 #end
 }

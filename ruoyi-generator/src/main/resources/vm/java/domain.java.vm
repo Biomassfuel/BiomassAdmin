@@ -6,7 +6,7 @@ import ${import};
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import com.ruoyi.common.annotation.Excel;
-#if($table.crud || $table.sub)
+#if($table.crud || $table.sub || $table.subDetail)
 import com.ruoyi.common.core.domain.BaseEntity;
 #elseif($table.tree)
 import com.ruoyi.common.core.domain.TreeEntity;
@@ -18,7 +18,7 @@ import com.ruoyi.common.core.domain.TreeEntity;
  * @author ${author}
  * @date ${datetime}
  */
-#if($table.crud || $table.sub)
+#if($table.crud || $table.sub || $table.subDetail)
 #set($Entity="BaseEntity")
 #elseif($table.tree)
 #set($Entity="TreeEntity")
@@ -50,7 +50,7 @@ public class ${ClassName} extends ${Entity}
 
 #end
 #end
-#if($table.sub)
+#if($table.sub || $table.subDetail)
     /** $table.subTable.functionName信息 */
     private List<${subClassName}> ${subclassName}List;
 
@@ -74,7 +74,7 @@ public class ${ClassName} extends ${Entity}
 
 #end
 #end
-#if($table.sub)
+#if($table.sub || $table.subDetail)
     public List<${subClassName}> get${subClassName}List()
     {
         return ${subclassName}List;
@@ -97,7 +97,7 @@ public class ${ClassName} extends ${Entity}
 #end
             .append("${column.javaField}", get${AttrName}())
 #end
-#if($table.sub)
+#if($table.sub || $table.subDetail)
             .append("${subclassName}List", get${subClassName}List())
 #end
             .toString();

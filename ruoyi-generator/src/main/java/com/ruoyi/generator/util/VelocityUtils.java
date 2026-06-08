@@ -74,7 +74,7 @@ public class VelocityUtils
         {
             setTreeVelocityContext(velocityContext, genTable);
         }
-        if (GenConstants.TPL_SUB.equals(tplCategory))
+        if (GenTable.isMasterSub(tplCategory))
         {
             setSubVelocityContext(velocityContext, genTable);
         }
@@ -186,7 +186,15 @@ public class VelocityUtils
             templates.add(useWebType + "/index.vue.vm");
             templates.add("vm/java/sub-domain.java.vm");
         }
-        if (isView)
+        else if (GenConstants.TPL_SUB_DETAIL.equals(tplCategory))
+        {
+            templates.add("vm/vue/sub-detail/index.vue.vm");
+            templates.add("vm/vue/sub-detail/detail.vue.vm");
+            templates.add("vm/vue/sub-detail/form.vue.vm");
+            templates.add("vm/vue/sub-detail/sub-form.vue.vm");
+            templates.add("vm/java/sub-domain.java.vm");
+        }
+        if (isView && !GenConstants.TPL_SUB_DETAIL.equals(tplCategory))
         {
             templates.add(useWebType + "/view.vue.vm");
         }
@@ -217,7 +225,7 @@ public class VelocityUtils
         {
             fileName = StringUtils.format("{}/domain/{}.java", javaPath, className);
         }
-        if (template.contains("sub-domain.java.vm") && StringUtils.equals(GenConstants.TPL_SUB, genTable.getTplCategory()))
+        if (template.contains("sub-domain.java.vm") && GenTable.isMasterSub(genTable.getTplCategory()))
         {
             fileName = StringUtils.format("{}/domain/{}.java", javaPath, genTable.getSubTable().getClassName());
         }
@@ -260,6 +268,22 @@ public class VelocityUtils
         else if (template.contains("index.ts.vm"))
         {
             fileName = StringUtils.format("{}/types/api/index-bak.ts", vuePath);
+        }
+        else if (template.contains("sub-detail/index.vue.vm"))
+        {
+            fileName = StringUtils.format("{}/views/{}/{}/index.vue", vuePath, moduleName, businessName);
+        }
+        else if (template.contains("sub-detail/detail.vue.vm"))
+        {
+            fileName = StringUtils.format("{}/views/{}/{}/detail.vue", vuePath, moduleName, businessName);
+        }
+        else if (template.contains("sub-detail/form.vue.vm"))
+        {
+            fileName = StringUtils.format("{}/views/{}/{}/form.vue", vuePath, moduleName, businessName);
+        }
+        else if (template.contains("sub-detail/sub-form.vue.vm"))
+        {
+            fileName = StringUtils.format("{}/views/{}/{}/subForm.vue", vuePath, moduleName, businessName);
         }
         else if (template.contains("index.vue.vm"))
         {

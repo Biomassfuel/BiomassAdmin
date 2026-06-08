@@ -1,0 +1,361 @@
+﻿<template>
+  <div class="app-container generated-detail-page">
+    <div class="detail-header">
+      <div>
+        <el-button icon="el-icon-back" @click="goBack">返回</el-button>
+      </div>
+      <div class="detail-header__actions">
+        <el-button icon="el-icon-refresh" @click="loadDetail">刷新</el-button>
+        <el-button type="primary" icon="el-icon-edit" @click="handleEditMaster" v-hasPermi="['${permissionPrefix}:edit']">编辑主表</el-button>
+      </div>
+    </div>
+
+    <div v-loading="loading" class="detail-panel">
+      <div class="detail-panel__head">
+        <div>
+          <h1>${functionName}详情</h1>
+          <p>查看主表信息与关联的${subTable.functionName}列表。</p>
+        </div>
+      </div>
+      <div class="detail-grid">
+#foreach($column in $columns)
+#if(!$column.pk && $column.list)
+#set($dictType=$column.dictType)
+#set($javaField=$column.javaField)
+#set($comment=$column.columnComment)
+        <div class="detail-item">
+          <span class="detail-label">${comment}</span>
+          <span class="detail-value">
+#if("" != $dictType)
+#if($column.htmlType == "checkbox")
+            <dict-tag :options="dict.type.${dictType}" :value="info.${javaField} ? info.${javaField}.split(',') : []" />
+#else
+            <dict-tag :options="dict.type.${dictType}" :value="info.${javaField}" />
+#end
+#elseif($column.htmlType == "datetime")
+            {{ parseTime(info.${javaField}, '{y}-{m}-{d}') }}
+#else
+            {{ info.${javaField} || "-" }}
+#end
+          </span>
+        </div>
+#end
+#end
+      </div>
+    </div>
+
+    <div class="table-panel">
+      <div class="table-panel__header">
+        <div class="table-panel__title">
+          <span>${subTable.functionName}列表</span>
+          <small>{{ subTotal }} 条记录</small>
+        </div>
+        <div class="table-panel__actions">
+          <el-button
+            type="primary"
+            icon="el-icon-plus"
+            size="mini"
+            @click="handleAddSub"
+            v-hasPermi="['${permissionPrefix}:add']"
+          >新增子表</el-button>
+          <el-button icon="el-icon-refresh" size="mini" @click="getSubList">刷新</el-button>
+        </div>
+      </div>
+
+      <el-table v-loading="subLoading" :data="${subclassName}List">
+        <el-table-column type="index" label="序号" width="70" align="center" />
+#foreach($column in $subTable.columns)
+#set($javaField=$column.javaField)
+#set($comment=$column.columnComment)
+#if($column.pk || $javaField == $subTableFkclassName)
+#elseif($column.list && $column.htmlType == "datetime")
+        <el-table-column label="${comment}" align="center" prop="${javaField}" width="180">
+          <template slot-scope="scope">
+            <span>{{ parseTime(scope.row.${javaField}, '{y}-{m}-{d}') }}</span>
+          </template>
+        </el-table-column>
+#elseif($column.list && $column.htmlType == "imageUpload")
+        <el-table-column label="${comment}" align="center" prop="${javaField}" width="100">
+          <template slot-scope="scope">
+            <image-preview :src="scope.row.${javaField}" :width="50" :height="50"/>
+          </template>
+        </el-table-column>
+#elseif($column.list && "" != $column.dictType)
+        <el-table-column label="${comment}" align="center" prop="${javaField}">
+          <template slot-scope="scope">
+#if($column.htmlType == "checkbox")
+            <dict-tag :options="dict.type.${column.dictType}" :value="scope.row.${javaField} ? scope.row.${javaField}.split(',') : []"/>
+#else
+            <dict-tag :options="dict.type.${column.dictType}" :value="scope.row.${javaField}"/>
+#end
+          </template>
+        </el-table-column>
+#elseif($column.list && "" != $javaField)
+        <el-table-column label="${comment}" align="center" prop="${javaField}" />
+#end
+#end
+        <el-table-column label="操作" align="center" width="150" class-name="small-padding fixed-width">
+          <template slot-scope="scope">
+            <el-button
+              size="mini"
+              type="text"
+              icon="el-icon-edit"
+              @click="handleEditSub(scope.row)"
+              v-hasPermi="['${permissionPrefix}:edit']"
+            >修改</el-button>
+            <el-button
+              size="mini"
+              type="text"
+              icon="el-icon-delete"
+              @click="handleDeleteSub(scope.row)"
+              v-hasPermi="['${permissionPrefix}:remove']"
+            >删除</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+
+      <div class="table-panel__pagination">
+        <pagination
+          v-show="subTotal > 0"
+          :total="subTotal"
+          :page.sync="subQueryParams.pageNum"
+          :limit.sync="subQueryParams.pageSize"
+          @pagination="getSubList"
+        />
+      </div>
+    </div>
+
+    <${businessName}-form ref="${businessName}FormRef" @success="handleMasterSaved" />
+    <${subclassName}-form ref="${subclassName}FormRef" @success="getSubList" />
+  </div>
+</template>
+
+<script>
+import { get${BusinessName}, list${subClassName}, del${subClassName} } from "@/api/${moduleName}/${businessName}"
+import ${BusinessName}Form from "./form"
+import ${subClassName}Form from "./subForm"
+
+export default {
+  name: "${BusinessName}Detail",
+  components: { ${BusinessName}Form, ${subClassName}Form },
+#if(${dicts} != '')
+  dicts: [${dicts}],
+#end
+  data() {
+    return {
+      loading: false,
+      subLoading: false,
+      info: {},
+      ${subclassName}List: [],
+      subTotal: 0,
+      subQueryParams: {
+        pageNum: 1,
+        pageSize: 10
+      }
+    }
+  },
+  computed: {
+    masterId() {
+      return this.#[[$route]]#.params && this.#[[$route]]#.params.${pkColumn.javaField}
+    }
+  },
+  created() {
+    this.loadDetail()
+    this.getSubList()
+  },
+  methods: {
+    loadDetail() {
+      if (!this.masterId) return
+      this.loading = true
+      get${BusinessName}(this.masterId).then(response => {
+        this.info = response.data || {}
+      }).finally(() => {
+        this.loading = false
+      })
+    },
+    getSubList() {
+      if (!this.masterId) return
+      this.subLoading = true
+      list${subClassName}(this.masterId, this.subQueryParams).then(response => {
+        this.${subclassName}List = response.rows
+        this.subTotal = response.total
+      }).finally(() => {
+        this.subLoading = false
+      })
+    },
+    goBack() {
+      const currentPath = this.#[[$route]]#.path
+      const detailIndex = currentPath.indexOf("/detail/")
+      const target = detailIndex > -1 ? currentPath.substring(0, detailIndex) : "/${moduleName}/${businessName}"
+      this.#[[$router]]#.push({ path: target })
+    },
+    handleEditMaster() {
+      this.#[[$]]#refs["${businessName}FormRef"].open(this.info)
+    },
+    handleMasterSaved() {
+      this.loadDetail()
+    },
+    handleAddSub() {
+      this.#[[$]]#refs["${subclassName}FormRef"].open(this.masterId)
+    },
+    handleEditSub(row) {
+      this.#[[$]]#refs["${subclassName}FormRef"].open(this.masterId, row)
+    },
+    handleDeleteSub(row) {
+      this.#[[$modal]]#.confirm('是否确认删除${subTable.functionName}编号为"' + row.${subTable.pkColumn.javaField} + '"的数据项？').then(() => {
+        return del${subClassName}(row.${subTable.pkColumn.javaField})
+      }).then(() => {
+        this.getSubList()
+        this.#[[$modal]]#.msgSuccess("删除成功")
+      }).catch(() => {})
+    }
+  }
+}
+</script>
+
+<style lang="scss" scoped>
+.generated-detail-page {
+  min-height: 100%;
+}
+
+.detail-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.detail-header__actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.detail-panel {
+  margin-bottom: 16px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: #ffffff;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.035);
+}
+
+.detail-panel__head {
+  padding: 20px 22px 14px;
+  border-bottom: 1px solid #edf0f5;
+
+  h1 {
+    margin: 0;
+    color: #111827;
+    font-size: 20px;
+    font-weight: 700;
+  }
+
+  p {
+    margin: 6px 0 0;
+    color: #6b7280;
+    font-size: 13px;
+  }
+}
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  padding: 18px 22px 22px;
+}
+
+.detail-item {
+  min-height: 58px;
+  padding: 12px 14px;
+  border: 1px solid #edf0f5;
+  border-radius: 8px;
+  background: #f9fafb;
+}
+
+.detail-label {
+  display: block;
+  margin-bottom: 6px;
+  color: #6b7280;
+  font-size: 12px;
+}
+
+.detail-value {
+  color: #111827;
+  font-size: 14px;
+  word-break: break-word;
+}
+
+.table-panel {
+  overflow: hidden;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: #ffffff;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.035);
+}
+
+.table-panel__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 18px;
+  border-bottom: 1px solid #edf0f5;
+}
+
+.table-panel__title {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  color: #111827;
+  font-size: 15px;
+  font-weight: 600;
+
+  small {
+    color: #6b7280;
+    font-size: 12px;
+    font-weight: 400;
+  }
+}
+
+.table-panel__actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.table-panel__pagination {
+  display: flex;
+  justify-content: flex-end;
+  padding: 14px 16px 16px;
+  border-top: 1px solid #edf0f5;
+}
+
+.table-panel__pagination ::v-deep .pagination-container {
+  margin: 0;
+  padding: 0;
+}
+
+@media (max-width: 992px) {
+  .detail-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .detail-header,
+  .table-panel__header {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .detail-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .table-panel__pagination {
+    justify-content: flex-start;
+    overflow-x: auto;
+  }
+}
+</style>

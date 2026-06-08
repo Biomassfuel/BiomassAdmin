@@ -17,9 +17,12 @@ import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.enums.BusinessType;
 import ${packageName}.domain.${ClassName};
+#if($table.subDetail)
+import ${packageName}.domain.${subClassName};
+#end
 import ${packageName}.service.I${ClassName}Service;
 import com.ruoyi.common.utils.poi.ExcelUtil;
-#if($table.crud || $table.sub)
+#if($table.crud || $table.sub || $table.subDetail)
 import com.ruoyi.common.core.page.TableDataInfo;
 #elseif($table.tree)
 #end
@@ -42,7 +45,7 @@ public class ${ClassName}Controller extends BaseController
      */
     @PreAuthorize("@ss.hasPermi('${permissionPrefix}:list')")
     @GetMapping("/list")
-#if($table.crud || $table.sub)
+#if($table.crud || $table.sub || $table.subDetail)
     public TableDataInfo list(${ClassName} ${className})
     {
         startPage();
@@ -112,4 +115,61 @@ public class ${ClassName}Controller extends BaseController
     {
         return toAjax(${className}Service.delete${ClassName}By${pkColumn.capJavaField}s(${pkColumn.javaField}s));
     }
+#if($table.subDetail)
+
+    /**
+     * 查询${subTable.functionName}列表
+     */
+    @PreAuthorize("@ss.hasPermi('${permissionPrefix}:query')")
+    @GetMapping("/sub/list/{masterId}")
+    public TableDataInfo subList(@PathVariable("masterId") ${pkColumn.javaType} masterId)
+    {
+        startPage();
+        List<${subClassName}> list = ${className}Service.select${subClassName}ListBy${subTableFkClassName}(masterId);
+        return getDataTable(list);
+    }
+
+    /**
+     * 获取${subTable.functionName}详细信息
+     */
+    @PreAuthorize("@ss.hasPermi('${permissionPrefix}:query')")
+    @GetMapping("/sub/{subId}")
+    public AjaxResult getSubInfo(@PathVariable("subId") ${subTable.pkColumn.javaType} subId)
+    {
+        return success(${className}Service.select${subClassName}By${subTable.pkColumn.capJavaField}(subId));
+    }
+
+    /**
+     * 新增${subTable.functionName}
+     */
+    @PreAuthorize("@ss.hasPermi('${permissionPrefix}:add')")
+    @Log(title = "${subTable.functionName}", businessType = BusinessType.INSERT)
+    @PostMapping("/sub/{masterId}")
+    public AjaxResult addSub(@PathVariable("masterId") ${pkColumn.javaType} masterId, @RequestBody ${subClassName} ${subclassName})
+    {
+        return toAjax(${className}Service.insert${subClassName}(masterId, ${subclassName}));
+    }
+
+    /**
+     * 修改${subTable.functionName}
+     */
+    @PreAuthorize("@ss.hasPermi('${permissionPrefix}:edit')")
+    @Log(title = "${subTable.functionName}", businessType = BusinessType.UPDATE)
+    @PutMapping("/sub")
+    public AjaxResult editSub(@RequestBody ${subClassName} ${subclassName})
+    {
+        return toAjax(${className}Service.update${subClassName}(${subclassName}));
+    }
+
+    /**
+     * 删除${subTable.functionName}
+     */
+    @PreAuthorize("@ss.hasPermi('${permissionPrefix}:remove')")
+    @Log(title = "${subTable.functionName}", businessType = BusinessType.DELETE)
+    @DeleteMapping("/sub/{subIds}")
+    public AjaxResult removeSub(@PathVariable ${subTable.pkColumn.javaType}[] subIds)
+    {
+        return toAjax(${className}Service.delete${subClassName}By${subTable.pkColumn.capJavaField}s(subIds));
+    }
+#end
 }

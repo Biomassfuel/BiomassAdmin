@@ -41,6 +41,9 @@ export default {
             if (meta.activeMenu) {
                 return meta.activeMenu
             }
+            if (path.indexOf('/detail/') > -1) {
+                return path.substring(0, path.indexOf('/detail/'))
+            }
             return path
         },
         showLogo() {

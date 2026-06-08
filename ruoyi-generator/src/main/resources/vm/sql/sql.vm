@@ -5,6 +5,13 @@ values('${functionName}', '${parentMenuId}', '1', '${businessName}', '${moduleNa
 -- 按钮父菜单ID
 SELECT @parentId := LAST_INSERT_ID();
 
+#if($table.subDetail)
+-- 详情页隐藏菜单 SQL（与主列表菜单同级，路径为主列表路径 + /detail/:主键）
+insert into sys_menu (menu_name, parent_id, order_num, path, component, query, route_name, is_frame, is_cache, menu_type, visible, status, perms, icon, create_by, create_time, update_by, update_time, remark)
+values('${functionName}详情', '${parentMenuId}', '2', '${businessName}/detail/:${pkColumn.javaField}', '${moduleName}/${businessName}/detail', '', '${BusinessName}Detail', 1, 1, 'C', '1', '0', '${permissionPrefix}:query', '#', 'admin', sysdate(), '', null, '${functionName}详情页');
+
+#end
+
 -- 按钮 SQL
 insert into sys_menu (menu_name, parent_id, order_num, path, component, is_frame, is_cache, menu_type, visible, status, perms, icon, create_by, create_time, update_by, update_time, remark)
 values('${functionName}查询', @parentId, '1',  '#', '', 1, 0, 'F', '0', '0', '${permissionPrefix}:query',        '#', 'admin', sysdate(), '', null, '');

@@ -42,3 +42,48 @@ export function del${BusinessName}(${pkColumn.javaField}) {
     method: 'delete'
   })
 }
+#if($table.subDetail)
+
+// 查询${subTable.functionName}列表
+export function list${subClassName}(masterId, query) {
+  return request({
+    url: '/${moduleName}/${businessName}/sub/list/' + masterId,
+    method: 'get',
+    params: query
+  })
+}
+
+// 查询${subTable.functionName}详细
+export function get${subClassName}(subId) {
+  return request({
+    url: '/${moduleName}/${businessName}/sub/' + subId,
+    method: 'get'
+  })
+}
+
+// 新增${subTable.functionName}
+export function add${subClassName}(masterId, data) {
+  return request({
+    url: '/${moduleName}/${businessName}/sub/' + masterId,
+    method: 'post',
+    data: data
+  })
+}
+
+// 修改${subTable.functionName}
+export function update${subClassName}(data) {
+  return request({
+    url: '/${moduleName}/${businessName}/sub',
+    method: 'put',
+    data: data
+  })
+}
+
+// 删除${subTable.functionName}
+export function del${subClassName}(subIds) {
+  return request({
+    url: '/${moduleName}/${businessName}/sub/' + subIds,
+    method: 'delete'
+  })
+}
+#end

@@ -16,6 +16,9 @@ public class GenConstants
     /** 主子表（增删改查） */
     public static final String TPL_SUB = "sub";
 
+    /** 主子表（详情页） */
+    public static final String TPL_SUB_DETAIL = "sub_detail";
+
     /** 树编码字段 */
     public static final String TREE_CODE = "treeCode";
 

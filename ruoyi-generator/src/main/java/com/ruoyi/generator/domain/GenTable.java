@@ -374,6 +374,26 @@ public class GenTable extends BaseEntity
         return tplCategory != null && StringUtils.equals(GenConstants.TPL_SUB, tplCategory);
     }
 
+    public boolean isSubDetail()
+    {
+        return isSubDetail(this.tplCategory);
+    }
+
+    public static boolean isSubDetail(String tplCategory)
+    {
+        return tplCategory != null && StringUtils.equals(GenConstants.TPL_SUB_DETAIL, tplCategory);
+    }
+
+    public boolean isMasterSub()
+    {
+        return isMasterSub(this.tplCategory);
+    }
+
+    public static boolean isMasterSub(String tplCategory)
+    {
+        return isSub(tplCategory) || isSubDetail(tplCategory);
+    }
+
     public boolean isTree()
     {
         return isTree(this.tplCategory);

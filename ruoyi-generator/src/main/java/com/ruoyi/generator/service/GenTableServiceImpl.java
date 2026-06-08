@@ -266,7 +266,7 @@ public class GenTableServiceImpl implements IGenTableService
         List<String> templates = VelocityUtils.getTemplateList(table);
         for (String template : templates)
         {
-            if (!StringUtils.containsAny(template, "sql.vm", "api.js.vm", "api.ts.vm", "type.ts.vm", "index.ts.vm", "index.vue.vm", "index-tree.vue.vm", "view.vue.vm"))
+            if (!StringUtils.containsAny(template, "sql.vm", "api.js.vm", "api.ts.vm", "type.ts.vm", "index.ts.vm", "index.vue.vm", "index-tree.vue.vm", "view.vue.vm", "sub-detail"))
             {
                 // 渲染模板
                 StringWriter sw = new StringWriter();
@@ -456,8 +456,13 @@ public class GenTableServiceImpl implements IGenTableService
                 throw new ServiceException("树名称字段不能为空");
             }
         }
-        else if (GenConstants.TPL_SUB.equals(genTable.getTplCategory()))
+        else if (GenTable.isMasterSub(genTable.getTplCategory()))
         {
+            if (GenConstants.TPL_SUB_DETAIL.equals(genTable.getTplCategory())
+                    && !StringUtils.equals("element-ui", genTable.getTplWebType()))
+            {
+                throw new ServiceException("主子表（详情页）模板暂只支持 Vue2 Element UI");
+            }
             if (StringUtils.isEmpty(genTable.getSubTableName()))
             {
                 throw new ServiceException("关联子表的表名不能为空");
@@ -488,7 +493,7 @@ public class GenTableServiceImpl implements IGenTableService
         {
             table.setPkColumn(table.getColumns().get(0));
         }
-        if (GenConstants.TPL_SUB.equals(table.getTplCategory()))
+        if (GenTable.isMasterSub(table.getTplCategory()))
         {
             for (GenTableColumn column : table.getSubTable().getColumns())
             {

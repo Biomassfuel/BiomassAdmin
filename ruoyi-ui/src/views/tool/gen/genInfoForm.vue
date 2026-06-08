@@ -8,24 +8,27 @@
             <el-option label="单表（增删改查）" value="crud" />
             <el-option label="树表（增删改查）" value="tree" />
             <el-option label="主子表（增删改查）" value="sub" />
+            <el-option label="主子表（详情页）" value="sub_detail" />
           </el-select>
         </el-form-item>
       </el-col>
+
       <el-col :span="12">
         <el-form-item prop="tplWebType">
           <span slot="label">前端类型</span>
-          <el-select v-model="info.tplWebType">
-            <el-option label="Vue2 Element UI 模版" value="element-ui" />
-            <el-option label="Vue3 Element Plus 模版" value="element-plus" />
-            <el-option label="Vue3 Element Plus TypeScript 模版" value="element-plus-typescript" />
+          <el-select v-model="info.tplWebType" :disabled="info.tplCategory === 'sub_detail'">
+            <el-option label="Vue2 Element UI 模板" value="element-ui" />
+            <el-option label="Vue3 Element Plus 模板" value="element-plus" />
+            <el-option label="Vue3 Element Plus TypeScript 模板" value="element-plus-typescript" />
           </el-select>
         </el-form-item>
       </el-col>
+
       <el-col :span="12">
         <el-form-item prop="packageName">
           <span slot="label">
             生成包路径
-            <el-tooltip content="生成在哪个java包下，例如 com.ruoyi.system" placement="top">
+            <el-tooltip content="生成在哪个 Java 包下，例如 com.ruoyi.system" placement="top">
               <i class="el-icon-question"></i>
             </el-tooltip>
           </span>
@@ -88,7 +91,7 @@
       <el-col :span="12">
         <el-form-item prop="genView">
           <span slot="label">扩展功能</span>
-          <el-checkbox v-model="info.view">生成详情页</el-checkbox>
+          <el-checkbox v-model="info.view" :disabled="info.tplCategory === 'sub_detail'">生成详情页</el-checkbox>
         </el-form-item>
       </el-col>
 
@@ -96,11 +99,11 @@
         <el-form-item prop="genType">
           <span slot="label">
             生成代码方式
-            <el-tooltip content="默认为zip压缩包下载，也可以自定义生成路径" placement="top">
+            <el-tooltip content="默认为 zip 压缩包下载，也可以自定义生成路径" placement="top">
               <i class="el-icon-question"></i>
             </el-tooltip>
           </span>
-          <el-radio v-model="info.genType" label="0">zip压缩包</el-radio>
+          <el-radio v-model="info.genType" label="0">zip 压缩包</el-radio>
           <el-radio v-model="info.genType" label="1">自定义路径</el-radio>
         </el-form-item>
       </el-col>
@@ -128,7 +131,7 @@
         <el-form-item prop="genPath">
           <span slot="label">
             自定义路径
-            <el-tooltip content="填写磁盘绝对路径，若不填写，则生成到当前Web项目下" placement="top">
+            <el-tooltip content="填写磁盘绝对路径，若不填写，则生成到当前 Web 项目中" placement="top">
               <i class="el-icon-question"></i>
             </el-tooltip>
           </span>
@@ -153,7 +156,7 @@
         <el-form-item>
           <span slot="label">
             树编码字段
-            <el-tooltip content="树显示的编码字段名， 如：dept_id" placement="top">
+            <el-tooltip content="树显示的编码字段名，例如 dept_id" placement="top">
               <i class="el-icon-question"></i>
             </el-tooltip>
           </span>
@@ -163,7 +166,7 @@
               :key="index"
               :label="column.columnName + '：' + column.columnComment"
               :value="column.columnName"
-            ></el-option>
+            />
           </el-select>
         </el-form-item>
       </el-col>
@@ -171,7 +174,7 @@
         <el-form-item>
           <span slot="label">
             树父编码字段
-            <el-tooltip content="树显示的父编码字段名， 如：parent_Id" placement="top">
+            <el-tooltip content="树显示的父编码字段名，例如 parent_id" placement="top">
               <i class="el-icon-question"></i>
             </el-tooltip>
           </span>
@@ -181,7 +184,7 @@
               :key="index"
               :label="column.columnName + '：' + column.columnComment"
               :value="column.columnName"
-            ></el-option>
+            />
           </el-select>
         </el-form-item>
       </el-col>
@@ -189,7 +192,7 @@
         <el-form-item>
           <span slot="label">
             树名称字段
-            <el-tooltip content="树节点的显示名称字段名， 如：dept_name" placement="top">
+            <el-tooltip content="树节点的显示名称字段名，例如 dept_name" placement="top">
               <i class="el-icon-question"></i>
             </el-tooltip>
           </span>
@@ -199,18 +202,19 @@
               :key="index"
               :label="column.columnName + '：' + column.columnComment"
               :value="column.columnName"
-            ></el-option>
+            />
           </el-select>
         </el-form-item>
       </el-col>
     </el-row>
-    <el-row v-show="info.tplCategory == 'sub'">
+
+    <el-row v-show="info.tplCategory == 'sub' || info.tplCategory == 'sub_detail'">
       <h4 class="form-header">关联信息</h4>
       <el-col :span="12">
         <el-form-item>
           <span slot="label">
             关联子表的表名
-            <el-tooltip content="关联子表的表名， 如：sys_user" placement="top">
+            <el-tooltip content="关联子表的表名，例如 sys_user" placement="top">
               <i class="el-icon-question"></i>
             </el-tooltip>
           </span>
@@ -220,7 +224,7 @@
               :key="index"
               :label="table.tableName + '：' + table.tableComment"
               :value="table.tableName"
-            ></el-option>
+            />
           </el-select>
         </el-form-item>
       </el-col>
@@ -228,7 +232,7 @@
         <el-form-item>
           <span slot="label">
             子表关联的外键名
-            <el-tooltip content="子表关联的外键名， 如：user_id" placement="top">
+            <el-tooltip content="子表关联的外键名，例如 user_id" placement="top">
               <i class="el-icon-question"></i>
             </el-tooltip>
           </span>
@@ -238,7 +242,7 @@
               :key="index"
               :label="column.columnName + '：' + column.columnComment"
               :value="column.columnName"
-            ></el-option>
+            />
           </el-select>
         </el-form-item>
       </el-col>
@@ -263,7 +267,7 @@ export default {
     },
     menus: {
       type: Array,
-      default: []
+      default: () => []
     }
   },
   data() {
@@ -292,14 +296,19 @@ export default {
     'info.subTableName': function(val) {
       this.setSubTableColumns(val)
     },
+    'info.tplCategory': function(val) {
+      if (val === 'sub_detail') {
+        this.info.tplWebType = 'element-ui'
+        this.info.view = true
+      }
+    },
     'info.tplWebType': function(val) {
-      if (val === '') {
-        this.info.tplWebType = "element-ui"
+      if (val === '' || this.info.tplCategory === 'sub_detail') {
+        this.info.tplWebType = 'element-ui'
       }
     }
   },
   methods: {
-    /** 转换菜单数据结构 */
     normalizer(node) {
       if (node.children && !node.children.length) {
         delete node.children
@@ -310,23 +319,25 @@ export default {
         children: node.children
       }
     },
-    /** 选择子表名触发 */
-    subSelectChange(value) {
+    subSelectChange() {
       this.info.subTableFkName = ''
     },
-    /** 选择生成模板触发 */
     tplSelectChange(value) {
-      if(value !== 'sub') {
+      if (value === 'sub_detail') {
+        this.info.tplWebType = 'element-ui'
+        this.info.view = true
+      }
+      if (value !== 'sub' && value !== 'sub_detail') {
         this.info.subTableName = ''
         this.info.subTableFkName = ''
       }
     },
-    /** 设置关联外键 */
     setSubTableColumns(value) {
-      for (var item in this.tables) {
-        const name = this.tables[item].tableName
-        if (value === name) {
-          this.subColumns = this.tables[item].columns
+      this.subColumns = []
+      for (const item in this.tables) {
+        const table = this.tables[item]
+        if (table && value === table.tableName) {
+          this.subColumns = table.columns || []
           break
         }
       }
