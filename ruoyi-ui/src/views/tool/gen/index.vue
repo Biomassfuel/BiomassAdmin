@@ -1,17 +1,31 @@
 <template>
   <div class="app-container gen-page">
-    <div class="saas-page-header gen-page__header">
-      <div>
-        <h1 class="saas-page-title">代码生成</h1>
-        <div class="saas-page-desc">导入数据库表结构，生成前后端代码。</div>
+    <div class="gen-hero">
+      <div class="gen-hero__content">
+        <h1 class="gen-hero__title">代码生成</h1>
+        <p class="gen-hero__desc">导入数据库表结构，配置字段规则后生成前后端代码。</p>
       </div>
-      <div class="gen-page__summary">
-        <span>{{ total }}</span>
-        <label>已导入表</label>
+      <div class="gen-hero__stats">
+        <div class="gen-stat-card">
+          <span>{{ total }}</span>
+          <label>已导入表</label>
+        </div>
+        <div class="gen-stat-card">
+          <span>{{ ids.length }}</span>
+          <label>当前选中</label>
+        </div>
       </div>
     </div>
 
-    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
+    <el-form
+      :model="queryParams"
+      ref="queryForm"
+      size="small"
+      :inline="true"
+      v-show="showSearch"
+      label-width="68px"
+      class="gen-search-panel"
+    >
       <el-form-item label="表名称" prop="tableName">
         <el-input
           v-model="queryParams.tableName"
@@ -31,7 +45,7 @@
       <el-form-item label="创建时间">
         <el-date-picker
           v-model="dateRange"
-          style="width: 240px"
+          class="gen-date-range"
           value-format="yyyy-MM-dd"
           type="daterange"
           range-separator="-"
@@ -39,128 +53,147 @@
           end-placeholder="结束日期"
         ></el-date-picker>
       </el-form-item>
-      <el-form-item>
+      <el-form-item class="gen-search-actions">
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
       </el-form-item>
     </el-form>
 
-    <el-row :gutter="10" class="mb8">
-      <el-col :span="1.5">
-        <el-button
-          type="primary"
-          plain
-          icon="el-icon-download"
-          size="mini"
-          :disabled="multiple"
-          @click="handleGenTable"
-          v-hasPermi="['tool:gen:code']"
-        >生成</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="primary"
-          plain
-          icon="el-icon-plus"
-          size="mini"
-          @click="openCreateTable"
-          v-hasRole="['admin']"
-        >创建</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="info"
-          plain
-          icon="el-icon-upload"
-          size="mini"
-          @click="openImportTable"
-          v-hasPermi="['tool:gen:import']"
-        >导入</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="success"
-          plain
-          icon="el-icon-edit"
-          size="mini"
-          :disabled="single"
-          @click="handleEditTable"
-          v-hasPermi="['tool:gen:edit']"
-        >修改</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="danger"
-          plain
-          icon="el-icon-delete"
-          size="mini"
-          :disabled="multiple"
-          @click="handleDelete"
-          v-hasPermi="['tool:gen:remove']"
-        >删除</el-button>
-      </el-col>
-      <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
-    </el-row>
-
-    <el-table ref="tables" v-loading="loading" :data="tableList" @selection-change="handleSelectionChange" :default-sort="defaultSort" @sort-change="handleSortChange">
-      <el-table-column type="selection" align="center" width="55"></el-table-column>
-      <el-table-column label="序号" type="index" width="50" align="center">
-        <template slot-scope="scope">
-          <span>{{(queryParams.pageNum - 1) * queryParams.pageSize + scope.$index + 1}}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="表名称" align="center" prop="tableName" :show-overflow-tooltip="true" width="140" />
-      <el-table-column label="表描述" align="center" prop="tableComment" :show-overflow-tooltip="true" width="140" />
-      <el-table-column label="实体" align="center" prop="className" :show-overflow-tooltip="true" width="140" />
-      <el-table-column label="创建时间" align="center" prop="createTime" sortable="custom" :sort-orders="['descending', 'ascending']" width="160" />
-      <el-table-column label="更新时间" align="center" prop="updateTime" sortable="custom" :sort-orders="['descending', 'ascending']" width="160" />
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
-        <template slot-scope="scope">
+    <section class="gen-table-panel">
+      <div class="gen-table-panel__header">
+        <div>
+          <h2>数据表列表</h2>
+          <p>选择表后可批量生成、同步结构或进入生成配置。</p>
+        </div>
+        <div class="gen-table-actions">
           <el-button
-            type="text"
-            size="small"
-            icon="el-icon-view"
-            @click="handlePreview(scope.row)"
-            v-hasPermi="['tool:gen:preview']"
-          >预览</el-button>
+            type="primary"
+            plain
+            icon="el-icon-download"
+            size="mini"
+            :disabled="multiple"
+            @click="handleGenTable"
+            v-hasPermi="['tool:gen:code']"
+          >生成</el-button>
           <el-button
-            type="text"
-            size="small"
+            type="primary"
+            plain
+            icon="el-icon-plus"
+            size="mini"
+            @click="openCreateTable"
+            v-hasRole="['admin']"
+          >创建</el-button>
+          <el-button
+            type="info"
+            plain
+            icon="el-icon-upload"
+            size="mini"
+            @click="openImportTable"
+            v-hasPermi="['tool:gen:import']"
+          >导入</el-button>
+          <el-button
+            type="success"
+            plain
             icon="el-icon-edit"
-            @click="handleEditTable(scope.row)"
+            size="mini"
+            :disabled="single"
+            @click="handleEditTable"
             v-hasPermi="['tool:gen:edit']"
-          >编辑</el-button>
+          >修改</el-button>
           <el-button
-            type="text"
-            size="small"
+            type="danger"
+            plain
             icon="el-icon-delete"
-            @click="handleDelete(scope.row)"
+            size="mini"
+            :disabled="multiple"
+            @click="handleDelete"
             v-hasPermi="['tool:gen:remove']"
           >删除</el-button>
-          <el-button
-            type="text"
-            size="small"
-            icon="el-icon-refresh"
-            @click="handleSynchDb(scope.row)"
-            v-hasPermi="['tool:gen:edit']"
-          >同步</el-button>
-          <el-button
-            type="text"
-            size="small"
-            icon="el-icon-download"
-            @click="handleGenTable(scope.row)"
-            v-hasPermi="['tool:gen:code']"
-          >生成代码</el-button>
+          <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
+        </div>
+      </div>
+
+      <el-table
+        ref="tables"
+        v-loading="loading"
+        :data="tableList"
+        class="gen-table"
+        @selection-change="handleSelectionChange"
+        :default-sort="defaultSort"
+        @sort-change="handleSortChange"
+      >
+        <template slot="empty">
+          <div class="gen-empty">
+            <div class="gen-empty__icon"><i class="el-icon-document"></i></div>
+            <div class="gen-empty__title">暂无数据表</div>
+            <div class="gen-empty__desc">导入数据库表后，即可维护生成配置并生成代码。</div>
+            <el-button type="primary" size="mini" icon="el-icon-upload" @click="openImportTable" v-hasPermi="['tool:gen:import']">导入表</el-button>
+          </div>
         </template>
-      </el-table-column>
-    </el-table>
-    <pagination
-      v-show="total>0"
-      :total="total"
-      :page.sync="queryParams.pageNum"
-      :limit.sync="queryParams.pageSize"
-      @pagination="getList"
-    />
+        <el-table-column type="selection" align="center" width="48"></el-table-column>
+        <el-table-column label="序号" type="index" width="64" align="center">
+          <template slot-scope="scope">
+            <span class="gen-index">{{(queryParams.pageNum - 1) * queryParams.pageSize + scope.$index + 1}}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="表名称" align="left" prop="tableName" :show-overflow-tooltip="true" min-width="160">
+          <template slot-scope="scope">
+            <span class="gen-table-name">{{ scope.row.tableName }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="表描述" align="left" prop="tableComment" :show-overflow-tooltip="true" min-width="180" />
+        <el-table-column label="实体" align="left" prop="className" :show-overflow-tooltip="true" min-width="160" />
+        <el-table-column label="创建时间" align="left" prop="createTime" sortable="custom" :sort-orders="['descending', 'ascending']" width="170" />
+        <el-table-column label="更新时间" align="left" prop="updateTime" sortable="custom" :sort-orders="['descending', 'ascending']" width="170" />
+        <el-table-column label="操作" align="center" class-name="gen-table-ops" width="300">
+          <template slot-scope="scope">
+            <el-button
+              type="text"
+              size="small"
+              icon="el-icon-view"
+              @click="handlePreview(scope.row)"
+              v-hasPermi="['tool:gen:preview']"
+            >预览</el-button>
+            <el-button
+              type="text"
+              size="small"
+              icon="el-icon-edit"
+              @click="handleEditTable(scope.row)"
+              v-hasPermi="['tool:gen:edit']"
+            >编辑</el-button>
+            <el-button
+              type="text"
+              size="small"
+              icon="el-icon-refresh"
+              @click="handleSynchDb(scope.row)"
+              v-hasPermi="['tool:gen:edit']"
+            >同步</el-button>
+            <el-button
+              type="text"
+              size="small"
+              icon="el-icon-download"
+              @click="handleGenTable(scope.row)"
+              v-hasPermi="['tool:gen:code']"
+            >生成</el-button>
+            <el-button
+              type="text"
+              size="small"
+              icon="el-icon-delete"
+              class="is-danger"
+              @click="handleDelete(scope.row)"
+              v-hasPermi="['tool:gen:remove']"
+            >删除</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <pagination
+        v-show="total>0"
+        :total="total"
+        :page.sync="queryParams.pageNum"
+        :limit.sync="queryParams.pageSize"
+        @pagination="getList"
+      />
+    </section>
     <!-- 预览界面 -->
     <el-dialog :title="preview.title" :visible.sync="preview.open" width="80%" top="5vh" append-to-body class="scrollbar gen-preview-dialog">
       <el-tabs v-model="preview.activeName">
@@ -362,26 +395,54 @@ export default {
 <style lang="scss" scoped>
 .gen-page {
   min-height: 100%;
+  padding: 18px 20px 24px;
+  background: #f3f5f7;
 }
 
-.gen-page__header {
+.gen-hero {
+  display: flex;
   align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 14px;
 }
 
-.gen-page__summary {
-  min-width: 132px;
-  padding: 14px 18px;
-  border: 1px solid #e5e7eb;
+.gen-hero__title {
+  margin: 0;
+  color: #111827;
+  font-size: 22px;
+  font-weight: 760;
+  line-height: 32px;
+}
+
+.gen-hero__desc {
+  margin: 4px 0 0;
+  color: #6b7280;
+  font-size: 13px;
+  line-height: 20px;
+}
+
+.gen-hero__stats {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 0 0 auto;
+}
+
+.gen-stat-card {
+  min-width: 118px;
+  padding: 12px 16px;
+  border: 1px solid #e6ebf2;
   border-radius: 8px;
   background: #ffffff;
-  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.035);
+  box-shadow: 0 8px 22px rgba(15, 23, 42, .04);
   text-align: right;
 
   span {
     display: block;
-    color: #2563eb;
-    font-size: 26px;
-    font-weight: 700;
+    color: #3f8f4d;
+    font-size: 24px;
+    font-weight: 760;
     line-height: 1;
   }
 
@@ -391,6 +452,212 @@ export default {
     color: #6b7280;
     font-size: 12px;
     font-weight: 500;
+  }
+}
+
+.gen-search-panel {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px 18px;
+  margin-bottom: 12px;
+  padding: 14px 16px 2px;
+  border: 1px solid #e6ebf2;
+  border-radius: 8px;
+  background: #ffffff;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, .035);
+}
+
+.gen-date-range {
+  width: 260px;
+}
+
+::v-deep .gen-search-panel {
+  .el-form-item {
+    margin-right: 0;
+    margin-bottom: 12px;
+  }
+
+  .el-form-item__label {
+    color: #4b5563;
+    font-weight: 600;
+  }
+
+  .el-input__inner {
+    height: 34px;
+    border-color: #dbe3ef;
+    border-radius: 7px;
+    background: #fbfcfe;
+  }
+
+  .el-range-editor.el-input__inner {
+    display: inline-flex;
+    align-items: center;
+    padding: 0 10px;
+  }
+
+  .el-button {
+    height: 34px;
+    padding: 0 16px;
+    border-radius: 7px;
+    font-weight: 600;
+  }
+}
+
+.gen-table-panel {
+  overflow: hidden;
+  border: 1px solid #e6ebf2;
+  border-radius: 8px;
+  background: #ffffff;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, .035);
+}
+
+.gen-table-panel__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 64px;
+  padding: 14px 16px;
+  border-bottom: 1px solid #edf1f7;
+
+  h2 {
+    margin: 0;
+    color: #1f2937;
+    font-size: 15px;
+    font-weight: 720;
+    line-height: 22px;
+  }
+
+  p {
+    margin: 3px 0 0;
+    color: #7b8794;
+    font-size: 12px;
+    line-height: 18px;
+  }
+}
+
+.gen-table-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+  min-width: 0;
+
+  .el-button + .el-button {
+    margin-left: 0;
+  }
+}
+
+.gen-table-name {
+  color: #1f2937;
+  font-weight: 650;
+}
+
+.gen-index {
+  color: #6b7280;
+  font-variant-numeric: tabular-nums;
+}
+
+.gen-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 210px;
+  padding: 34px 16px;
+}
+
+.gen-empty__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  margin-bottom: 12px;
+  border-radius: 8px;
+  color: #8aa0b8;
+  background: #f4f7fb;
+  font-size: 22px;
+}
+
+.gen-empty__title {
+  color: #1f2937;
+  font-size: 14px;
+  font-weight: 650;
+  line-height: 22px;
+}
+
+.gen-empty__desc {
+  margin: 4px 0 14px;
+  color: #7b8794;
+  font-size: 12px;
+  line-height: 20px;
+}
+
+::v-deep .gen-table-panel {
+  .top-right-btn {
+    margin-left: 4px;
+  }
+
+  .top-right-btn .el-button.is-circle {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+  }
+
+  .el-button--mini {
+    height: 32px;
+    padding: 0 13px;
+    border-radius: 7px;
+    font-weight: 600;
+  }
+
+  .el-table {
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  .el-table .el-table__header-wrapper th {
+    height: 46px;
+    background: #f8fafc !important;
+    color: #334155 !important;
+    font-weight: 700;
+  }
+
+  .el-table td.el-table__cell {
+    padding: 12px 0;
+  }
+
+  .el-table__row:hover > td.el-table__cell {
+    background: #f8fbff !important;
+  }
+
+  .gen-table-ops .cell {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .gen-table-ops .el-button--text {
+    margin-left: 0;
+    padding: 0;
+    color: #2563eb;
+    font-weight: 600;
+  }
+
+  .gen-table-ops .el-button--text.is-danger {
+    color: #dc2626;
+  }
+
+  .pagination-container {
+    margin-top: 0;
+    padding: 12px 16px 14px;
+    border-top: 1px solid #edf1f7;
   }
 }
 
@@ -408,9 +675,50 @@ export default {
 }
 
 @media (max-width: 768px) {
-  .gen-page__summary {
-    margin-top: 16px;
+  .gen-page {
+    padding: 14px;
+  }
+
+  .gen-hero {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .gen-hero__stats {
+    width: 100%;
+  }
+
+  .gen-stat-card {
+    flex: 1;
     text-align: left;
+  }
+
+  .gen-search-panel {
+    display: block;
+    padding: 14px 14px 2px;
+  }
+
+  .gen-date-range {
+    width: 100%;
+  }
+
+  .gen-table-panel__header {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .gen-table-actions {
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 480px) {
+  .gen-hero__stats {
+    flex-direction: column;
+  }
+
+  .gen-stat-card {
+    width: 100%;
   }
 }
 </style>

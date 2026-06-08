@@ -2,20 +2,23 @@
   <div class="login">
     <section class="login-aside">
       <div class="brand-lockup">
-        <div class="brand-mark">B</div>
+        <img :src="logo" class="brand-mark" alt="BiomassAdmin">
         <div class="brand-name">BiomassAdmin</div>
       </div>
       <div class="aside-copy">
         <h1>BiomassAdmin</h1>
-        <p>清晰处理权限、配置、日志与开发工具。</p>
+        <p>面向生物质能源场景的后台管理系统。</p>
       </div>
     </section>
 
     <section class="login-panel">
       <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form">
+        <div class="form-brand">
+          <img :src="logo" class="form-logo" alt="BiomassAdmin">
+        </div>
         <div class="form-heading">
           <h2>{{ title }}</h2>
-          <p>欢迎回来，请登录。</p>
+          <p>欢迎回来，请登录工作台。</p>
         </div>
 
         <el-form-item prop="username">
@@ -87,6 +90,7 @@ import { getCodeImg } from "@/api/login"
 import Cookies from "js-cookie"
 import { encrypt, decrypt } from '@/utils/jsencrypt'
 import defaultSettings from '@/settings'
+import logo from '@/assets/logo/logo.png'
 
 export default {
   name: "Login",
@@ -94,6 +98,7 @@ export default {
     return {
       title: 'BiomassAdmin',
       footerContent: defaultSettings.footerContent,
+      logo,
       codeUrl: "",
       loginForm: {
         username: "",
@@ -180,139 +185,223 @@ export default {
 
 <style lang="scss" scoped>
 .login {
+  position: relative;
   display: grid;
-  grid-template-columns: minmax(460px, 1fr) 480px;
+  grid-template-columns: minmax(520px, 1fr) minmax(430px, 520px);
   width: 100%;
   min-height: 100%;
-  background: #f3f4f6;
+  background:
+    linear-gradient(118deg, rgba(210, 232, 190, .56) 0 28%, transparent 28% 100%),
+    linear-gradient(144deg, transparent 0 58%, rgba(220, 238, 205, .64) 58% 100%),
+    linear-gradient(135deg, #f7fbf3 0%, #eef7ee 48%, #f6f8fb 100%);
   overflow-x: hidden;
+
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
 }
 
 .login-aside {
+  position: relative;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   min-height: 100vh;
-  padding: 54px 72px;
-  border-right: 1px solid rgba(148, 163, 184, .14);
+  padding: 58px 76px 64px;
+  border-right: 1px solid rgba(58, 125, 68, .12);
   background:
-    linear-gradient(135deg, rgba(37, 99, 235, .28), transparent 38%),
-    linear-gradient(180deg, #111827 0%, #0f172a 100%);
-  color: #f8fafc;
+    linear-gradient(135deg, rgba(255, 255, 255, .88), rgba(255, 255, 255, .52)),
+    linear-gradient(155deg, rgba(224, 242, 204, .92), rgba(238, 247, 229, .74) 48%, rgba(241, 246, 240, .88));
+  color: #153426;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    right: -80px;
+    bottom: 86px;
+    width: 420px;
+    height: 170px;
+    border: 1px solid rgba(50, 91, 64, .08);
+    border-radius: 28px;
+    transform: rotate(-18deg);
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    left: 78px;
+    bottom: 140px;
+    width: 320px;
+    height: 1px;
+    background: linear-gradient(90deg, rgba(63, 143, 77, .38), transparent);
+  }
 }
 
 .brand-lockup {
+  position: relative;
+  z-index: 1;
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 14px;
 }
 
 .brand-mark {
-  display: grid;
-  place-items: center;
-  width: 38px;
-  height: 38px;
-  border-radius: 8px;
-  background: linear-gradient(135deg, #2563eb 0%, #10b981 100%);
-  color: #ffffff;
-  font-size: 18px;
-  font-weight: 700;
-  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.24);
+  display: block;
+  width: 46px;
+  height: 46px;
+  border-radius: 12px;
+  object-fit: contain;
 }
 
 .brand-name {
-  color: #f8fafc;
+  color: #17372a;
   font-size: 17px;
   font-weight: 700;
   line-height: 24px;
 }
 
 .aside-copy {
+  position: relative;
+  z-index: 1;
   max-width: 520px;
+}
 
+.aside-copy {
   h1 {
-    margin: 0 0 16px;
-    color: #f8fafc;
-    font-size: 44px;
-    font-weight: 750;
-    line-height: 1.18;
+    margin: 0 0 18px;
+    color: #10291f;
+    font-size: 48px;
+    font-weight: 760;
+    line-height: 1.12;
   }
 
   p {
     margin: 0;
-    max-width: 420px;
-    color: #cbd5e1;
-    font-size: 15px;
-    line-height: 28px;
+    max-width: 460px;
+    color: #52655b;
+    font-size: 16px;
+    line-height: 30px;
   }
 }
 
 .login-panel {
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   width: 100%;
   min-width: 0;
-  padding: 42px;
-  background: #f3f4f6;
+  min-height: 100vh;
+  padding: 42px 52px;
+  background: rgba(248, 250, 247, .72);
   overflow-x: hidden;
 }
 
 .login-form {
+  box-sizing: border-box !important;
   width: 100%;
-  max-width: 386px;
+  max-width: 398px;
   min-width: 0;
-  padding: 34px;
-  border: 1px solid #e5e7eb;
-  border-radius: 10px;
-  background: #ffffff;
-  box-shadow: 0 12px 34px rgba(15, 23, 42, 0.08);
+  padding: 36px;
+  border: 1px solid rgba(58, 125, 68, .11);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, .94);
+  box-shadow: 0 22px 60px rgba(31, 64, 47, .12);
 
   .el-input {
     width: 100%;
     min-width: 0;
-    height: 42px;
+    height: 44px;
 
     ::v-deep input {
-      height: 42px;
-      border-radius: 7px;
+      height: 44px;
+      border-color: #dce6d7;
+      border-radius: 8px;
+      color: #20342b;
+      background: #fbfdf9;
+
+      &:focus {
+        border-color: #6da447;
+        box-shadow: 0 0 0 3px rgba(109, 164, 71, .14);
+      }
+
+      &::placeholder {
+        color: #93a29a;
+      }
     }
   }
 
   .input-icon {
     width: 15px;
-    height: 42px;
+    height: 44px;
     margin-left: 4px;
-    color: #9ca3af;
+    color: #8da094;
   }
 
   ::v-deep .el-form-item__content {
     min-width: 0;
   }
+
+  ::v-deep .el-form-item {
+    margin-bottom: 20px;
+  }
+
+  ::v-deep .el-checkbox__input.is-checked .el-checkbox__inner {
+    border-color: #3f8f4d;
+    background-color: #3f8f4d;
+  }
+
+  ::v-deep .el-checkbox__input.is-checked + .el-checkbox__label {
+    color: #315640;
+  }
+}
+
+.form-brand {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 58px;
+  height: 58px;
+  margin-bottom: 18px;
+  border: 1px solid rgba(58, 125, 68, .1);
+  border-radius: 14px;
+  background: #ffffff;
+  box-shadow: 0 10px 24px rgba(46, 88, 56, .12);
+}
+
+.form-logo {
+  display: block;
+  width: 46px;
+  height: 46px;
+  object-fit: contain;
 }
 
 .form-heading {
-  margin-bottom: 26px;
+  margin-bottom: 28px;
 
   h2 {
     margin: 0;
-    color: #111827;
-    font-size: 24px;
-    font-weight: 700;
+    color: #12251c;
+    font-size: 26px;
+    font-weight: 760;
     line-height: 32px;
   }
 
   p {
-    margin: 6px 0 0;
-    color: #6b7280;
+    margin: 8px 0 0;
+    color: #6d7b72;
     font-size: 13px;
+    line-height: 20px;
   }
 }
 
 .captcha-row {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 112px;
+  grid-template-columns: minmax(0, 1fr) 116px;
   gap: 10px;
 
   > * {
@@ -323,19 +412,25 @@ export default {
 .login-code {
   width: 100%;
   min-width: 0;
-  height: 42px;
+  height: 44px;
   padding: 0;
-  border: 1px solid #d7dde7;
-  border-radius: 7px;
-  background: #f9fafb;
+  border: 1px solid #dce6d7;
+  border-radius: 8px;
+  background: #fbfdf9;
   cursor: pointer;
   overflow: hidden;
+  transition: border-color .18s ease, box-shadow .18s ease;
+
+  &:hover {
+    border-color: #8ab46a;
+    box-shadow: 0 0 0 3px rgba(109, 164, 71, .1);
+  }
 }
 
 .login-code-img {
   display: block;
   width: 100%;
-  height: 42px;
+  height: 44px;
   object-fit: cover;
 }
 
@@ -344,23 +439,39 @@ export default {
   align-items: center;
   justify-content: space-between;
   margin: 2px 0 22px;
-  color: #4b5563;
+  color: #58675f;
   font-size: 13px;
 }
 
 .login-submit {
   width: 100%;
-  height: 42px;
-  border-radius: 7px;
+  height: 44px;
+  border: none;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #3f8f4d 0%, #77a835 100%);
+  box-shadow: 0 14px 26px rgba(63, 143, 77, .24);
   font-size: 14px;
   font-weight: 600;
+  transition: transform .18s ease, box-shadow .18s ease, opacity .18s ease;
+
+  &:hover,
+  &:focus {
+    background: linear-gradient(135deg, #367f44 0%, #6c9f2f 100%);
+    box-shadow: 0 16px 30px rgba(63, 143, 77, .28);
+    transform: translateY(-1px);
+  }
+
+  &.is-loading {
+    transform: none;
+  }
 }
 
 .el-login-footer {
-  margin-top: 22px;
-  color: #6b7280;
+  margin-top: 24px;
+  color: #7a887f;
   text-align: center;
   font-size: 12px;
+  line-height: 20px;
 }
 
 @media (max-width: 960px) {
@@ -369,14 +480,32 @@ export default {
   }
 
   .login-aside {
-    display: none;
+    min-height: auto;
+    padding: 30px 28px 24px;
+
+    &::before,
+    &::after {
+      display: none;
+    }
+  }
+
+  .aside-copy {
+    margin-top: 40px;
+
+    h1 {
+      font-size: 34px;
+    }
+
+    p {
+      max-width: 560px;
+    }
   }
 
   .login-panel {
     align-items: stretch;
     overflow-x: hidden;
-    min-height: 100vh;
-    padding: 24px;
+    min-height: auto;
+    padding: 28px 24px 34px;
   }
 
   .login-form {
@@ -398,19 +527,36 @@ export default {
 }
 
 @media (max-width: 420px) {
+  .login-aside {
+    padding: 24px 18px 20px;
+  }
+
+  .brand-mark {
+    width: 42px;
+    height: 42px;
+  }
+
+  .aside-copy {
+    margin-top: 30px;
+
+    h1 {
+      font-size: 30px;
+    }
+  }
+
   .login-panel {
     align-items: stretch;
-    padding: 18px;
+    padding: 18px 14px;
   }
 
   .login-form {
     width: 100%;
     max-width: 100%;
-    padding: 24px;
+    padding: 24px 20px;
   }
 
   .captcha-row {
-    grid-template-columns: minmax(0, 1fr) 82px;
+    grid-template-columns: minmax(0, 1fr) 72px;
     gap: 8px;
   }
 

@@ -2,10 +2,10 @@
   <div class="sidebar-logo-container" :class="{'collapse':collapse}">
     <transition name="sidebarLogoFade">
       <router-link v-if="collapse" key="collapse" class="sidebar-logo-link" to="/">
-        <span class="sidebar-logo-mark">B</span>
+        <img :src="logo" class="sidebar-logo-mark" alt="logo">
       </router-link>
       <router-link v-else key="expand" class="sidebar-logo-link" to="/">
-        <span class="sidebar-logo-mark">B</span>
+        <img :src="logo" class="sidebar-logo-mark" alt="logo">
         <h1 class="sidebar-title">{{ title }}</h1>
       </router-link>
     </transition>
@@ -14,6 +14,7 @@
 
 <script>
 import variables from '@/assets/styles/variables.scss'
+import logo from '@/assets/logo/logo.png'
 
 export default {
   name: 'SidebarLogo',
@@ -36,6 +37,7 @@ export default {
   },
   data() {
     return {
+      logo,
       title: process.env.VUE_APP_TITLE
     }
   }
@@ -70,18 +72,11 @@ export default {
     line-height: 1;
 
     & .sidebar-logo-mark {
-      display: inline-grid;
-      place-items: center;
       flex: 0 0 auto;
-      width: 34px;
-      height: 34px;
-      border-radius: 8px;
-      color: #ffffff;
-      background: linear-gradient(135deg, #1890ff 0%, #36cfc9 100%);
-      box-shadow: 0 8px 18px rgba(24, 144, 255, 0.22);
-      font-size: 16px;
-      font-weight: 700;
-      line-height: 1;
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      object-fit: contain;
     }
 
     & .sidebar-title {

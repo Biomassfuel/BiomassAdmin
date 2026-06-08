@@ -6,7 +6,7 @@
     <section class="lock-shell">
       <div class="lock-time-panel">
         <div class="brand-lockup">
-          <span class="brand-mark">B</span>
+          <img :src="logo" class="brand-mark" alt="BiomassAdmin">
           <span class="brand-name">BiomassAdmin</span>
         </div>
         <div class="lock-time">{{ currentTime }}</div>
@@ -43,6 +43,7 @@
 import { mapGetters } from 'vuex'
 import { unlockScreen } from '@/api/login'
 import defAva from '@/assets/images/profile.jpg'
+import logo from '@/assets/logo/logo.png'
 
 export default {
   name: 'LockScreen',
@@ -56,7 +57,8 @@ export default {
       currentDate: '',
       timer: null,
       animationId: null,
-      particles: []
+      particles: [],
+      logo
     }
   },
   computed: {
@@ -161,7 +163,7 @@ export default {
         this.particles.forEach(p => {
           ctx.beginPath()
           ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2)
-          ctx.fillStyle = `rgba(37,99,235,${p.alpha * 0.30})`
+          ctx.fillStyle = `rgba(63,143,77,${p.alpha * 0.28})`
           ctx.fill()
           p.x += p.dx
           p.y += p.dy
@@ -177,7 +179,7 @@ export default {
               ctx.beginPath()
               ctx.moveTo(a.x, a.y)
               ctx.lineTo(b.x, b.y)
-              ctx.strokeStyle = `rgba(37,99,235,${0.08 * (1 - dist / 120)})`
+              ctx.strokeStyle = `rgba(63,143,77,${0.08 * (1 - dist / 120)})`
               ctx.lineWidth = 0.5
               ctx.stroke()
             }
@@ -196,8 +198,9 @@ export default {
   position: fixed;
   inset: 0;
   background:
-    linear-gradient(135deg, rgba(37, 99, 235, 0.10), transparent 34%),
-    linear-gradient(180deg, #f9fafb 0%, #f3f4f6 100%);
+    linear-gradient(118deg, rgba(210, 232, 190, .56) 0 28%, transparent 28% 100%),
+    linear-gradient(144deg, transparent 0 58%, rgba(220, 238, 205, .58) 58% 100%),
+    linear-gradient(135deg, #f7fbf3 0%, #eef7ee 48%, #f6f8fb 100%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -205,6 +208,12 @@ export default {
   padding: 42px;
   font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
   overflow: hidden;
+}
+
+.lock-container *,
+.lock-container *::before,
+.lock-container *::after {
+  box-sizing: border-box;
 }
 
 .particle-bg {
@@ -226,19 +235,33 @@ export default {
 
 .lock-time-panel,
 .lock-card {
-  border: 1px solid #e5e7eb;
-  border-radius: 10px;
-  background: rgba(255, 255, 255, .92);
-  box-shadow: 0 12px 34px rgba(15, 23, 42, 0.08);
+  border: 1px solid rgba(58, 125, 68, .11);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, .94);
+  box-shadow: 0 22px 60px rgba(31, 64, 47, .12);
   backdrop-filter: blur(10px);
 }
 
 .lock-time-panel {
+  position: relative;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   min-height: 420px;
   padding: 34px;
+  overflow: hidden;
+}
+
+.lock-time-panel::before {
+  content: '';
+  position: absolute;
+  right: -96px;
+  bottom: 54px;
+  width: 330px;
+  height: 132px;
+  border: 1px solid rgba(50, 91, 64, .08);
+  border-radius: 24px;
+  transform: rotate(-18deg);
 }
 
 .brand-lockup {
@@ -248,20 +271,15 @@ export default {
 }
 
 .brand-mark {
-  display: grid;
-  place-items: center;
-  width: 38px;
-  height: 38px;
-  border-radius: 8px;
-  background: linear-gradient(135deg, #2563eb 0%, #10b981 100%);
-  color: #ffffff;
-  font-size: 18px;
-  font-weight: 750;
-  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.22);
+  display: block;
+  width: 46px;
+  height: 46px;
+  border-radius: 12px;
+  object-fit: contain;
 }
 
 .brand-name {
-  color: #111827;
+  color: #17372a;
   font-size: 17px;
   font-weight: 700;
   line-height: 24px;
@@ -271,7 +289,7 @@ export default {
   position: relative;
   font-size: 72px;
   font-weight: 750;
-  color: #111827;
+  color: #10291f;
   letter-spacing: 0;
   line-height: 1;
   font-variant-numeric: tabular-nums;
@@ -280,7 +298,7 @@ export default {
 .lock-date {
   position: relative;
   margin-top: 16px;
-  color: #4b5563;
+  color: #52655b;
   font-size: 15px;
   line-height: 24px;
 }
@@ -307,15 +325,15 @@ export default {
   border: 3px solid #ffffff;
   object-fit: cover;
   display: block;
-  box-shadow: 0 10px 24px rgba(29, 33, 41, .12);
+  box-shadow: 0 10px 24px rgba(46, 88, 56, .13);
 }
 
 .lock-icon {
   position: absolute;
   bottom: -4px;
   right: -4px;
-  background: #eff6ff;
-  color: #2563eb;
+  background: #eff7e8;
+  color: #3f8f4d;
   border-radius: 50%;
   width: 26px;
   height: 26px;
@@ -323,18 +341,18 @@ export default {
   align-items: center;
   justify-content: center;
   font-size: 13px;
-  box-shadow: 0 4px 10px rgba(37, 99, 235, .16);
+  box-shadow: 0 4px 10px rgba(63, 143, 77, .18);
 }
 
 .lock-username {
-  color: #111827;
+  color: #12251c;
   font-size: 18px;
   font-weight: 600;
   margin-bottom: 6px;
 }
 
 .lock-hint {
-  color: #6b7280;
+  color: #6d7b72;
   font-size: 13px;
   margin-bottom: 28px;
 }
@@ -343,17 +361,17 @@ export default {
   width: 100%;
   display: flex;
   align-items: center;
-  background: #f9fafb;
-  border: 1px solid #d7dde7;
+  background: #fbfdf9;
+  border: 1px solid #dce6d7;
   border-radius: 8px;
   padding: 4px 4px 4px 20px;
   transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
 }
 
 .input-wrap:focus-within {
-  border-color: #2563eb;
+  border-color: #6da447;
   background: #ffffff;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, .12);
+  box-shadow: 0 0 0 3px rgba(109, 164, 71, .14);
 }
 
 .input-wrap.shake {
@@ -373,25 +391,26 @@ export default {
   background: transparent;
   border: none;
   outline: none;
-  color: #111827;
+  color: #20342b;
   font-size: 15px;
   padding: 10px 0;
 }
 
 .lock-input::placeholder {
-  color: #a6afbd;
+  color: #93a29a;
 }
 
 .unlock-btn {
   width: 42px;
   height: 42px;
   border-radius: 7px;
-  background: #2563eb;
+  background: linear-gradient(135deg, #3f8f4d 0%, #77a835 100%);
   border: none;
   color: #fff;
   font-size: 18px;
   cursor: pointer;
-  transition: transform 0.2s, opacity 0.2s, background 0.2s;
+  box-shadow: 0 10px 20px rgba(63, 143, 77, .2);
+  transition: transform 0.2s, opacity 0.2s, box-shadow 0.2s, background 0.2s;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -400,7 +419,8 @@ export default {
 
 .unlock-btn:hover:not(:disabled) {
   transform: scale(1.08);
-  background: #1d4ed8;
+  background: linear-gradient(135deg, #367f44 0%, #6c9f2f 100%);
+  box-shadow: 0 12px 24px rgba(63, 143, 77, .26);
 }
 
 .unlock-btn:disabled {
@@ -431,14 +451,14 @@ export default {
 }
 
 .lock-footer a {
-  color: #4b5563;
+  color: #58675f;
   font-size: 13px;
   text-decoration: none;
   transition: color 0.2s;
 }
 
 .lock-footer a:hover {
-  color: #2563eb;
+  color: #3f8f4d;
 }
 
 @media (max-width: 820px) {
