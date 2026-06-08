@@ -44,7 +44,7 @@ BiomassAdmin
 ├── ruoyi-quartz      # 定时任务模块
 ├── ruoyi-system      # 系统管理模块
 ├── ruoyi-ui          # 前端项目
-├── sql               # 数据库脚本和测试 SQL
+├── sql               # 数据库脚本
 └── doc               # 项目文档
 ```
 
@@ -85,12 +85,6 @@ BiomassAdmin
 9. 导入生成的菜单 SQL。
 10. 重启后端并重新登录前端，让动态菜单路由重新加载。
 
-测试用主子表 SQL：
-
-```text
-sql/demo_purchase_master_sub.sql
-```
-
 ## 本地运行
 
 ### 后端
@@ -130,7 +124,6 @@ npm run build:prod
 - 重新设计代码生成页面布局。
 - 新增 `主子表（详情页）` 代码生成模板。
 - 为详情页路由高亮增加轻量处理。
-- 增加主子表详情页测试 SQL。
 
 ## 验证
 
