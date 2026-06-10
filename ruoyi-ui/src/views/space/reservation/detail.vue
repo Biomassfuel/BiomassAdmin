@@ -52,6 +52,7 @@
         :total="items.length"
         :page.sync="itemPager.pageNum"
         :limit.sync="itemPager.pageSize"
+        @pagination="handleItemPagination"
       />
     </div>
   </div>
@@ -81,9 +82,15 @@ export default {
       return this.items.slice(start, start + this.itemPager.pageSize)
     }
   },
+  created() {
+    this.syncRouteReservationId()
+  },
   activated() {
-    if (this.queryParams.reservationId) {
-      this.handleQuery()
+    this.syncRouteReservationId()
+  },
+  watch: {
+    '$route.query.reservationId'() {
+      this.syncRouteReservationId()
     }
   },
   methods: {
@@ -91,6 +98,18 @@ export default {
     itemStatusText,
     reservationTypeText,
     weekdayText,
+    syncRouteReservationId() {
+      const routeReservationId = this.$route && this.$route.query ? this.$route.query.reservationId : null
+      const reservationId = routeReservationId || this.queryParams.reservationId
+      if (!reservationId) {
+        return
+      }
+      if (routeReservationId) {
+        this.queryParams.reservationId = routeReservationId
+      }
+      this.handleQuery()
+    },
+    handleItemPagination() {},
     handleQuery() {
       if (!this.queryParams.reservationId) {
         this.$modal.msgWarning('请输入预约ID')

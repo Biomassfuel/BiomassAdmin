@@ -52,18 +52,15 @@
 
     <pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
 
-    <detail-dialog :visible.sync="detailOpen" :detail="detail" />
   </div>
 </template>
 
 <script>
-import { listMyReservation, getReservation, cancelReservation } from '@/api/space/reservation'
-import DetailDialog from './DetailDialog'
+import { listMyReservation, cancelReservation } from '@/api/space/reservation'
 import { statusText, reservationTypeText, reservationTypeOptions, reservationStatusOptions } from './utils'
 
 export default {
   name: 'SpaceMyReservation',
-  components: { DetailDialog },
   data() {
     return {
       loading: true,
@@ -73,8 +70,6 @@ export default {
       showSearch: true,
       total: 0,
       reservationList: [],
-      detailOpen: false,
-      detail: null,
       reservationTypeOptions,
       reservationStatusOptions,
       queryParams: {
@@ -118,9 +113,9 @@ export default {
       this.multiple = !selection.length
     },
     handleView(row) {
-      getReservation(row.reservationId).then(response => {
-        this.detail = response.data
-        this.detailOpen = true
+      this.$router.push({
+        path: '/space-reservation/detail',
+        query: { reservationId: row.reservationId }
       })
     },
     handleCancel(row) {

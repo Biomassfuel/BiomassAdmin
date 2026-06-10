@@ -590,7 +590,7 @@ insert into sys_menu values(2011, '房间占用查看', '2010', 1, 'occupancy', 
 insert into sys_menu values(2012, '我要预约', '2010', 2, 'apply', 'space/reservation/apply', '', 'SpaceReservationApply', 1, 0, 'C', '0', '0', 'space:reservation:add', 'form', 'admin', sysdate(), '', null, '我要预约');
 insert into sys_menu values(2013, '长期固定预约', '2010', 3, 'long', 'space/reservation/long', '', 'SpaceLongReservation', 1, 0, 'C', '0', '0', 'space:reservation:add', 'date-range', 'admin', sysdate(), '', null, '长期固定预约');
 insert into sys_menu values(2014, '我的预约', '2010', 4, 'my', 'space/reservation/my', '', 'SpaceMyReservation', 1, 0, 'C', '0', '0', 'space:reservation:mine', 'user', 'admin', sysdate(), '', null, '我的预约');
-insert into sys_menu values(2015, '预约详情', '2010', 5, 'detail', 'space/reservation/detail', '', 'SpaceReservationDetail', 1, 0, 'C', '0', '0', 'space:reservation:query', 'eye-open', 'admin', sysdate(), '', null, '预约详情');
+insert into sys_menu values(2015, '预约详情', '2010', 5, 'detail', 'space/reservation/detail', '', 'SpaceReservationDetail', 1, 0, 'C', '1', '0', 'space:reservation:query', 'eye-open', 'admin', sysdate(), '', null, '预约详情');
 
 insert into sys_menu values(2020, '审核管理模块', '0', 6, 'space-audit', null, '', 'SpaceAuditManage', 1, 0, 'M', '0', '0', '', 'audit', 'admin', sysdate(), '', null, '空间预约-审核管理模块');
 insert into sys_menu values(2021, '待审核预约', '2020', 1, 'pending', 'space/audit/pending', '', 'SpaceAuditPending', 1, 0, 'C', '0', '0', 'space:audit:list', 'validCode', 'admin', sysdate(), '', null, '待审核预约');
