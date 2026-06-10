@@ -301,6 +301,10 @@ export default {
     this.getTypeOptions()
     this.getList()
   },
+  activated() {
+    this.getTypeOptions()
+    this.getList()
+  },
   methods: {
     getList() {
       this.loading = true

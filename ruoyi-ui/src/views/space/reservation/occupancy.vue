@@ -109,6 +109,9 @@ export default {
   created() {
     this.getList()
   },
+  activated() {
+    this.getList()
+  },
   methods: {
     itemStatusText,
     weekdayText,

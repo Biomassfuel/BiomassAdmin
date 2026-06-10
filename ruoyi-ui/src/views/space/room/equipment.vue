@@ -119,6 +119,9 @@ export default {
   created() {
     this.getList()
   },
+  activated() {
+    this.getList()
+  },
   methods: {
     getList() {
       this.loading = true

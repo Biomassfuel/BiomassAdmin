@@ -122,6 +122,9 @@ export default {
   created() {
     this.getList()
   },
+  activated() {
+    this.getList()
+  },
   methods: {
     statusText,
     reservationTypeText,

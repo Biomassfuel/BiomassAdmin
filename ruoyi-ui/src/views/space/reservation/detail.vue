@@ -81,6 +81,11 @@ export default {
       return this.items.slice(start, start + this.itemPager.pageSize)
     }
   },
+  activated() {
+    if (this.queryParams.reservationId) {
+      this.handleQuery()
+    }
+  },
   methods: {
     statusText,
     itemStatusText,
