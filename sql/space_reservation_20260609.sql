@@ -598,6 +598,9 @@ insert into sys_menu values(2021, '待审核预约', '2020', 1, 'pending', 'spac
 insert into sys_menu values(2023, '预约记录', '2020', 2, 'record', 'space/audit/record', '', 'SpaceReservationRecord', 1, 0, 'C', '0', '0', 'space:reservation:list', 'documentation', 'admin', sysdate(), '', null, '预约记录');
 insert into sys_menu values(2025, '审核日志', '2020', 3, 'log', 'space/audit/log', '', 'SpaceAuditLog', 1, 0, 'C', '0', '0', 'space:auditLog:list', 'log', 'admin', sysdate(), '', null, '审核日志');
 
+insert into sys_menu values(2060, '数据统计模块', '0', 7, 'space-statistics', null, '', 'SpaceStatisticsManage', 1, 0, 'M', '0', '0', '', 'chart', 'admin', sysdate(), '', null, '空间预约-数据统计模块');
+insert into sys_menu values(2061, '房间预约数据统计', '2060', 1, 'index', 'space/statistics/index', '', 'SpaceStatistics', 1, 0, 'C', '0', '0', 'space:statistics:list', 'dashboard', 'admin', sysdate(), '', null, '自动统计各房间预约频次、占用率、预约成功/驳回数量，支持日期、房间筛选统计');
+
 insert into sys_menu values(2030, '房间查询', '2001', 1, '', '', '', '', 1, 0, 'F', '0', '0', 'space:room:query', '#', 'admin', sysdate(), '', null, '');
 insert into sys_menu values(2031, '房间新增', '2001', 2, '', '', '', '', 1, 0, 'F', '0', '0', 'space:room:add', '#', 'admin', sysdate(), '', null, '');
 insert into sys_menu values(2032, '房间修改', '2001', 3, '', '', '', '', 1, 0, 'F', '0', '0', 'space:room:edit', '#', 'admin', sysdate(), '', null, '');
@@ -626,9 +629,10 @@ insert into sys_menu values(2052, '审核日志查询', '2025', 1, '', '', '', '
 insert into sys_menu values(2053, '审核日志导出', '2025', 2, '', '', '', '', 1, 0, 'F', '0', '0', 'space:auditLog:export', '#', 'admin', sysdate(), '', null, '');
 insert into sys_menu values(2054, '预约房间下拉查询', '2012', 1, '', '', '', '', 1, 0, 'F', '0', '0', 'space:room:list', '#', 'admin', sysdate(), '', null, '我要预约/长期预约页面加载房间下拉权限');
 insert into sys_menu values(2055, '预约时段下拉查询', '2012', 2, '', '', '', '', 1, 0, 'F', '0', '0', 'space:timePeriod:list', '#', 'admin', sysdate(), '', null, '我要预约/长期预约页面加载标准时段下拉权限');
+insert into sys_menu values(2062, '数据统计导出', '2061', 1, '', '', '', '', 1, 0, 'F', '0', '0', 'space:statistics:export', '#', 'admin', sysdate(), '', null, '');
 
 insert into sys_role_menu(role_id, menu_id)
-select 100, menu_id from sys_menu where menu_id between 2000 and 2057;
+select 100, menu_id from sys_menu where menu_id between 2000 and 2062;
 
 insert into sys_role_menu(role_id, menu_id) values
 (101, 2010), (101, 2011), (101, 2012), (101, 2013), (101, 2014), (101, 2015), (101, 2016),

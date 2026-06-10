@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.space.SpaceStatisticsMapper">
+
+    <resultMap type="SpaceStatisticsSummary" id="SpaceStatisticsSummaryResult">
+        <result property="reservationCount" column="reservation_count" />
+        <result property="successCount" column="success_count" />
+        <result property="rejectCount" column="reject_count" />
+        <result property="pendingCount" column="pending_count" />
+        <result property="roomCount" column="room_count" />
+        <result property="occupancyRate" column="occupancy_rate" />
+    </resultMap>
+
+    <resultMap type="SpaceRoomStatistics" id="SpaceRoomStatisticsResult">
+        <result property="roomCode" column="room_code" />
+        <result property="roomName" column="room_name" />
+        <result property="reservationCount" column="reservation_count" />
+        <result property="occupancyRate" column="occupancy_rate" />
+        <result property="successCount" column="success_count" />
+        <result property="rejectCount" column="reject_count" />
+        <result property="occupiedHours" column="occupied_hours" />
+    </resultMap>
+
+    <resultMap type="SpaceStatisticsTrend" id="SpaceStatisticsTrendResult">
+        <result property="statDate" column="stat_date" />
+        <result property="reservationCount" column="reservation_count" />
+        <result property="successCount" column="success_count" />
+        <result property="rejectCount" column="reject_count" />
+    </resultMap>
+
+    <sql id="roomWhere">
+        r.del_flag = '0'
+        <if test="roomId != null"> and r.room_id = #{roomId}</if>
+        <if test="roomCode != null and roomCode != ''"> and r.room_code like concat('%', #{roomCode}, '%')</if>
+        <if test="roomName != null and roomName != ''"> and r.room_name like concat('%', #{roomName}, '%')</if>
+    </sql>
+
+    <sql id="itemJoinWhere">
+        sri.room_id = r.room_id
+        <if test="startDate != null and startDate != ''"> and sri.booking_date &gt;= #{startDate}</if>
+        <if test="endDate != null and endDate != ''"> and sri.booking_date &lt;= #{endDate}</if>
+    </sql>
+
+    <select id="selectSummary" parameterType="SpaceStatisticsQuery" resultMap="SpaceStatisticsSummaryResult">
+        select count(case when sr.del_flag = '0' then sri.item_id end) as reservation_count,
+               ifnull(sum(case when sr.del_flag = '0' and sri.item_status in ('2', '6') then 1 else 0 end), 0) as success_count,
+               ifnull(sum(case when sr.del_flag = '0' and sri.item_status = '3' then 1 else 0 end), 0) as reject_count,
+               ifnull(sum(case when sr.del_flag = '0' and sri.item_status in ('1', '4') then 1 else 0 end), 0) as pending_count,
+               count(distinct r.room_id) as room_count,
+               ifnull(round(
+                   sum(case when sr.del_flag = '0' and sri.item_status in ('2', '6') then time_to_sec(timediff(sri.end_time, sri.start_time)) / 60 else 0 end)
+                   / nullif(count(distinct r.room_id) * (datediff(#{endDate}, #{startDate}) + 1) * 24 * 60, 0) * 100,
+                   2
+               ), 0) as occupancy_rate
+        from space_room r
+        left join space_reservation_item sri on <include refid="itemJoinWhere"/>
+        left join space_reservation sr on sr.reservation_id = sri.reservation_id and sr.del_flag = '0'
+        where <include refid="roomWhere"/>
+    </select>
+
+    <select id="selectRoomStatistics" parameterType="SpaceStatisticsQuery" resultMap="SpaceRoomStatisticsResult">
+        select r.room_code,
+               r.room_name,
+               count(case when sr.del_flag = '0' then sri.item_id end) as reservation_count,
+               ifnull(sum(case when sr.del_flag = '0' and sri.item_status in ('2', '6') then 1 else 0 end), 0) as success_count,
+               ifnull(sum(case when sr.del_flag = '0' and sri.item_status = '3' then 1 else 0 end), 0) as reject_count,
+               ifnull(round(sum(case when sr.del_flag = '0' and sri.item_status in ('2', '6') then time_to_sec(timediff(sri.end_time, sri.start_time)) / 60 else 0 end) / 60, 2), 0) as occupied_hours,
+               ifnull(round(
+                   sum(case when sr.del_flag = '0' and sri.item_status in ('2', '6') then time_to_sec(timediff(sri.end_time, sri.start_time)) / 60 else 0 end)
+                   / nullif((datediff(#{endDate}, #{startDate}) + 1) * 24 * 60, 0) * 100,
+                   2
+               ), 0) as occupancy_rate
+        from space_room r
+        left join space_reservation_item sri on <include refid="itemJoinWhere"/>
+        left join space_reservation sr on sr.reservation_id = sri.reservation_id and sr.del_flag = '0'
+        where <include refid="roomWhere"/>
+        group by r.room_id, r.room_code, r.room_name
+        order by reservation_count desc, occupancy_rate desc
+    </select>
+
+    <select id="selectDailyTrend" parameterType="SpaceStatisticsQuery" resultMap="SpaceStatisticsTrendResult">
+        select date_format(sri.booking_date, '%Y-%m-%d') as stat_date,
+               count(sri.item_id) as reservation_count,
+               ifnull(sum(case when sri.item_status in ('2', '6') then 1 else 0 end), 0) as success_count,
+               ifnull(sum(case when sri.item_status = '3' then 1 else 0 end), 0) as reject_count
+        from space_reservation_item sri
+        left join space_reservation sr on sr.reservation_id = sri.reservation_id
+        left join space_room r on r.room_id = sri.room_id
+        where sr.del_flag = '0' and <include refid="roomWhere"/>
+        <if test="startDate != null and startDate != ''"> and sri.booking_date &gt;= #{startDate}</if>
+        <if test="endDate != null and endDate != ''"> and sri.booking_date &lt;= #{endDate}</if>
+        group by sri.booking_date
+        order by sri.booking_date asc
+    </select>
+
+</mapper>
