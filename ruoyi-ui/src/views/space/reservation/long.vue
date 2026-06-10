@@ -100,6 +100,7 @@
 import { listRoom } from '@/api/space/room'
 import { listTimePeriod } from '@/api/space/time-period'
 import { addReservation } from '@/api/space/reservation'
+import { fetchAllPages } from '@/utils/paged-list'
 import { formatDate, standardPeriods, weekdayText } from './utils'
 
 export default {
@@ -164,13 +165,13 @@ export default {
   methods: {
     weekdayText,
     getRooms() {
-      listRoom({ pageNum: 1, pageSize: 200, status: '0', bookable: '0' }).then(response => {
-        this.rooms = response.rows || []
+      fetchAllPages(listRoom, { status: '0', bookable: '0' }).then(rows => {
+        this.rooms = rows
       })
     },
     getPeriods() {
-      listTimePeriod({ pageNum: 1, pageSize: 10, status: '0' }).then(response => {
-        this.periods = standardPeriods(response.rows)
+      fetchAllPages(listTimePeriod, { status: '0' }).then(rows => {
+        this.periods = standardPeriods(rows)
         if (this.periods.length) {
           this.rule.periodId = this.periods[0].periodId
           this.setRulePeriod(this.rule.periodId)

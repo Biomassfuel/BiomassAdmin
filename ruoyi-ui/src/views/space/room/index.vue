@@ -249,6 +249,7 @@
 import { getToken } from '@/utils/auth'
 import { listRoom, getRoom, addRoom, updateRoom, delRoom } from '@/api/space/room'
 import { listRoomType } from '@/api/space/room-type'
+import { fetchAllPages } from '@/utils/paged-list'
 
 export default {
   name: 'SpaceRoom',
@@ -310,8 +311,8 @@ export default {
       })
     },
     getTypeOptions() {
-      listRoomType({ pageNum: 1, pageSize: 200, status: '0' }).then(response => {
-        this.typeOptions = response.rows || []
+      fetchAllPages(listRoomType, { status: '0' }).then(rows => {
+        this.typeOptions = rows
       })
     },
     capacityText(row) {
