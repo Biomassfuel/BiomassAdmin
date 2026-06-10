@@ -30,7 +30,7 @@
 
     <el-form ref="itemForm" :model="itemForm" :rules="itemRules" size="small" :inline="true" label-width="78px">
       <el-form-item label="房间" prop="roomId">
-        <el-select v-model="itemForm.roomId" filterable placeholder="请选择房间" style="width: 260px">
+        <el-select v-model="itemForm.roomId" filterable :loading="loadingRooms" placeholder="请选择房间" style="width: 260px" @visible-change="handleRoomSelectVisible">
           <el-option v-for="room in rooms" :key="room.roomId" :label="roomLabel(room)" :value="room.roomId" />
         </el-select>
       </el-form-item>
@@ -91,6 +91,7 @@ export default {
   data() {
     return {
       loadingRooms: false,
+      roomLoadSeq: 0,
       rooms: [],
       periods: [],
       form: {
@@ -131,16 +132,28 @@ export default {
     this.getRooms()
     this.getPeriods()
   },
+  activated() {
+    this.getRooms()
+  },
   methods: {
     weekdayText,
     getRooms() {
+      const seq = ++this.roomLoadSeq
       this.loadingRooms = true
       fetchAllPages(listRoom, { status: '0', bookable: '0' }).then(rows => {
+        if (seq !== this.roomLoadSeq) return
         this.rooms = rows
+        if (this.itemForm.roomId && !rows.some(item => item.roomId === this.itemForm.roomId)) {
+          this.itemForm.roomId = null
+        }
         this.loadingRooms = false
       }).catch(() => {
+        if (seq !== this.roomLoadSeq) return
         this.loadingRooms = false
       })
+    },
+    handleRoomSelectVisible(visible) {
+      if (visible) this.getRooms()
     },
     getPeriods() {
       fetchAllPages(listTimePeriod, { status: '0' }).then(rows => {
