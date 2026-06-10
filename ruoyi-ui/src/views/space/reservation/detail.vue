@@ -1,17 +1,7 @@
 <template>
   <div class="app-container">
 
-    <el-form ref="queryForm" :model="queryParams" size="small" :inline="true" label-width="78px">
-      <el-form-item label="预约ID" prop="reservationId">
-        <el-input v-model="queryParams.reservationId" placeholder="请输入预约ID" clearable @keyup.enter.native="handleQuery" />
-      </el-form-item>
-      <el-form-item>
-        <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">查询</el-button>
-        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
-      </el-form-item>
-    </el-form>
-
-    <el-empty v-if="!detail" description="请输入预约ID查询详情" />
+    <el-empty v-if="!detail" description="请选择预约记录查看详情" />
 
     <div v-else>
       <el-descriptions :column="3" border>
@@ -48,7 +38,7 @@
       </el-table>
 
       <pagination
-        v-show="items.length > itemPager.pageSize"
+        v-show="items.length > 0"
         :total="items.length"
         :page.sync="itemPager.pageNum"
         :limit.sync="itemPager.pageSize"
@@ -121,7 +111,6 @@ export default {
       })
     },
     resetQuery() {
-      this.resetForm('queryForm')
       this.detail = null
       this.itemPager.pageNum = 1
     }

@@ -41,7 +41,7 @@
 
     <pagination
       v-if="detail"
-      v-show="items.length > pager.pageSize"
+      v-show="items.length > 0"
       :total="items.length"
       :page.sync="pager.pageNum"
       :limit.sync="pager.pageSize"
