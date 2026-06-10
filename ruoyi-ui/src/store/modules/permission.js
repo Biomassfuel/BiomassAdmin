@@ -70,6 +70,9 @@ function filterAsyncRouter(asyncRouterMap, lastRouter = false, type = false) {
         route.component = loadView(route.component)
       }
     }
+    if (route.meta && route.path === 'occupancy-detail/index/:roomId') {
+      route.meta.activeMenu = '/space-reservation/occupancy'
+    }
     if (route.children != null && route.children && route.children.length) {
       route.children = filterAsyncRouter(route.children, route, type)
     } else {

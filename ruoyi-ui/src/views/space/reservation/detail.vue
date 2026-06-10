@@ -1,5 +1,8 @@
 <template>
   <div class="app-container">
+    <div class="detail-toolbar">
+      <el-button plain icon="el-icon-back" size="mini" @click="handleBack">返回</el-button>
+    </div>
 
     <el-empty v-if="!detail" description="请选择预约记录查看详情" />
 
@@ -110,6 +113,9 @@ export default {
         this.itemPager.pageNum = 1
       })
     },
+    handleBack() {
+      this.$tab.closePage()
+    },
     resetQuery() {
       this.detail = null
       this.itemPager.pageNum = 1
@@ -119,6 +125,12 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.detail-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 12px;
+}
+
 .mt16 {
   margin-top: 16px;
 }

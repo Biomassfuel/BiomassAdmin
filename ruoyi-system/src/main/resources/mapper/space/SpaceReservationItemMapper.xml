@@ -21,7 +21,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="auditTime" column="audit_time" />
         <result property="auditorId" column="auditor_id" />
         <result property="auditorName" column="auditor_name" />
-        <result property="rejectReason" column="reject_reason" />
+        <result property="rejectReason" column="reject_reason" />
+        <result property="reservationNo" column="reservation_no" />
+        <result property="reservationType" column="reservation_type" />
+        <result property="title" column="title" />
+        <result property="applicantName" column="applicant_name" />
+        <result property="orgName" column="org_name" />
+        <result property="reservationStatus" column="reservation_status" />
         <result property="createBy" column="create_by" />
         <result property="createTime" column="create_time" />
         <result property="updateBy" column="update_by" />
@@ -30,36 +36,49 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 
     <sql id="selectSpaceReservationItemVo">
-        select item_id, reservation_id, room_id, room_code, room_name, booking_date, weekday, start_time, end_time, item_status, conflict_flag, conflict_reason, conflict_item_id, audit_time, auditor_id, auditor_name, reject_reason, create_by, create_time, update_by, update_time, remark from space_reservation_item
+        select sri.item_id, sri.reservation_id, sri.room_id, sri.room_code, sri.room_name, sri.booking_date, sri.weekday,
+               sri.start_time, sri.end_time, sri.item_status, sri.conflict_flag, sri.conflict_reason, sri.conflict_item_id,
+               sri.audit_time, sri.auditor_id, sri.auditor_name, sri.reject_reason, sri.create_by, sri.create_time,
+               sri.update_by, sri.update_time, sri.remark,
+               sr.reservation_no, sr.reservation_type, sr.title, sr.applicant_name, sr.org_name,
+               sr.status as reservation_status
+        from space_reservation_item sri
+        left join space_reservation sr on sr.reservation_id = sri.reservation_id
     </sql>
 
     <select id="selectSpaceReservationItemById" parameterType="Long" resultMap="SpaceReservationItemResult">
         <include refid="selectSpaceReservationItemVo"/>
-        where item_id = #{itemId}
+        where sri.item_id = #{itemId}
     </select>
 
     <select id="selectSpaceReservationItemList" parameterType="SpaceReservationItem" resultMap="SpaceReservationItemResult">
         <include refid="selectSpaceReservationItemVo"/>
         <where>
-            <if test="itemId != null"> and item_id = #{itemId}</if>
-            <if test="reservationId != null"> and reservation_id = #{reservationId}</if>
-            <if test="roomId != null"> and room_id = #{roomId}</if>
-            <if test="roomCode != null and roomCode != ''"> and room_code like concat('%', #{roomCode}, '%')</if>
-            <if test="roomName != null and roomName != ''"> and room_name like concat('%', #{roomName}, '%')</if>
-            <if test="bookingDate != null and bookingDate != ''"> and booking_date like concat('%', #{bookingDate}, '%')</if>
-            <if test="weekday != null and weekday != ''"> and weekday like concat('%', #{weekday}, '%')</if>
-            <if test="startTime != null and startTime != ''"> and start_time like concat('%', #{startTime}, '%')</if>
-            <if test="endTime != null and endTime != ''"> and end_time like concat('%', #{endTime}, '%')</if>
-            <if test="itemStatus != null and itemStatus != ''"> and item_status = #{itemStatus}</if>
-            <if test="conflictFlag != null and conflictFlag != ''"> and conflict_flag = #{conflictFlag}</if>
-            <if test="conflictReason != null and conflictReason != ''"> and conflict_reason like concat('%', #{conflictReason}, '%')</if>
-            <if test="conflictItemId != null"> and conflict_item_id = #{conflictItemId}</if>
-            <if test="auditTime != null"> and audit_time = #{auditTime}</if>
-            <if test="auditorId != null"> and auditor_id = #{auditorId}</if>
-            <if test="auditorName != null and auditorName != ''"> and auditor_name like concat('%', #{auditorName}, '%')</if>
-            <if test="rejectReason != null and rejectReason != ''"> and reject_reason like concat('%', #{rejectReason}, '%')</if>
+            <if test="itemId != null"> and sri.item_id = #{itemId}</if>
+            <if test="reservationId != null"> and sri.reservation_id = #{reservationId}</if>
+            <if test="roomId != null"> and sri.room_id = #{roomId}</if>
+            <if test="roomCode != null and roomCode != ''"> and sri.room_code like concat('%', #{roomCode}, '%')</if>
+            <if test="roomName != null and roomName != ''"> and sri.room_name like concat('%', #{roomName}, '%')</if>
+            <if test="bookingDate != null and bookingDate != ''"> and sri.booking_date like concat('%', #{bookingDate}, '%')</if>
+            <if test="weekday != null and weekday != ''"> and sri.weekday like concat('%', #{weekday}, '%')</if>
+            <if test="startTime != null and startTime != ''"> and sri.start_time like concat('%', #{startTime}, '%')</if>
+            <if test="endTime != null and endTime != ''"> and sri.end_time like concat('%', #{endTime}, '%')</if>
+            <if test="itemStatus != null and itemStatus != ''"> and sri.item_status = #{itemStatus}</if>
+            <if test="conflictFlag != null and conflictFlag != ''"> and sri.conflict_flag = #{conflictFlag}</if>
+            <if test="conflictReason != null and conflictReason != ''"> and sri.conflict_reason like concat('%', #{conflictReason}, '%')</if>
+            <if test="conflictItemId != null"> and sri.conflict_item_id = #{conflictItemId}</if>
+            <if test="auditTime != null"> and sri.audit_time = #{auditTime}</if>
+            <if test="auditorId != null"> and sri.auditor_id = #{auditorId}</if>
+            <if test="auditorName != null and auditorName != ''"> and sri.auditor_name like concat('%', #{auditorName}, '%')</if>
+            <if test="rejectReason != null and rejectReason != ''"> and sri.reject_reason like concat('%', #{rejectReason}, '%')</if>
+
+            <if test="reservationNo != null and reservationNo != ''"> and sr.reservation_no like concat('%', #{reservationNo}, '%')</if>
+
+            <if test="title != null and title != ''"> and sr.title like concat('%', #{title}, '%')</if>
+
+            <if test="applicantName != null and applicantName != ''"> and sr.applicant_name like concat('%', #{applicantName}, '%')</if>
         </where>
-        order by item_id desc
+        order by sri.item_id desc
     </select>
 
     <insert id="insertSpaceReservationItem" parameterType="SpaceReservationItem" useGeneratedKeys="true" keyProperty="itemId">
@@ -151,12 +170,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
     <select id="selectConflictItems" parameterType="SpaceReservationItem" resultMap="SpaceReservationItemResult">
         <include refid="selectSpaceReservationItemVo"/>
-        where room_id = #{roomId}
-          and booking_date = #{bookingDate}
-          and item_status in ('1', '2')
-          and start_time &lt; #{endTime}
-          and end_time &gt; #{startTime}
-          <if test="itemId != null"> and item_id &lt;&gt; #{itemId}</if>
+        where sri.room_id = #{roomId}
+          and sri.booking_date = #{bookingDate}
+          and sri.item_status in ('1', '2')
+          and sri.start_time &lt; #{endTime}
+          and sri.end_time &gt; #{startTime}
+          <if test="itemId != null"> and sri.item_id &lt;&gt; #{itemId}</if>
     </select>
 
     <update id="updateItemStatus" parameterType="SpaceReservationItem">

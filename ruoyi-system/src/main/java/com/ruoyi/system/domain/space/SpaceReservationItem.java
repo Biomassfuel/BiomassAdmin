@@ -39,6 +39,18 @@ public class SpaceReservationItem extends BaseEntity
     private String auditorName;
     @Excel(name = "驳回原因")
     private String rejectReason;
+    @Excel(name = "预约编号")
+    private String reservationNo;
+    @Excel(name = "预约类型", readConverterExp = "0=普通预约,1=长期预约")
+    private String reservationType;
+    @Excel(name = "预约主题")
+    private String title;
+    @Excel(name = "申请人")
+    private String applicantName;
+    @Excel(name = "申请单位")
+    private String orgName;
+    @Excel(name = "预约状态", readConverterExp = "0=草稿,1=待审核,2=已通过,3=部分通过,4=已驳回,5=已取消,6=已结束")
+    private String reservationStatus;
 
     public Long getItemId()
     {
@@ -210,4 +222,63 @@ public class SpaceReservationItem extends BaseEntity
         this.rejectReason = rejectReason;
     }
 
+    public String getReservationNo()
+    {
+        return reservationNo;
+    }
+
+    public void setReservationNo(String reservationNo)
+    {
+        this.reservationNo = reservationNo;
+    }
+
+    public String getReservationType()
+    {
+        return reservationType;
+    }
+
+    public void setReservationType(String reservationType)
+    {
+        this.reservationType = reservationType;
+    }
+
+    public String getTitle()
+    {
+        return title;
+    }
+
+    public void setTitle(String title)
+    {
+        this.title = title;
+    }
+
+    public String getApplicantName()
+    {
+        return applicantName;
+    }
+
+    public void setApplicantName(String applicantName)
+    {
+        this.applicantName = applicantName;
+    }
+
+    public String getOrgName()
+    {
+        return orgName;
+    }
+
+    public void setOrgName(String orgName)
+    {
+        this.orgName = orgName;
+    }
+
+    public String getReservationStatus()
+    {
+        return reservationStatus;
+    }
+
+    public void setReservationStatus(String reservationStatus)
+    {
+        this.reservationStatus = reservationStatus;
+    }
 }
