@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.space.SpaceRoomDayLockMapper">
+
+    <insert id="insertIgnore">
+        insert ignore into space_room_day_lock(room_id, booking_date, lock_version, create_by, create_time)
+        values(#{roomId}, #{bookingDate}, 0, #{createBy}, sysdate())
+    </insert>
+
+    <select id="lockRoomDay" resultType="Integer">
+        select lock_version
+        from space_room_day_lock
+        where room_id = #{roomId}
+          and booking_date = #{bookingDate}
+        for update
+    </select>
+
+</mapper>

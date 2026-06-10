@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.space.SpaceImportBatchMapper">
+
+    <resultMap type="SpaceImportBatch" id="SpaceImportBatchResult">
+        <id property="batchId" column="batch_id" />
+        <result property="importType" column="import_type" />
+        <result property="fileName" column="file_name" />
+        <result property="filePath" column="file_path" />
+        <result property="totalCount" column="total_count" />
+        <result property="successCount" column="success_count" />
+        <result property="failCount" column="fail_count" />
+        <result property="importStatus" column="import_status" />
+        <result property="errorMsg" column="error_msg" />
+        <result property="createBy" column="create_by" />
+        <result property="createTime" column="create_time" />
+        <result property="updateBy" column="update_by" />
+        <result property="updateTime" column="update_time" />
+        <result property="remark" column="remark" />
+    </resultMap>
+
+    <sql id="selectSpaceImportBatchVo">
+        select batch_id, import_type, file_name, file_path, total_count, success_count, fail_count, import_status, error_msg, create_by, create_time, update_by, update_time, remark from space_import_batch
+    </sql>
+
+    <select id="selectSpaceImportBatchById" parameterType="Long" resultMap="SpaceImportBatchResult">
+        <include refid="selectSpaceImportBatchVo"/>
+        where batch_id = #{batchId}
+    </select>
+
+    <select id="selectSpaceImportBatchList" parameterType="SpaceImportBatch" resultMap="SpaceImportBatchResult">
+        <include refid="selectSpaceImportBatchVo"/>
+        <where>
+            <if test="batchId != null"> and batch_id = #{batchId}</if>
+            <if test="importType != null and importType != ''"> and import_type like concat('%', #{importType}, '%')</if>
+            <if test="fileName != null and fileName != ''"> and file_name like concat('%', #{fileName}, '%')</if>
+            <if test="filePath != null and filePath != ''"> and file_path like concat('%', #{filePath}, '%')</if>
+            <if test="totalCount != null"> and total_count = #{totalCount}</if>
+            <if test="successCount != null"> and success_count = #{successCount}</if>
+            <if test="failCount != null"> and fail_count = #{failCount}</if>
+            <if test="importStatus != null and importStatus != ''"> and import_status = #{importStatus}</if>
+            <if test="errorMsg != null and errorMsg != ''"> and error_msg like concat('%', #{errorMsg}, '%')</if>
+        </where>
+        order by batch_id desc
+    </select>
+
+    <insert id="insertSpaceImportBatch" parameterType="SpaceImportBatch" useGeneratedKeys="true" keyProperty="batchId">
+        insert into space_import_batch
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="batchId != null"> batch_id,</if>
+            <if test="importType != null"> import_type,</if>
+            <if test="fileName != null"> file_name,</if>
+            <if test="filePath != null"> file_path,</if>
+            <if test="totalCount != null"> total_count,</if>
+            <if test="successCount != null"> success_count,</if>
+            <if test="failCount != null"> fail_count,</if>
+            <if test="importStatus != null"> import_status,</if>
+            <if test="errorMsg != null"> error_msg,</if>
+            <if test="createBy != null"> create_by,</if>
+            create_time,
+            <if test="updateBy != null"> update_by,</if>
+            <if test="remark != null"> remark,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="batchId != null"> #{batchId},</if>
+            <if test="importType != null"> #{importType},</if>
+            <if test="fileName != null"> #{fileName},</if>
+            <if test="filePath != null"> #{filePath},</if>
+            <if test="totalCount != null"> #{totalCount},</if>
+            <if test="successCount != null"> #{successCount},</if>
+            <if test="failCount != null"> #{failCount},</if>
+            <if test="importStatus != null"> #{importStatus},</if>
+            <if test="errorMsg != null"> #{errorMsg},</if>
+            <if test="createBy != null"> #{createBy},</if>
+            sysdate(),
+            <if test="updateBy != null"> #{updateBy},</if>
+            <if test="remark != null"> #{remark},</if>
+        </trim>
+    </insert>
+
+    <update id="updateSpaceImportBatch" parameterType="SpaceImportBatch">
+        update space_import_batch
+        <set>
+            <if test="importType != null"> import_type = #{importType},</if>
+            <if test="fileName != null"> file_name = #{fileName},</if>
+            <if test="filePath != null"> file_path = #{filePath},</if>
+            <if test="totalCount != null"> total_count = #{totalCount},</if>
+            <if test="successCount != null"> success_count = #{successCount},</if>
+            <if test="failCount != null"> fail_count = #{failCount},</if>
+            <if test="importStatus != null"> import_status = #{importStatus},</if>
+            <if test="errorMsg != null"> error_msg = #{errorMsg},</if>
+            <if test="remark != null"> remark = #{remark},</if>
+            <if test="updateBy != null"> update_by = #{updateBy},</if>
+            update_time = sysdate()
+        </set>
+        where batch_id = #{batchId}
+    </update>
+
+    <delete id="deleteSpaceImportBatchById" parameterType="Long">
+        delete from space_import_batch where batch_id = #{batchId}
+    </delete>
+
+    <delete id="deleteSpaceImportBatchByIds" parameterType="Long">
+        delete from space_import_batch where batch_id in
+        <foreach collection="array" item="batchId" open="(" separator="," close=")">
+            #{batchId}
+        </foreach>
+    </delete>
+
+</mapper>

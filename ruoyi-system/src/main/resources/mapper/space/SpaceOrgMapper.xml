@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.space.SpaceOrgMapper">
+
+    <resultMap type="SpaceOrg" id="SpaceOrgResult">
+        <id property="orgId" column="org_id" />
+        <result property="orgCode" column="org_code" />
+        <result property="orgName" column="org_name" />
+        <result property="orgShortName" column="org_short_name" />
+        <result property="orgType" column="org_type" />
+        <result property="deptId" column="dept_id" />
+        <result property="contactName" column="contact_name" />
+        <result property="contactPhone" column="contact_phone" />
+        <result property="status" column="status" />
+        <result property="delFlag" column="del_flag" />
+        <result property="createBy" column="create_by" />
+        <result property="createTime" column="create_time" />
+        <result property="updateBy" column="update_by" />
+        <result property="updateTime" column="update_time" />
+        <result property="remark" column="remark" />
+    </resultMap>
+
+    <sql id="selectSpaceOrgVo">
+        select org_id, org_code, org_name, org_short_name, org_type, dept_id, contact_name, contact_phone, status, del_flag, create_by, create_time, update_by, update_time, remark from space_org
+    </sql>
+
+    <select id="selectSpaceOrgById" parameterType="Long" resultMap="SpaceOrgResult">
+        <include refid="selectSpaceOrgVo"/>
+        where org_id = #{orgId}
+    </select>
+
+    <select id="selectSpaceOrgList" parameterType="SpaceOrg" resultMap="SpaceOrgResult">
+        <include refid="selectSpaceOrgVo"/>
+        <where>
+            and del_flag = '0'
+            <if test="orgId != null"> and org_id = #{orgId}</if>
+            <if test="orgCode != null and orgCode != ''"> and org_code like concat('%', #{orgCode}, '%')</if>
+            <if test="orgName != null and orgName != ''"> and org_name like concat('%', #{orgName}, '%')</if>
+            <if test="orgShortName != null and orgShortName != ''"> and org_short_name like concat('%', #{orgShortName}, '%')</if>
+            <if test="orgType != null and orgType != ''"> and org_type like concat('%', #{orgType}, '%')</if>
+            <if test="deptId != null"> and dept_id = #{deptId}</if>
+            <if test="contactName != null and contactName != ''"> and contact_name like concat('%', #{contactName}, '%')</if>
+            <if test="contactPhone != null and contactPhone != ''"> and contact_phone like concat('%', #{contactPhone}, '%')</if>
+            <if test="status != null and status != ''"> and status = #{status}</if>
+        </where>
+        order by org_id desc
+    </select>
+
+    <insert id="insertSpaceOrg" parameterType="SpaceOrg" useGeneratedKeys="true" keyProperty="orgId">
+        insert into space_org
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="orgId != null"> org_id,</if>
+            <if test="orgCode != null"> org_code,</if>
+            <if test="orgName != null"> org_name,</if>
+            <if test="orgShortName != null"> org_short_name,</if>
+            <if test="orgType != null"> org_type,</if>
+            <if test="deptId != null"> dept_id,</if>
+            <if test="contactName != null"> contact_name,</if>
+            <if test="contactPhone != null"> contact_phone,</if>
+            <if test="status != null"> status,</if>
+            <if test="delFlag != null"> del_flag,</if>
+            <if test="createBy != null"> create_by,</if>
+            create_time,
+            <if test="updateBy != null"> update_by,</if>
+            <if test="remark != null"> remark,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="orgId != null"> #{orgId},</if>
+            <if test="orgCode != null"> #{orgCode},</if>
+            <if test="orgName != null"> #{orgName},</if>
+            <if test="orgShortName != null"> #{orgShortName},</if>
+            <if test="orgType != null"> #{orgType},</if>
+            <if test="deptId != null"> #{deptId},</if>
+            <if test="contactName != null"> #{contactName},</if>
+            <if test="contactPhone != null"> #{contactPhone},</if>
+            <if test="status != null"> #{status},</if>
+            <if test="delFlag != null"> #{delFlag},</if>
+            <if test="createBy != null"> #{createBy},</if>
+            sysdate(),
+            <if test="updateBy != null"> #{updateBy},</if>
+            <if test="remark != null"> #{remark},</if>
+        </trim>
+    </insert>
+
+    <update id="updateSpaceOrg" parameterType="SpaceOrg">
+        update space_org
+        <set>
+            <if test="orgCode != null"> org_code = #{orgCode},</if>
+            <if test="orgName != null"> org_name = #{orgName},</if>
+            <if test="orgShortName != null"> org_short_name = #{orgShortName},</if>
+            <if test="orgType != null"> org_type = #{orgType},</if>
+            <if test="deptId != null"> dept_id = #{deptId},</if>
+            <if test="contactName != null"> contact_name = #{contactName},</if>
+            <if test="contactPhone != null"> contact_phone = #{contactPhone},</if>
+            <if test="status != null"> status = #{status},</if>
+            <if test="delFlag != null"> del_flag = #{delFlag},</if>
+            <if test="remark != null"> remark = #{remark},</if>
+            <if test="updateBy != null"> update_by = #{updateBy},</if>
+            update_time = sysdate()
+        </set>
+        where org_id = #{orgId}
+    </update>
+
+    <delete id="deleteSpaceOrgById" parameterType="Long">
+        update space_org set del_flag = '2' where org_id = #{orgId}
+    </delete>
+
+    <delete id="deleteSpaceOrgByIds" parameterType="Long">
+        update space_org set del_flag = '2' where org_id in
+        <foreach collection="array" item="orgId" open="(" separator="," close=")">
+            #{orgId}
+        </foreach>
+    </delete>
+
+</mapper>

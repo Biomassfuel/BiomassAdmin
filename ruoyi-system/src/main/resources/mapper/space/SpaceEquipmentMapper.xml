@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.space.SpaceEquipmentMapper">
+
+    <resultMap type="SpaceEquipment" id="SpaceEquipmentResult">
+        <id property="equipmentId" column="equipment_id" />
+        <result property="equipmentCode" column="equipment_code" />
+        <result property="equipmentName" column="equipment_name" />
+        <result property="orderNum" column="order_num" />
+        <result property="status" column="status" />
+        <result property="createBy" column="create_by" />
+        <result property="createTime" column="create_time" />
+        <result property="updateBy" column="update_by" />
+        <result property="updateTime" column="update_time" />
+        <result property="remark" column="remark" />
+    </resultMap>
+
+    <sql id="selectSpaceEquipmentVo">
+        select equipment_id, equipment_code, equipment_name, order_num, status, create_by, create_time, update_by, update_time, remark from space_equipment
+    </sql>
+
+    <select id="selectSpaceEquipmentById" parameterType="Long" resultMap="SpaceEquipmentResult">
+        <include refid="selectSpaceEquipmentVo"/>
+        where equipment_id = #{equipmentId}
+    </select>
+
+    <select id="selectSpaceEquipmentList" parameterType="SpaceEquipment" resultMap="SpaceEquipmentResult">
+        <include refid="selectSpaceEquipmentVo"/>
+        <where>
+            <if test="equipmentId != null"> and equipment_id = #{equipmentId}</if>
+            <if test="equipmentCode != null and equipmentCode != ''"> and equipment_code like concat('%', #{equipmentCode}, '%')</if>
+            <if test="equipmentName != null and equipmentName != ''"> and equipment_name like concat('%', #{equipmentName}, '%')</if>
+            <if test="orderNum != null"> and order_num = #{orderNum}</if>
+            <if test="status != null and status != ''"> and status = #{status}</if>
+        </where>
+        order by equipment_id desc
+    </select>
+
+    <insert id="insertSpaceEquipment" parameterType="SpaceEquipment" useGeneratedKeys="true" keyProperty="equipmentId">
+        insert into space_equipment
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="equipmentId != null"> equipment_id,</if>
+            <if test="equipmentCode != null"> equipment_code,</if>
+            <if test="equipmentName != null"> equipment_name,</if>
+            <if test="orderNum != null"> order_num,</if>
+            <if test="status != null"> status,</if>
+            <if test="createBy != null"> create_by,</if>
+            create_time,
+            <if test="updateBy != null"> update_by,</if>
+            <if test="remark != null"> remark,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="equipmentId != null"> #{equipmentId},</if>
+            <if test="equipmentCode != null"> #{equipmentCode},</if>
+            <if test="equipmentName != null"> #{equipmentName},</if>
+            <if test="orderNum != null"> #{orderNum},</if>
+            <if test="status != null"> #{status},</if>
+            <if test="createBy != null"> #{createBy},</if>
+            sysdate(),
+            <if test="updateBy != null"> #{updateBy},</if>
+            <if test="remark != null"> #{remark},</if>
+        </trim>
+    </insert>
+
+    <update id="updateSpaceEquipment" parameterType="SpaceEquipment">
+        update space_equipment
+        <set>
+            <if test="equipmentCode != null"> equipment_code = #{equipmentCode},</if>
+            <if test="equipmentName != null"> equipment_name = #{equipmentName},</if>
+            <if test="orderNum != null"> order_num = #{orderNum},</if>
+            <if test="status != null"> status = #{status},</if>
+            <if test="remark != null"> remark = #{remark},</if>
+            <if test="updateBy != null"> update_by = #{updateBy},</if>
+            update_time = sysdate()
+        </set>
+        where equipment_id = #{equipmentId}
+    </update>
+
+    <delete id="deleteSpaceEquipmentById" parameterType="Long">
+        delete from space_equipment where equipment_id = #{equipmentId}
+    </delete>
+
+    <delete id="deleteSpaceEquipmentByIds" parameterType="Long">
+        delete from space_equipment where equipment_id in
+        <foreach collection="array" item="equipmentId" open="(" separator="," close=")">
+            #{equipmentId}
+        </foreach>
+    </delete>
+
+</mapper>

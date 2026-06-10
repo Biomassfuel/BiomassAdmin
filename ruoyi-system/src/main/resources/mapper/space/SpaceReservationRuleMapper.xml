@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.space.SpaceReservationRuleMapper">
+
+    <resultMap type="SpaceReservationRule" id="SpaceReservationRuleResult">
+        <id property="ruleId" column="rule_id" />
+        <result property="reservationId" column="reservation_id" />
+        <result property="ruleType" column="rule_type" />
+        <result property="roomId" column="room_id" />
+        <result property="roomCode" column="room_code" />
+        <result property="startDate" column="start_date" />
+        <result property="endDate" column="end_date" />
+        <result property="weekdays" column="weekdays" />
+        <result property="customDatesText" column="custom_dates_text" />
+        <result property="startTime" column="start_time" />
+        <result property="endTime" column="end_time" />
+        <result property="ruleDesc" column="rule_desc" />
+        <result property="createBy" column="create_by" />
+        <result property="createTime" column="create_time" />
+        <result property="updateBy" column="update_by" />
+        <result property="updateTime" column="update_time" />
+        <result property="remark" column="remark" />
+    </resultMap>
+
+    <sql id="selectSpaceReservationRuleVo">
+        select rule_id, reservation_id, rule_type, room_id, room_code, start_date, end_date, weekdays, custom_dates_text, start_time, end_time, rule_desc, create_by, create_time, update_by, update_time, remark from space_reservation_rule
+    </sql>
+
+    <select id="selectSpaceReservationRuleById" parameterType="Long" resultMap="SpaceReservationRuleResult">
+        <include refid="selectSpaceReservationRuleVo"/>
+        where rule_id = #{ruleId}
+    </select>
+
+    <select id="selectSpaceReservationRuleList" parameterType="SpaceReservationRule" resultMap="SpaceReservationRuleResult">
+        <include refid="selectSpaceReservationRuleVo"/>
+        <where>
+            <if test="ruleId != null"> and rule_id = #{ruleId}</if>
+            <if test="reservationId != null"> and reservation_id = #{reservationId}</if>
+            <if test="ruleType != null and ruleType != ''"> and rule_type = #{ruleType}</if>
+            <if test="roomId != null"> and room_id = #{roomId}</if>
+            <if test="roomCode != null and roomCode != ''"> and room_code like concat('%', #{roomCode}, '%')</if>
+            <if test="startDate != null and startDate != ''"> and start_date like concat('%', #{startDate}, '%')</if>
+            <if test="endDate != null and endDate != ''"> and end_date like concat('%', #{endDate}, '%')</if>
+            <if test="weekdays != null and weekdays != ''"> and weekdays like concat('%', #{weekdays}, '%')</if>
+            <if test="customDatesText != null and customDatesText != ''"> and custom_dates_text like concat('%', #{customDatesText}, '%')</if>
+            <if test="startTime != null and startTime != ''"> and start_time like concat('%', #{startTime}, '%')</if>
+            <if test="endTime != null and endTime != ''"> and end_time like concat('%', #{endTime}, '%')</if>
+            <if test="ruleDesc != null and ruleDesc != ''"> and rule_desc like concat('%', #{ruleDesc}, '%')</if>
+        </where>
+        order by rule_id desc
+    </select>
+
+    <insert id="insertSpaceReservationRule" parameterType="SpaceReservationRule" useGeneratedKeys="true" keyProperty="ruleId">
+        insert into space_reservation_rule
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="ruleId != null"> rule_id,</if>
+            <if test="reservationId != null"> reservation_id,</if>
+            <if test="ruleType != null"> rule_type,</if>
+            <if test="roomId != null"> room_id,</if>
+            <if test="roomCode != null"> room_code,</if>
+            <if test="startDate != null"> start_date,</if>
+            <if test="endDate != null"> end_date,</if>
+            <if test="weekdays != null"> weekdays,</if>
+            <if test="customDatesText != null"> custom_dates_text,</if>
+            <if test="startTime != null"> start_time,</if>
+            <if test="endTime != null"> end_time,</if>
+            <if test="ruleDesc != null"> rule_desc,</if>
+            <if test="createBy != null"> create_by,</if>
+            create_time,
+            <if test="updateBy != null"> update_by,</if>
+            <if test="remark != null"> remark,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="ruleId != null"> #{ruleId},</if>
+            <if test="reservationId != null"> #{reservationId},</if>
+            <if test="ruleType != null"> #{ruleType},</if>
+            <if test="roomId != null"> #{roomId},</if>
+            <if test="roomCode != null"> #{roomCode},</if>
+            <if test="startDate != null"> #{startDate},</if>
+            <if test="endDate != null"> #{endDate},</if>
+            <if test="weekdays != null"> #{weekdays},</if>
+            <if test="customDatesText != null"> #{customDatesText},</if>
+            <if test="startTime != null"> #{startTime},</if>
+            <if test="endTime != null"> #{endTime},</if>
+            <if test="ruleDesc != null"> #{ruleDesc},</if>
+            <if test="createBy != null"> #{createBy},</if>
+            sysdate(),
+            <if test="updateBy != null"> #{updateBy},</if>
+            <if test="remark != null"> #{remark},</if>
+        </trim>
+    </insert>
+
+    <update id="updateSpaceReservationRule" parameterType="SpaceReservationRule">
+        update space_reservation_rule
+        <set>
+            <if test="reservationId != null"> reservation_id = #{reservationId},</if>
+            <if test="ruleType != null"> rule_type = #{ruleType},</if>
+            <if test="roomId != null"> room_id = #{roomId},</if>
+            <if test="roomCode != null"> room_code = #{roomCode},</if>
+            <if test="startDate != null"> start_date = #{startDate},</if>
+            <if test="endDate != null"> end_date = #{endDate},</if>
+            <if test="weekdays != null"> weekdays = #{weekdays},</if>
+            <if test="customDatesText != null"> custom_dates_text = #{customDatesText},</if>
+            <if test="startTime != null"> start_time = #{startTime},</if>
+            <if test="endTime != null"> end_time = #{endTime},</if>
+            <if test="ruleDesc != null"> rule_desc = #{ruleDesc},</if>
+            <if test="remark != null"> remark = #{remark},</if>
+            <if test="updateBy != null"> update_by = #{updateBy},</if>
+            update_time = sysdate()
+        </set>
+        where rule_id = #{ruleId}
+    </update>
+
+    <delete id="deleteSpaceReservationRuleById" parameterType="Long">
+        delete from space_reservation_rule where rule_id = #{ruleId}
+    </delete>
+
+    <delete id="deleteSpaceReservationRuleByIds" parameterType="Long">
+        delete from space_reservation_rule where rule_id in
+        <foreach collection="array" item="ruleId" open="(" separator="," close=")">
+            #{ruleId}
+        </foreach>
+    </delete>
+
+</mapper>

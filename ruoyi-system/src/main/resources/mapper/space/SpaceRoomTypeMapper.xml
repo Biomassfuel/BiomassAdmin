@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.space.SpaceRoomTypeMapper">
+
+    <resultMap type="SpaceRoomType" id="SpaceRoomTypeResult">
+        <id property="typeId" column="type_id" />
+        <result property="typeCode" column="type_code" />
+        <result property="typeName" column="type_name" />
+        <result property="capacityLevel" column="capacity_level" />
+        <result property="orderNum" column="order_num" />
+        <result property="status" column="status" />
+        <result property="createBy" column="create_by" />
+        <result property="createTime" column="create_time" />
+        <result property="updateBy" column="update_by" />
+        <result property="updateTime" column="update_time" />
+        <result property="remark" column="remark" />
+    </resultMap>
+
+    <sql id="selectSpaceRoomTypeVo">
+        select type_id, type_code, type_name, capacity_level, order_num, status, create_by, create_time, update_by, update_time, remark from space_room_type
+    </sql>
+
+    <select id="selectSpaceRoomTypeById" parameterType="Long" resultMap="SpaceRoomTypeResult">
+        <include refid="selectSpaceRoomTypeVo"/>
+        where type_id = #{typeId}
+    </select>
+
+    <select id="selectSpaceRoomTypeList" parameterType="SpaceRoomType" resultMap="SpaceRoomTypeResult">
+        <include refid="selectSpaceRoomTypeVo"/>
+        <where>
+            <if test="typeId != null"> and type_id = #{typeId}</if>
+            <if test="typeCode != null and typeCode != ''"> and type_code like concat('%', #{typeCode}, '%')</if>
+            <if test="typeName != null and typeName != ''"> and type_name like concat('%', #{typeName}, '%')</if>
+            <if test="capacityLevel != null and capacityLevel != ''"> and capacity_level like concat('%', #{capacityLevel}, '%')</if>
+            <if test="orderNum != null"> and order_num = #{orderNum}</if>
+            <if test="status != null and status != ''"> and status = #{status}</if>
+        </where>
+        order by type_id desc
+    </select>
+
+    <insert id="insertSpaceRoomType" parameterType="SpaceRoomType" useGeneratedKeys="true" keyProperty="typeId">
+        insert into space_room_type
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="typeId != null"> type_id,</if>
+            <if test="typeCode != null"> type_code,</if>
+            <if test="typeName != null"> type_name,</if>
+            <if test="capacityLevel != null"> capacity_level,</if>
+            <if test="orderNum != null"> order_num,</if>
+            <if test="status != null"> status,</if>
+            <if test="createBy != null"> create_by,</if>
+            create_time,
+            <if test="updateBy != null"> update_by,</if>
+            <if test="remark != null"> remark,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="typeId != null"> #{typeId},</if>
+            <if test="typeCode != null"> #{typeCode},</if>
+            <if test="typeName != null"> #{typeName},</if>
+            <if test="capacityLevel != null"> #{capacityLevel},</if>
+            <if test="orderNum != null"> #{orderNum},</if>
+            <if test="status != null"> #{status},</if>
+            <if test="createBy != null"> #{createBy},</if>
+            sysdate(),
+            <if test="updateBy != null"> #{updateBy},</if>
+            <if test="remark != null"> #{remark},</if>
+        </trim>
+    </insert>
+
+    <update id="updateSpaceRoomType" parameterType="SpaceRoomType">
+        update space_room_type
+        <set>
+            <if test="typeCode != null"> type_code = #{typeCode},</if>
+            <if test="typeName != null"> type_name = #{typeName},</if>
+            <if test="capacityLevel != null"> capacity_level = #{capacityLevel},</if>
+            <if test="orderNum != null"> order_num = #{orderNum},</if>
+            <if test="status != null"> status = #{status},</if>
+            <if test="remark != null"> remark = #{remark},</if>
+            <if test="updateBy != null"> update_by = #{updateBy},</if>
+            update_time = sysdate()
+        </set>
+        where type_id = #{typeId}
+    </update>
+
+    <delete id="deleteSpaceRoomTypeById" parameterType="Long">
+        delete from space_room_type where type_id = #{typeId}
+    </delete>
+
+    <delete id="deleteSpaceRoomTypeByIds" parameterType="Long">
+        delete from space_room_type where type_id in
+        <foreach collection="array" item="typeId" open="(" separator="," close=")">
+            #{typeId}
+        </foreach>
+    </delete>
+
+</mapper>

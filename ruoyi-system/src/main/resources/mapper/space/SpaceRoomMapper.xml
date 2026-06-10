@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.space.SpaceRoomMapper">
+
+    <resultMap type="SpaceRoom" id="SpaceRoomResult">
+        <id property="roomId" column="room_id" />
+        <result property="roomCode" column="room_code" />
+        <result property="roomName" column="room_name" />
+        <result property="buildingId" column="building_id" />
+        <result property="buildingName" column="building_name" />
+        <result property="floorNo" column="floor_no" />
+        <result property="typeId" column="type_id" />
+        <result property="roomType" column="room_type" />
+        <result property="area" column="area" />
+        <result property="capacityMin" column="capacity_min" />
+        <result property="capacityMax" column="capacity_max" />
+        <result property="capacityDesc" column="capacity_desc" />
+        <result property="assignedOrgId" column="assigned_org_id" />
+        <result property="assignedOrgName" column="assigned_org_name" />
+        <result property="equipmentDesc" column="equipment_desc" />
+        <result property="locationDesc" column="location_desc" />
+        <result property="bookable" column="bookable" />
+        <result property="status" column="status" />
+        <result property="delFlag" column="del_flag" />
+        <result property="createBy" column="create_by" />
+        <result property="createTime" column="create_time" />
+        <result property="updateBy" column="update_by" />
+        <result property="updateTime" column="update_time" />
+        <result property="remark" column="remark" />
+    </resultMap>
+
+    <sql id="selectSpaceRoomVo">
+        select room_id, room_code, room_name, building_id, building_name, floor_no, type_id, room_type, area, capacity_min, capacity_max, capacity_desc, assigned_org_id, assigned_org_name, equipment_desc, location_desc, bookable, status, del_flag, create_by, create_time, update_by, update_time, remark from space_room
+    </sql>
+
+    <select id="selectSpaceRoomById" parameterType="Long" resultMap="SpaceRoomResult">
+        <include refid="selectSpaceRoomVo"/>
+        where room_id = #{roomId}
+    </select>
+
+    <select id="selectSpaceRoomByCode" parameterType="String" resultMap="SpaceRoomResult">
+
+        <include refid="selectSpaceRoomVo"/>
+
+        where room_code = #{roomCode} and del_flag = '0'
+
+        limit 1
+
+    </select>
+
+
+
+    <select id="selectSpaceRoomList" parameterType="SpaceRoom" resultMap="SpaceRoomResult">
+        <include refid="selectSpaceRoomVo"/>
+        <where>
+            and del_flag = '0'
+            <if test="roomId != null"> and room_id = #{roomId}</if>
+            <if test="roomCode != null and roomCode != ''"> and room_code like concat('%', #{roomCode}, '%')</if>
+            <if test="roomName != null and roomName != ''"> and room_name like concat('%', #{roomName}, '%')</if>
+            <if test="buildingId != null"> and building_id = #{buildingId}</if>
+            <if test="buildingName != null and buildingName != ''"> and building_name like concat('%', #{buildingName}, '%')</if>
+            <if test="floorNo != null and floorNo != ''"> and floor_no like concat('%', #{floorNo}, '%')</if>
+            <if test="typeId != null"> and type_id = #{typeId}</if>
+            <if test="roomType != null and roomType != ''"> and room_type like concat('%', #{roomType}, '%')</if>
+            <if test="area != null"> and area = #{area}</if>
+            <if test="capacityMin != null"> and capacity_min = #{capacityMin}</if>
+            <if test="capacityMax != null"> and capacity_max = #{capacityMax}</if>
+            <if test="capacityDesc != null and capacityDesc != ''"> and capacity_desc like concat('%', #{capacityDesc}, '%')</if>
+            <if test="assignedOrgId != null"> and assigned_org_id = #{assignedOrgId}</if>
+            <if test="assignedOrgName != null and assignedOrgName != ''"> and assigned_org_name like concat('%', #{assignedOrgName}, '%')</if>
+            <if test="equipmentDesc != null and equipmentDesc != ''"> and equipment_desc like concat('%', #{equipmentDesc}, '%')</if>
+            <if test="locationDesc != null and locationDesc != ''"> and location_desc like concat('%', #{locationDesc}, '%')</if>
+            <if test="bookable != null and bookable != ''"> and bookable = #{bookable}</if>
+            <if test="status != null and status != ''"> and status = #{status}</if>
+        </where>
+        order by room_id desc
+    </select>
+
+    <insert id="insertSpaceRoom" parameterType="SpaceRoom" useGeneratedKeys="true" keyProperty="roomId">
+        insert into space_room
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="roomId != null"> room_id,</if>
+            <if test="roomCode != null"> room_code,</if>
+            <if test="roomName != null"> room_name,</if>
+            <if test="buildingId != null"> building_id,</if>
+            <if test="buildingName != null"> building_name,</if>
+            <if test="floorNo != null"> floor_no,</if>
+            <if test="typeId != null"> type_id,</if>
+            <if test="roomType != null"> room_type,</if>
+            <if test="area != null"> area,</if>
+            <if test="capacityMin != null"> capacity_min,</if>
+            <if test="capacityMax != null"> capacity_max,</if>
+            <if test="capacityDesc != null"> capacity_desc,</if>
+            <if test="assignedOrgId != null"> assigned_org_id,</if>
+            <if test="assignedOrgName != null"> assigned_org_name,</if>
+            <if test="equipmentDesc != null"> equipment_desc,</if>
+            <if test="locationDesc != null"> location_desc,</if>
+            <if test="bookable != null"> bookable,</if>
+            <if test="status != null"> status,</if>
+            <if test="delFlag != null"> del_flag,</if>
+            <if test="createBy != null"> create_by,</if>
+            create_time,
+            <if test="updateBy != null"> update_by,</if>
+            <if test="remark != null"> remark,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="roomId != null"> #{roomId},</if>
+            <if test="roomCode != null"> #{roomCode},</if>
+            <if test="roomName != null"> #{roomName},</if>
+            <if test="buildingId != null"> #{buildingId},</if>
+            <if test="buildingName != null"> #{buildingName},</if>
+            <if test="floorNo != null"> #{floorNo},</if>
+            <if test="typeId != null"> #{typeId},</if>
+            <if test="roomType != null"> #{roomType},</if>
+            <if test="area != null"> #{area},</if>
+            <if test="capacityMin != null"> #{capacityMin},</if>
+            <if test="capacityMax != null"> #{capacityMax},</if>
+            <if test="capacityDesc != null"> #{capacityDesc},</if>
+            <if test="assignedOrgId != null"> #{assignedOrgId},</if>
+            <if test="assignedOrgName != null"> #{assignedOrgName},</if>
+            <if test="equipmentDesc != null"> #{equipmentDesc},</if>
+            <if test="locationDesc != null"> #{locationDesc},</if>
+            <if test="bookable != null"> #{bookable},</if>
+            <if test="status != null"> #{status},</if>
+            <if test="delFlag != null"> #{delFlag},</if>
+            <if test="createBy != null"> #{createBy},</if>
+            sysdate(),
+            <if test="updateBy != null"> #{updateBy},</if>
+            <if test="remark != null"> #{remark},</if>
+        </trim>
+    </insert>
+
+    <update id="updateSpaceRoom" parameterType="SpaceRoom">
+        update space_room
+        <set>
+            <if test="roomCode != null"> room_code = #{roomCode},</if>
+            <if test="roomName != null"> room_name = #{roomName},</if>
+            <if test="buildingId != null"> building_id = #{buildingId},</if>
+            <if test="buildingName != null"> building_name = #{buildingName},</if>
+            <if test="floorNo != null"> floor_no = #{floorNo},</if>
+            <if test="typeId != null"> type_id = #{typeId},</if>
+            <if test="roomType != null"> room_type = #{roomType},</if>
+            <if test="area != null"> area = #{area},</if>
+            <if test="capacityMin != null"> capacity_min = #{capacityMin},</if>
+            <if test="capacityMax != null"> capacity_max = #{capacityMax},</if>
+            <if test="capacityDesc != null"> capacity_desc = #{capacityDesc},</if>
+            <if test="assignedOrgId != null"> assigned_org_id = #{assignedOrgId},</if>
+            <if test="assignedOrgName != null"> assigned_org_name = #{assignedOrgName},</if>
+            <if test="equipmentDesc != null"> equipment_desc = #{equipmentDesc},</if>
+            <if test="locationDesc != null"> location_desc = #{locationDesc},</if>
+            <if test="bookable != null"> bookable = #{bookable},</if>
+            <if test="status != null"> status = #{status},</if>
+            <if test="delFlag != null"> del_flag = #{delFlag},</if>
+            <if test="remark != null"> remark = #{remark},</if>
+            <if test="updateBy != null"> update_by = #{updateBy},</if>
+            update_time = sysdate()
+        </set>
+        where room_id = #{roomId}
+    </update>
+
+    <delete id="deleteSpaceRoomById" parameterType="Long">
+        update space_room set del_flag = '2' where room_id = #{roomId}
+    </delete>
+
+    <delete id="deleteSpaceRoomByIds" parameterType="Long">
+        update space_room set del_flag = '2' where room_id in
+        <foreach collection="array" item="roomId" open="(" separator="," close=")">
+            #{roomId}
+        </foreach>
+    </delete>
+
+</mapper>

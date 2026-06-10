@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.space.SpaceAuditLogMapper">
+
+    <resultMap type="SpaceAuditLog" id="SpaceAuditLogResult">
+        <id property="logId" column="log_id" />
+        <result property="reservationId" column="reservation_id" />
+        <result property="itemId" column="item_id" />
+        <result property="auditAction" column="audit_action" />
+        <result property="beforeStatus" column="before_status" />
+        <result property="afterStatus" column="after_status" />
+        <result property="auditorId" column="auditor_id" />
+        <result property="auditorName" column="auditor_name" />
+        <result property="auditOpinion" column="audit_opinion" />
+        <result property="auditTime" column="audit_time" />
+        <result property="createBy" column="create_by" />
+        <result property="createTime" column="create_time" />
+        <result property="updateBy" column="update_by" />
+        <result property="updateTime" column="update_time" />
+        <result property="remark" column="remark" />
+    </resultMap>
+
+    <sql id="selectSpaceAuditLogVo">
+        select log_id, reservation_id, item_id, audit_action, before_status, after_status, auditor_id, auditor_name, audit_opinion, audit_time, create_by, create_time, update_by, update_time, remark from space_audit_log
+    </sql>
+
+    <select id="selectSpaceAuditLogById" parameterType="Long" resultMap="SpaceAuditLogResult">
+        <include refid="selectSpaceAuditLogVo"/>
+        where log_id = #{logId}
+    </select>
+
+    <select id="selectSpaceAuditLogList" parameterType="SpaceAuditLog" resultMap="SpaceAuditLogResult">
+        <include refid="selectSpaceAuditLogVo"/>
+        <where>
+            <if test="logId != null"> and log_id = #{logId}</if>
+            <if test="reservationId != null"> and reservation_id = #{reservationId}</if>
+            <if test="itemId != null"> and item_id = #{itemId}</if>
+            <if test="auditAction != null and auditAction != ''"> and audit_action like concat('%', #{auditAction}, '%')</if>
+            <if test="beforeStatus != null and beforeStatus != ''"> and before_status like concat('%', #{beforeStatus}, '%')</if>
+            <if test="afterStatus != null and afterStatus != ''"> and after_status like concat('%', #{afterStatus}, '%')</if>
+            <if test="auditorId != null"> and auditor_id = #{auditorId}</if>
+            <if test="auditorName != null and auditorName != ''"> and auditor_name like concat('%', #{auditorName}, '%')</if>
+            <if test="auditOpinion != null and auditOpinion != ''"> and audit_opinion like concat('%', #{auditOpinion}, '%')</if>
+            <if test="auditTime != null"> and audit_time = #{auditTime}</if>
+        </where>
+        order by log_id desc
+    </select>
+
+    <insert id="insertSpaceAuditLog" parameterType="SpaceAuditLog" useGeneratedKeys="true" keyProperty="logId">
+        insert into space_audit_log
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="logId != null"> log_id,</if>
+            <if test="reservationId != null"> reservation_id,</if>
+            <if test="itemId != null"> item_id,</if>
+            <if test="auditAction != null"> audit_action,</if>
+            <if test="beforeStatus != null"> before_status,</if>
+            <if test="afterStatus != null"> after_status,</if>
+            <if test="auditorId != null"> auditor_id,</if>
+            <if test="auditorName != null"> auditor_name,</if>
+            <if test="auditOpinion != null"> audit_opinion,</if>
+            <if test="auditTime != null"> audit_time,</if>
+            <if test="createBy != null"> create_by,</if>
+            create_time,
+            <if test="updateBy != null"> update_by,</if>
+            <if test="remark != null"> remark,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="logId != null"> #{logId},</if>
+            <if test="reservationId != null"> #{reservationId},</if>
+            <if test="itemId != null"> #{itemId},</if>
+            <if test="auditAction != null"> #{auditAction},</if>
+            <if test="beforeStatus != null"> #{beforeStatus},</if>
+            <if test="afterStatus != null"> #{afterStatus},</if>
+            <if test="auditorId != null"> #{auditorId},</if>
+            <if test="auditorName != null"> #{auditorName},</if>
+            <if test="auditOpinion != null"> #{auditOpinion},</if>
+            <if test="auditTime != null"> #{auditTime},</if>
+            <if test="createBy != null"> #{createBy},</if>
+            sysdate(),
+            <if test="updateBy != null"> #{updateBy},</if>
+            <if test="remark != null"> #{remark},</if>
+        </trim>
+    </insert>
+
+    <update id="updateSpaceAuditLog" parameterType="SpaceAuditLog">
+        update space_audit_log
+        <set>
+            <if test="reservationId != null"> reservation_id = #{reservationId},</if>
+            <if test="itemId != null"> item_id = #{itemId},</if>
+            <if test="auditAction != null"> audit_action = #{auditAction},</if>
+            <if test="beforeStatus != null"> before_status = #{beforeStatus},</if>
+            <if test="afterStatus != null"> after_status = #{afterStatus},</if>
+            <if test="auditorId != null"> auditor_id = #{auditorId},</if>
+            <if test="auditorName != null"> auditor_name = #{auditorName},</if>
+            <if test="auditOpinion != null"> audit_opinion = #{auditOpinion},</if>
+            <if test="auditTime != null"> audit_time = #{auditTime},</if>
+            <if test="remark != null"> remark = #{remark},</if>
+            <if test="updateBy != null"> update_by = #{updateBy},</if>
+            update_time = sysdate()
+        </set>
+        where log_id = #{logId}
+    </update>
+
+    <delete id="deleteSpaceAuditLogById" parameterType="Long">
+        delete from space_audit_log where log_id = #{logId}
+    </delete>
+
+    <delete id="deleteSpaceAuditLogByIds" parameterType="Long">
+        delete from space_audit_log where log_id in
+        <foreach collection="array" item="logId" open="(" separator="," close=")">
+            #{logId}
+        </foreach>
+    </delete>
+
+</mapper>

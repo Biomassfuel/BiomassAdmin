@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.space.SpaceBuildingMapper">
+
+    <resultMap type="SpaceBuilding" id="SpaceBuildingResult">
+        <id property="buildingId" column="building_id" />
+        <result property="buildingCode" column="building_code" />
+        <result property="buildingName" column="building_name" />
+        <result property="campusName" column="campus_name" />
+        <result property="address" column="address" />
+        <result property="floorCount" column="floor_count" />
+        <result property="status" column="status" />
+        <result property="delFlag" column="del_flag" />
+        <result property="createBy" column="create_by" />
+        <result property="createTime" column="create_time" />
+        <result property="updateBy" column="update_by" />
+        <result property="updateTime" column="update_time" />
+        <result property="remark" column="remark" />
+    </resultMap>
+
+    <sql id="selectSpaceBuildingVo">
+        select building_id, building_code, building_name, campus_name, address, floor_count, status, del_flag, create_by, create_time, update_by, update_time, remark from space_building
+    </sql>
+
+    <select id="selectSpaceBuildingById" parameterType="Long" resultMap="SpaceBuildingResult">
+        <include refid="selectSpaceBuildingVo"/>
+        where building_id = #{buildingId}
+    </select>
+
+    <select id="selectSpaceBuildingList" parameterType="SpaceBuilding" resultMap="SpaceBuildingResult">
+        <include refid="selectSpaceBuildingVo"/>
+        <where>
+            and del_flag = '0'
+            <if test="buildingId != null"> and building_id = #{buildingId}</if>
+            <if test="buildingCode != null and buildingCode != ''"> and building_code like concat('%', #{buildingCode}, '%')</if>
+            <if test="buildingName != null and buildingName != ''"> and building_name like concat('%', #{buildingName}, '%')</if>
+            <if test="campusName != null and campusName != ''"> and campus_name like concat('%', #{campusName}, '%')</if>
+            <if test="address != null and address != ''"> and address like concat('%', #{address}, '%')</if>
+            <if test="floorCount != null"> and floor_count = #{floorCount}</if>
+            <if test="status != null and status != ''"> and status = #{status}</if>
+        </where>
+        order by building_id desc
+    </select>
+
+    <insert id="insertSpaceBuilding" parameterType="SpaceBuilding" useGeneratedKeys="true" keyProperty="buildingId">
+        insert into space_building
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="buildingId != null"> building_id,</if>
+            <if test="buildingCode != null"> building_code,</if>
+            <if test="buildingName != null"> building_name,</if>
+            <if test="campusName != null"> campus_name,</if>
+            <if test="address != null"> address,</if>
+            <if test="floorCount != null"> floor_count,</if>
+            <if test="status != null"> status,</if>
+            <if test="delFlag != null"> del_flag,</if>
+            <if test="createBy != null"> create_by,</if>
+            create_time,
+            <if test="updateBy != null"> update_by,</if>
+            <if test="remark != null"> remark,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="buildingId != null"> #{buildingId},</if>
+            <if test="buildingCode != null"> #{buildingCode},</if>
+            <if test="buildingName != null"> #{buildingName},</if>
+            <if test="campusName != null"> #{campusName},</if>
+            <if test="address != null"> #{address},</if>
+            <if test="floorCount != null"> #{floorCount},</if>
+            <if test="status != null"> #{status},</if>
+            <if test="delFlag != null"> #{delFlag},</if>
+            <if test="createBy != null"> #{createBy},</if>
+            sysdate(),
+            <if test="updateBy != null"> #{updateBy},</if>
+            <if test="remark != null"> #{remark},</if>
+        </trim>
+    </insert>
+
+    <update id="updateSpaceBuilding" parameterType="SpaceBuilding">
+        update space_building
+        <set>
+            <if test="buildingCode != null"> building_code = #{buildingCode},</if>
+            <if test="buildingName != null"> building_name = #{buildingName},</if>
+            <if test="campusName != null"> campus_name = #{campusName},</if>
+            <if test="address != null"> address = #{address},</if>
+            <if test="floorCount != null"> floor_count = #{floorCount},</if>
+            <if test="status != null"> status = #{status},</if>
+            <if test="delFlag != null"> del_flag = #{delFlag},</if>
+            <if test="remark != null"> remark = #{remark},</if>
+            <if test="updateBy != null"> update_by = #{updateBy},</if>
+            update_time = sysdate()
+        </set>
+        where building_id = #{buildingId}
+    </update>
+
+    <delete id="deleteSpaceBuildingById" parameterType="Long">
+        update space_building set del_flag = '2' where building_id = #{buildingId}
+    </delete>
+
+    <delete id="deleteSpaceBuildingByIds" parameterType="Long">
+        update space_building set del_flag = '2' where building_id in
+        <foreach collection="array" item="buildingId" open="(" separator="," close=")">
+            #{buildingId}
+        </foreach>
+    </delete>
+
+</mapper>

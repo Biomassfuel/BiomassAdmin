@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.space.SpaceBlackoutMapper">
+
+    <resultMap type="SpaceBlackout" id="SpaceBlackoutResult">
+        <id property="blackoutId" column="blackout_id" />
+        <result property="roomId" column="room_id" />
+        <result property="roomCode" column="room_code" />
+        <result property="startTime" column="start_time" />
+        <result property="endTime" column="end_time" />
+        <result property="reason" column="reason" />
+        <result property="status" column="status" />
+        <result property="createBy" column="create_by" />
+        <result property="createTime" column="create_time" />
+        <result property="updateBy" column="update_by" />
+        <result property="updateTime" column="update_time" />
+        <result property="remark" column="remark" />
+    </resultMap>
+
+    <sql id="selectSpaceBlackoutVo">
+        select blackout_id, room_id, room_code, start_time, end_time, reason, status, create_by, create_time, update_by, update_time, remark from space_blackout
+    </sql>
+
+    <select id="selectSpaceBlackoutById" parameterType="Long" resultMap="SpaceBlackoutResult">
+        <include refid="selectSpaceBlackoutVo"/>
+        where blackout_id = #{blackoutId}
+    </select>
+
+    <select id="selectSpaceBlackoutList" parameterType="SpaceBlackout" resultMap="SpaceBlackoutResult">
+        <include refid="selectSpaceBlackoutVo"/>
+        <where>
+            <if test="blackoutId != null"> and blackout_id = #{blackoutId}</if>
+            <if test="roomId != null"> and room_id = #{roomId}</if>
+            <if test="roomCode != null and roomCode != ''"> and room_code like concat('%', #{roomCode}, '%')</if>
+            <if test="startTime != null and startTime != ''"> and start_time like concat('%', #{startTime}, '%')</if>
+            <if test="endTime != null and endTime != ''"> and end_time like concat('%', #{endTime}, '%')</if>
+            <if test="reason != null and reason != ''"> and reason like concat('%', #{reason}, '%')</if>
+            <if test="status != null and status != ''"> and status = #{status}</if>
+        </where>
+        order by blackout_id desc
+    </select>
+
+    <insert id="insertSpaceBlackout" parameterType="SpaceBlackout" useGeneratedKeys="true" keyProperty="blackoutId">
+        insert into space_blackout
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="blackoutId != null"> blackout_id,</if>
+            <if test="roomId != null"> room_id,</if>
+            <if test="roomCode != null"> room_code,</if>
+            <if test="startTime != null"> start_time,</if>
+            <if test="endTime != null"> end_time,</if>
+            <if test="reason != null"> reason,</if>
+            <if test="status != null"> status,</if>
+            <if test="createBy != null"> create_by,</if>
+            create_time,
+            <if test="updateBy != null"> update_by,</if>
+            <if test="remark != null"> remark,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="blackoutId != null"> #{blackoutId},</if>
+            <if test="roomId != null"> #{roomId},</if>
+            <if test="roomCode != null"> #{roomCode},</if>
+            <if test="startTime != null"> #{startTime},</if>
+            <if test="endTime != null"> #{endTime},</if>
+            <if test="reason != null"> #{reason},</if>
+            <if test="status != null"> #{status},</if>
+            <if test="createBy != null"> #{createBy},</if>
+            sysdate(),
+            <if test="updateBy != null"> #{updateBy},</if>
+            <if test="remark != null"> #{remark},</if>
+        </trim>
+    </insert>
+
+    <update id="updateSpaceBlackout" parameterType="SpaceBlackout">
+        update space_blackout
+        <set>
+            <if test="roomId != null"> room_id = #{roomId},</if>
+            <if test="roomCode != null"> room_code = #{roomCode},</if>
+            <if test="startTime != null"> start_time = #{startTime},</if>
+            <if test="endTime != null"> end_time = #{endTime},</if>
+            <if test="reason != null"> reason = #{reason},</if>
+            <if test="status != null"> status = #{status},</if>
+            <if test="remark != null"> remark = #{remark},</if>
+            <if test="updateBy != null"> update_by = #{updateBy},</if>
+            update_time = sysdate()
+        </set>
+        where blackout_id = #{blackoutId}
+    </update>
+
+    <delete id="deleteSpaceBlackoutById" parameterType="Long">
+        delete from space_blackout where blackout_id = #{blackoutId}
+    </delete>
+
+    <delete id="deleteSpaceBlackoutByIds" parameterType="Long">
+        delete from space_blackout where blackout_id in
+        <foreach collection="array" item="blackoutId" open="(" separator="," close=")">
+            #{blackoutId}
+        </foreach>
+    </delete>
+
+</mapper>

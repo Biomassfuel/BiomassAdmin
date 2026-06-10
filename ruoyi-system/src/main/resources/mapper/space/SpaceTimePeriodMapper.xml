@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.space.SpaceTimePeriodMapper">
+
+    <resultMap type="SpaceTimePeriod" id="SpaceTimePeriodResult">
+        <id property="periodId" column="period_id" />
+        <result property="periodCode" column="period_code" />
+        <result property="periodName" column="period_name" />
+        <result property="startTime" column="start_time" />
+        <result property="endTime" column="end_time" />
+        <result property="orderNum" column="order_num" />
+        <result property="status" column="status" />
+        <result property="createBy" column="create_by" />
+        <result property="createTime" column="create_time" />
+        <result property="updateBy" column="update_by" />
+        <result property="updateTime" column="update_time" />
+        <result property="remark" column="remark" />
+    </resultMap>
+
+    <sql id="selectSpaceTimePeriodVo">
+        select period_id, period_code, period_name, start_time, end_time, order_num, status, create_by, create_time, update_by, update_time, remark from space_time_period
+    </sql>
+
+    <select id="selectSpaceTimePeriodById" parameterType="Long" resultMap="SpaceTimePeriodResult">
+        <include refid="selectSpaceTimePeriodVo"/>
+        where period_id = #{periodId}
+    </select>
+
+    <select id="selectSpaceTimePeriodList" parameterType="SpaceTimePeriod" resultMap="SpaceTimePeriodResult">
+        <include refid="selectSpaceTimePeriodVo"/>
+        <where>
+            <if test="periodId != null"> and period_id = #{periodId}</if>
+            <if test="periodCode != null and periodCode != ''"> and period_code like concat('%', #{periodCode}, '%')</if>
+            <if test="periodName != null and periodName != ''"> and period_name like concat('%', #{periodName}, '%')</if>
+            <if test="startTime != null and startTime != ''"> and start_time like concat('%', #{startTime}, '%')</if>
+            <if test="endTime != null and endTime != ''"> and end_time like concat('%', #{endTime}, '%')</if>
+            <if test="orderNum != null"> and order_num = #{orderNum}</if>
+            <if test="status != null and status != ''"> and status = #{status}</if>
+        </where>
+        order by period_id desc
+    </select>
+
+    <insert id="insertSpaceTimePeriod" parameterType="SpaceTimePeriod" useGeneratedKeys="true" keyProperty="periodId">
+        insert into space_time_period
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="periodId != null"> period_id,</if>
+            <if test="periodCode != null"> period_code,</if>
+            <if test="periodName != null"> period_name,</if>
+            <if test="startTime != null"> start_time,</if>
+            <if test="endTime != null"> end_time,</if>
+            <if test="orderNum != null"> order_num,</if>
+            <if test="status != null"> status,</if>
+            <if test="createBy != null"> create_by,</if>
+            create_time,
+            <if test="updateBy != null"> update_by,</if>
+            <if test="remark != null"> remark,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="periodId != null"> #{periodId},</if>
+            <if test="periodCode != null"> #{periodCode},</if>
+            <if test="periodName != null"> #{periodName},</if>
+            <if test="startTime != null"> #{startTime},</if>
+            <if test="endTime != null"> #{endTime},</if>
+            <if test="orderNum != null"> #{orderNum},</if>
+            <if test="status != null"> #{status},</if>
+            <if test="createBy != null"> #{createBy},</if>
+            sysdate(),
+            <if test="updateBy != null"> #{updateBy},</if>
+            <if test="remark != null"> #{remark},</if>
+        </trim>
+    </insert>
+
+    <update id="updateSpaceTimePeriod" parameterType="SpaceTimePeriod">
+        update space_time_period
+        <set>
+            <if test="periodCode != null"> period_code = #{periodCode},</if>
+            <if test="periodName != null"> period_name = #{periodName},</if>
+            <if test="startTime != null"> start_time = #{startTime},</if>
+            <if test="endTime != null"> end_time = #{endTime},</if>
+            <if test="orderNum != null"> order_num = #{orderNum},</if>
+            <if test="status != null"> status = #{status},</if>
+            <if test="remark != null"> remark = #{remark},</if>
+            <if test="updateBy != null"> update_by = #{updateBy},</if>
+            update_time = sysdate()
+        </set>
+        where period_id = #{periodId}
+    </update>
+
+    <delete id="deleteSpaceTimePeriodById" parameterType="Long">
+        delete from space_time_period where period_id = #{periodId}
+    </delete>
+
+    <delete id="deleteSpaceTimePeriodByIds" parameterType="Long">
+        delete from space_time_period where period_id in
+        <foreach collection="array" item="periodId" open="(" separator="," close=")">
+            #{periodId}
+        </foreach>
+    </delete>
+
+</mapper>

@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.space.SpaceReservationMapper">
+
+    <resultMap type="SpaceReservation" id="SpaceReservationResult">
+        <id property="reservationId" column="reservation_id" />
+        <result property="reservationNo" column="reservation_no" />
+        <result property="reservationType" column="reservation_type" />
+        <result property="applicantId" column="applicant_id" />
+        <result property="applicantName" column="applicant_name" />
+        <result property="applicantRole" column="applicant_role" />
+        <result property="applicantPhone" column="applicant_phone" />
+        <result property="orgId" column="org_id" />
+        <result property="orgName" column="org_name" />
+        <result property="title" column="title" />
+        <result property="purpose" column="purpose" />
+        <result property="peopleCount" column="people_count" />
+        <result property="detailRemark" column="detail_remark" />
+        <result property="status" column="status" />
+        <result property="submitTime" column="submit_time" />
+        <result property="auditorId" column="auditor_id" />
+        <result property="auditorName" column="auditor_name" />
+        <result property="auditTime" column="audit_time" />
+        <result property="rejectReason" column="reject_reason" />
+        <result property="version" column="version" />
+        <result property="delFlag" column="del_flag" />
+        <result property="createBy" column="create_by" />
+        <result property="createTime" column="create_time" />
+        <result property="updateBy" column="update_by" />
+        <result property="updateTime" column="update_time" />
+        <result property="remark" column="remark" />
+    </resultMap>
+
+    <sql id="selectSpaceReservationVo">
+        select reservation_id, reservation_no, reservation_type, applicant_id, applicant_name, applicant_role, applicant_phone, org_id, org_name, title, purpose, people_count, detail_remark, status, submit_time, auditor_id, auditor_name, audit_time, reject_reason, version, del_flag, create_by, create_time, update_by, update_time, remark from space_reservation
+    </sql>
+
+    <select id="selectSpaceReservationById" parameterType="Long" resultMap="SpaceReservationResult">
+        <include refid="selectSpaceReservationVo"/>
+        where reservation_id = #{reservationId}
+    </select>
+
+    <select id="selectSpaceReservationList" parameterType="SpaceReservation" resultMap="SpaceReservationResult">
+        <include refid="selectSpaceReservationVo"/>
+        <where>
+            and del_flag = '0'
+            <if test="reservationId != null"> and reservation_id = #{reservationId}</if>
+            <if test="reservationNo != null and reservationNo != ''"> and reservation_no like concat('%', #{reservationNo}, '%')</if>
+            <if test="reservationType != null and reservationType != ''"> and reservation_type = #{reservationType}</if>
+            <if test="applicantId != null"> and applicant_id = #{applicantId}</if>
+            <if test="applicantName != null and applicantName != ''"> and applicant_name like concat('%', #{applicantName}, '%')</if>
+            <if test="applicantRole != null and applicantRole != ''"> and applicant_role like concat('%', #{applicantRole}, '%')</if>
+            <if test="applicantPhone != null and applicantPhone != ''"> and applicant_phone like concat('%', #{applicantPhone}, '%')</if>
+            <if test="orgId != null"> and org_id = #{orgId}</if>
+            <if test="orgName != null and orgName != ''"> and org_name like concat('%', #{orgName}, '%')</if>
+            <if test="title != null and title != ''"> and title like concat('%', #{title}, '%')</if>
+            <if test="purpose != null and purpose != ''"> and purpose like concat('%', #{purpose}, '%')</if>
+            <if test="peopleCount != null"> and people_count = #{peopleCount}</if>
+            <if test="detailRemark != null and detailRemark != ''"> and detail_remark like concat('%', #{detailRemark}, '%')</if>
+            <if test="status != null and status != ''"> and status = #{status}</if>
+            <if test="pendingOnly != null and pendingOnly">
+                and exists (
+                    select 1
+                    from space_reservation_item sri
+                    where sri.reservation_id = space_reservation.reservation_id
+                      and sri.item_status in ('1', '4')
+                )
+            </if>
+
+            <if test="submitTime != null"> and submit_time = #{submitTime}</if>
+            <if test="auditorId != null"> and auditor_id = #{auditorId}</if>
+            <if test="auditorName != null and auditorName != ''"> and auditor_name like concat('%', #{auditorName}, '%')</if>
+            <if test="auditTime != null"> and audit_time = #{auditTime}</if>
+            <if test="rejectReason != null and rejectReason != ''"> and reject_reason like concat('%', #{rejectReason}, '%')</if>
+            <if test="version != null"> and version = #{version}</if>
+        </where>
+        order by reservation_id desc
+    </select>
+
+    <insert id="insertSpaceReservation" parameterType="SpaceReservation" useGeneratedKeys="true" keyProperty="reservationId">
+        insert into space_reservation
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="reservationId != null"> reservation_id,</if>
+            <if test="reservationNo != null"> reservation_no,</if>
+            <if test="reservationType != null"> reservation_type,</if>
+            <if test="applicantId != null"> applicant_id,</if>
+            <if test="applicantName != null"> applicant_name,</if>
+            <if test="applicantRole != null"> applicant_role,</if>
+            <if test="applicantPhone != null"> applicant_phone,</if>
+            <if test="orgId != null"> org_id,</if>
+            <if test="orgName != null"> org_name,</if>
+            <if test="title != null"> title,</if>
+            <if test="purpose != null"> purpose,</if>
+            <if test="peopleCount != null"> people_count,</if>
+            <if test="detailRemark != null"> detail_remark,</if>
+            <if test="status != null"> status,</if>
+            <if test="submitTime != null"> submit_time,</if>
+            <if test="auditorId != null"> auditor_id,</if>
+            <if test="auditorName != null"> auditor_name,</if>
+            <if test="auditTime != null"> audit_time,</if>
+            <if test="rejectReason != null"> reject_reason,</if>
+            <if test="version != null"> version,</if>
+            <if test="delFlag != null"> del_flag,</if>
+            <if test="createBy != null"> create_by,</if>
+            create_time,
+            <if test="updateBy != null"> update_by,</if>
+            <if test="remark != null"> remark,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="reservationId != null"> #{reservationId},</if>
+            <if test="reservationNo != null"> #{reservationNo},</if>
+            <if test="reservationType != null"> #{reservationType},</if>
+            <if test="applicantId != null"> #{applicantId},</if>
+            <if test="applicantName != null"> #{applicantName},</if>
+            <if test="applicantRole != null"> #{applicantRole},</if>
+            <if test="applicantPhone != null"> #{applicantPhone},</if>
+            <if test="orgId != null"> #{orgId},</if>
+            <if test="orgName != null"> #{orgName},</if>
+            <if test="title != null"> #{title},</if>
+            <if test="purpose != null"> #{purpose},</if>
+            <if test="peopleCount != null"> #{peopleCount},</if>
+            <if test="detailRemark != null"> #{detailRemark},</if>
+            <if test="status != null"> #{status},</if>
+            <if test="submitTime != null"> #{submitTime},</if>
+            <if test="auditorId != null"> #{auditorId},</if>
+            <if test="auditorName != null"> #{auditorName},</if>
+            <if test="auditTime != null"> #{auditTime},</if>
+            <if test="rejectReason != null"> #{rejectReason},</if>
+            <if test="version != null"> #{version},</if>
+            <if test="delFlag != null"> #{delFlag},</if>
+            <if test="createBy != null"> #{createBy},</if>
+            sysdate(),
+            <if test="updateBy != null"> #{updateBy},</if>
+            <if test="remark != null"> #{remark},</if>
+        </trim>
+    </insert>
+
+    <update id="updateSpaceReservation" parameterType="SpaceReservation">
+        update space_reservation
+        <set>
+            <if test="reservationNo != null"> reservation_no = #{reservationNo},</if>
+            <if test="reservationType != null"> reservation_type = #{reservationType},</if>
+            <if test="applicantId != null"> applicant_id = #{applicantId},</if>
+            <if test="applicantName != null"> applicant_name = #{applicantName},</if>
+            <if test="applicantRole != null"> applicant_role = #{applicantRole},</if>
+            <if test="applicantPhone != null"> applicant_phone = #{applicantPhone},</if>
+            <if test="orgId != null"> org_id = #{orgId},</if>
+            <if test="orgName != null"> org_name = #{orgName},</if>
+            <if test="title != null"> title = #{title},</if>
+            <if test="purpose != null"> purpose = #{purpose},</if>
+            <if test="peopleCount != null"> people_count = #{peopleCount},</if>
+            <if test="detailRemark != null"> detail_remark = #{detailRemark},</if>
+            <if test="status != null"> status = #{status},</if>
+            <if test="submitTime != null"> submit_time = #{submitTime},</if>
+            <if test="auditorId != null"> auditor_id = #{auditorId},</if>
+            <if test="auditorName != null"> auditor_name = #{auditorName},</if>
+            <if test="auditTime != null"> audit_time = #{auditTime},</if>
+            <if test="rejectReason != null"> reject_reason = #{rejectReason},</if>
+            <if test="version != null"> version = #{version},</if>
+            <if test="delFlag != null"> del_flag = #{delFlag},</if>
+            <if test="remark != null"> remark = #{remark},</if>
+            <if test="updateBy != null"> update_by = #{updateBy},</if>
+            update_time = sysdate()
+        </set>
+        where reservation_id = #{reservationId}
+    </update>
+
+    <delete id="deleteSpaceReservationById" parameterType="Long">
+        update space_reservation set del_flag = '2' where reservation_id = #{reservationId}
+    </delete>
+
+    <delete id="deleteSpaceReservationByIds" parameterType="Long">
+        update space_reservation set del_flag = '2' where reservation_id in
+        <foreach collection="array" item="reservationId" open="(" separator="," close=")">
+            #{reservationId}
+        </foreach>
+    </delete>
+
+    <update id="updateReservationStatus" parameterType="SpaceReservation">
+        update space_reservation
+        set status = #{status},
+            auditor_id = #{auditorId},
+            auditor_name = #{auditorName},
+            audit_time = sysdate(),
+            reject_reason = #{rejectReason},
+            update_by = #{updateBy},
+            update_time = sysdate(),
+            version = version + 1
+        where reservation_id = #{reservationId}
+    </update>
+
+</mapper>
