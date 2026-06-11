@@ -23,7 +23,15 @@ public interface ISpaceReservationService
 
     public int cancelReservation(Long reservationId, String updateBy);
 
+    public int approveCancelReservation(Long reservationId, Long auditorId, String auditorName, String opinion, String updateBy);
+
+    public int rejectCancelReservation(Long reservationId, Long auditorId, String auditorName, String reason, String updateBy);
+
     public int approveItem(Long itemId, Long auditorId, String auditorName, String opinion, String updateBy);
 
     public int rejectItem(Long itemId, Long auditorId, String auditorName, String reason, String updateBy);
+
+    public int approveCancelItem(Long itemId, Long auditorId, String auditorName, String opinion, String updateBy);
+
+    public int rejectCancelItem(Long itemId, Long auditorId, String auditorName, String reason, String updateBy);
 }

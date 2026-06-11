@@ -12,6 +12,10 @@ export function listPendingReservation(query) {
   return request({ url: '/space/reservation/pending/list', method: 'get', params: query })
 }
 
+export function listCancelPendingReservation(query) {
+  return request({ url: '/space/reservation/cancel-pending/list', method: 'get', params: query })
+}
+
 export function getReservation(reservationId) {
   return request({ url: '/space/reservation/' + reservationId, method: 'get' })
 }
@@ -40,10 +44,26 @@ export function rejectReservation(reservationId, data) {
   return request({ url: '/space/reservation/' + reservationId + '/reject', method: 'put', data: data || {} })
 }
 
+export function approveCancelReservation(reservationId, data) {
+  return request({ url: '/space/reservation/' + reservationId + '/cancel-audit/approve', method: 'put', data: data || {} })
+}
+
+export function rejectCancelReservation(reservationId, data) {
+  return request({ url: '/space/reservation/' + reservationId + '/cancel-audit/reject', method: 'put', data: data || {} })
+}
+
 export function approveReservationItem(itemId, data) {
   return request({ url: '/space/reservation/item/' + itemId + '/approve', method: 'put', data: data || {} })
 }
 
 export function rejectReservationItem(itemId, data) {
   return request({ url: '/space/reservation/item/' + itemId + '/reject', method: 'put', data: data || {} })
+}
+
+export function approveCancelReservationItem(itemId, data) {
+  return request({ url: '/space/reservation/item/' + itemId + '/cancel-audit/approve', method: 'put', data: data || {} })
+}
+
+export function rejectCancelReservationItem(itemId, data) {
+  return request({ url: '/space/reservation/item/' + itemId + '/cancel-audit/reject', method: 'put', data: data || {} })
 }

@@ -72,6 +72,16 @@ public class SpaceReservationController extends BaseController
         return getDataTable(list);
     }
 
+    @PreAuthorize("@ss.hasPermi('space:cancelAudit:list')")
+    @GetMapping("/cancel-pending/list")
+    public TableDataInfo cancelPendingList(SpaceReservation spaceReservation)
+    {
+        spaceReservation.setCancelPendingOnly(true);
+        startPage();
+        List<SpaceReservation> list = spaceReservationService.selectSpaceReservationList(spaceReservation);
+        return getDataTable(list);
+    }
+
     @PreAuthorize("@ss.hasPermi('space:reservation:query')")
     @GetMapping(value = "/{reservationId}")
     public AjaxResult getInfo(@PathVariable Long reservationId)
@@ -112,6 +122,24 @@ public class SpaceReservationController extends BaseController
         return toAjax(spaceReservationService.cancelReservation(reservationId, getUsername()));
     }
 
+    @PreAuthorize("@ss.hasPermi('space:cancelAudit:approve')")
+    @Log(title = "取消预约审核", businessType = BusinessType.UPDATE)
+    @PutMapping("/{reservationId}/cancel-audit/approve")
+    public AjaxResult approveCancel(@PathVariable Long reservationId, @RequestBody(required = false) SpaceAuditLog auditLog)
+    {
+        String opinion = auditLog == null ? "同意取消" : auditLog.getAuditOpinion();
+        return toAjax(spaceReservationService.approveCancelReservation(reservationId, getUserId(), getUsername(), opinion, getUsername()));
+    }
+
+    @PreAuthorize("@ss.hasPermi('space:cancelAudit:reject')")
+    @Log(title = "取消预约审核", businessType = BusinessType.UPDATE)
+    @PutMapping("/{reservationId}/cancel-audit/reject")
+    public AjaxResult rejectCancel(@PathVariable Long reservationId, @RequestBody(required = false) SpaceAuditLog auditLog)
+    {
+        String reason = auditLog == null ? "驳回取消" : auditLog.getAuditOpinion();
+        return toAjax(spaceReservationService.rejectCancelReservation(reservationId, getUserId(), getUsername(), reason, getUsername()));
+    }
+
     @PreAuthorize("@ss.hasPermi('space:audit:approve')")
     @Log(title = "预约审核", businessType = BusinessType.UPDATE)
     @PutMapping("/{reservationId}/approve")
@@ -146,6 +174,24 @@ public class SpaceReservationController extends BaseController
     {
         String reason = auditLog == null ? "单场次驳回" : auditLog.getAuditOpinion();
         return toAjax(spaceReservationService.rejectItem(itemId, getUserId(), getUsername(), reason, getUsername()));
+    }
+
+    @PreAuthorize("@ss.hasPermi('space:cancelAudit:approve')")
+    @Log(title = "取消场次审核", businessType = BusinessType.UPDATE)
+    @PutMapping("/item/{itemId}/cancel-audit/approve")
+    public AjaxResult approveCancelItem(@PathVariable Long itemId, @RequestBody(required = false) SpaceAuditLog auditLog)
+    {
+        String opinion = auditLog == null ? "同意取消场次" : auditLog.getAuditOpinion();
+        return toAjax(spaceReservationService.approveCancelItem(itemId, getUserId(), getUsername(), opinion, getUsername()));
+    }
+
+    @PreAuthorize("@ss.hasPermi('space:cancelAudit:reject')")
+    @Log(title = "取消场次审核", businessType = BusinessType.UPDATE)
+    @PutMapping("/item/{itemId}/cancel-audit/reject")
+    public AjaxResult rejectCancelItem(@PathVariable Long itemId, @RequestBody(required = false) SpaceAuditLog auditLog)
+    {
+        String reason = auditLog == null ? "驳回取消场次" : auditLog.getAuditOpinion();
+        return toAjax(spaceReservationService.rejectCancelItem(itemId, getUserId(), getUsername(), reason, getUsername()));
     }
 
     @PreAuthorize("@ss.hasPermi('space:reservation:remove')")

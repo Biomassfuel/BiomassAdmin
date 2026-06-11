@@ -190,6 +190,7 @@ create table space_reservation (
   people_count      int(6)          default 0                  comment '预约人数',
   detail_remark     varchar(1000)   default ''                 comment '预约详细备注',
   status            char(1)         default '1'                comment '预约主状态（0草稿 1待审核 2已通过 3部分通过 4已驳回 5已取消 6已结束）',
+  audit_type        char(1)         default '0'                comment '当前审核类型（0普通预约审核 1取消审核）',
   submit_time       datetime                                   comment '提交时间',
   auditor_id        bigint(20)      default null               comment '最后审核人用户ID，关联sys_user.user_id，业务层维护一致性',
   auditor_name      varchar(50)     default ''                 comment '最后审核人姓名快照',
@@ -205,7 +206,7 @@ create table space_reservation (
   primary key (reservation_id),
   unique key uk_space_reservation_no (reservation_no),
   key idx_space_reservation_applicant (applicant_id, submit_time),
-  key idx_space_reservation_status (status, submit_time),
+  key idx_space_reservation_status (status, audit_type, submit_time),
   key idx_space_reservation_type (reservation_type, status)
 ) engine=innodb auto_increment=100 comment = '空间预约-预约申请主表';
 
@@ -550,6 +551,11 @@ insert into sys_dict_data values(122, 3, '部分通过',   '3',                '
 insert into sys_dict_data values(123, 4, '取消申请',   '4',                'space_audit_action',       '', 'info',    'N', '0', 'admin', sysdate(), '', null, '取消申请');
 insert into sys_dict_data values(124, 5, '单场次通过', '5',                'space_audit_action',       '', 'success', 'N', '0', 'admin', sysdate(), '', null, '单场次通过');
 insert into sys_dict_data values(125, 6, '单场次驳回', '6',                'space_audit_action',       '', 'danger',  'N', '0', 'admin', sysdate(), '', null, '单场次驳回');
+insert into sys_dict_data values(133, 7, '发起取消审核', '7',              'space_audit_action',       '', 'warning', 'N', '0', 'admin', sysdate(), '', null, '已通过预约发起取消审核');
+insert into sys_dict_data values(134, 8, '取消审核通过', '8',              'space_audit_action',       '', 'success', 'N', '0', 'admin', sysdate(), '', null, '取消审核通过');
+insert into sys_dict_data values(135, 9, '取消审核驳回', '9',              'space_audit_action',       '', 'danger',  'N', '0', 'admin', sysdate(), '', null, '取消审核驳回');
+insert into sys_dict_data values(136, 10, '单场次取消通过', 'A',           'space_audit_action',       '', 'success', 'N', '0', 'admin', sysdate(), '', null, '单场次取消审核通过');
+insert into sys_dict_data values(137, 11, '单场次取消驳回', 'B',           'space_audit_action',       '', 'danger',  'N', '0', 'admin', sysdate(), '', null, '单场次取消审核驳回');
 insert into sys_dict_data values(126, 1, '每周固定',   '0',                'space_rule_type',          '', 'primary', 'Y', '0', 'admin', sysdate(), '', null, '每周固定预约');
 insert into sys_dict_data values(127, 2, '每日固定',   '1',                'space_rule_type',          '', 'success', 'N', '0', 'admin', sysdate(), '', null, '每日固定预约');
 insert into sys_dict_data values(128, 3, '自定义日期', '2',                'space_rule_type',          '', 'warning', 'N', '0', 'admin', sysdate(), '', null, '自定义多日期预约');
@@ -595,8 +601,9 @@ insert into sys_menu values(2016, '房间占用详情', '2010', 6, 'occupancy-de
 
 insert into sys_menu values(2020, '审核管理模块', '0', 6, 'space-audit', null, '', 'SpaceAuditManage', 1, 0, 'M', '0', '0', '', 'audit', 'admin', sysdate(), '', null, '空间预约-审核管理模块');
 insert into sys_menu values(2021, '待审核预约', '2020', 1, 'pending', 'space/audit/pending', '', 'SpaceAuditPending', 1, 0, 'C', '0', '0', 'space:audit:list', 'validCode', 'admin', sysdate(), '', null, '待审核预约');
-insert into sys_menu values(2023, '预约记录', '2020', 2, 'record', 'space/audit/record', '', 'SpaceReservationRecord', 1, 0, 'C', '0', '0', 'space:reservation:list', 'documentation', 'admin', sysdate(), '', null, '预约记录');
-insert into sys_menu values(2025, '审核日志', '2020', 3, 'log', 'space/audit/log', '', 'SpaceAuditLog', 1, 0, 'C', '0', '0', 'space:auditLog:list', 'log', 'admin', sysdate(), '', null, '审核日志');
+insert into sys_menu values(2022, '待取消审核', '2020', 2, 'cancel-pending', 'space/audit/cancelPending', '', 'SpaceCancelAuditPending', 1, 0, 'C', '0', '0', 'space:cancelAudit:list', 'validCode', 'admin', sysdate(), '', null, '待取消审核');
+insert into sys_menu values(2023, '预约记录', '2020', 3, 'record', 'space/audit/record', '', 'SpaceReservationRecord', 1, 0, 'C', '0', '0', 'space:reservation:list', 'documentation', 'admin', sysdate(), '', null, '预约记录');
+insert into sys_menu values(2025, '审核日志', '2020', 4, 'log', 'space/audit/log', '', 'SpaceAuditLog', 1, 0, 'C', '0', '0', 'space:auditLog:list', 'log', 'admin', sysdate(), '', null, '审核日志');
 
 insert into sys_menu values(2030, '房间查询', '2001', 1, '', '', '', '', 1, 0, 'F', '0', '0', 'space:room:query', '#', 'admin', sysdate(), '', null, '');
 insert into sys_menu values(2031, '房间新增', '2001', 2, '', '', '', '', 1, 0, 'F', '0', '0', 'space:room:add', '#', 'admin', sysdate(), '', null, '');
@@ -625,17 +632,20 @@ insert into sys_menu values(2051, '审核驳回', '2021', 2, '', '', '', '', 1, 
 insert into sys_menu values(2052, '审核日志查询', '2025', 1, '', '', '', '', 1, 0, 'F', '0', '0', 'space:auditLog:query', '#', 'admin', sysdate(), '', null, '');
 insert into sys_menu values(2053, '审核日志导出', '2025', 2, '', '', '', '', 1, 0, 'F', '0', '0', 'space:auditLog:export', '#', 'admin', sysdate(), '', null, '');
 insert into sys_menu values(2054, '预约房间下拉查询', '2012', 1, '', '', '', '', 1, 0, 'F', '0', '0', 'space:room:list', '#', 'admin', sysdate(), '', null, '我要预约/长期预约页面加载房间下拉权限');
-insert into sys_menu values(2055, '预约时段下拉查询', '2012', 2, '', '', '', '', 1, 0, 'F', '0', '0', 'space:timePeriod:list', '#', 'admin', sysdate(), '', null, '我要预约/长期预约页面加载标准时段下拉权限');
+insert into sys_menu values(2055, '预约时段下拉查询', '2012', 2, '', '', '', '', 1, 0, 'F', '0', '0', 'space:timePeriod:list', '#', 'admin', sysdate(), '', null, '我要预约/长期预约/房间占用详情页面加载标准时段下拉权限');
+insert into sys_menu values(2058, '待取消审核查询', '2022', 1, '', '', '', '', 1, 0, 'F', '0', '0', 'space:cancelAudit:list', '#', 'admin', sysdate(), '', null, '');
+insert into sys_menu values(2059, '同意取消', '2022', 2, '', '', '', '', 1, 0, 'F', '0', '0', 'space:cancelAudit:approve', '#', 'admin', sysdate(), '', null, '');
+insert into sys_menu values(2060, '驳回取消', '2022', 3, '', '', '', '', 1, 0, 'F', '0', '0', 'space:cancelAudit:reject', '#', 'admin', sysdate(), '', null, '');
 
 insert into sys_role_menu(role_id, menu_id)
-select 100, menu_id from sys_menu where menu_id between 2000 and 2057;
+select 100, menu_id from sys_menu where menu_id between 2000 and 2060;
 
 insert into sys_role_menu(role_id, menu_id) values
 (101, 2010), (101, 2011), (101, 2012), (101, 2013), (101, 2014), (101, 2015), (101, 2016),
 (101, 2046), (101, 2048), (101, 2054), (101, 2055), (101, 2056), (101, 2057);
 
 insert into sys_role_menu(role_id, menu_id) values
-(102, 2010), (102, 2011), (102, 2016), (102, 2056), (102, 2057);
+(102, 2010), (102, 2011), (102, 2016), (102, 2055), (102, 2056), (102, 2057);
 
 -- ----------------------------
 -- 精简RuoYi默认部门和岗位数据

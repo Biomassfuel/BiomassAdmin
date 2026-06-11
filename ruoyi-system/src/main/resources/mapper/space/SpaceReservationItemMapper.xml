@@ -25,10 +25,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="reservationNo" column="reservation_no" />
         <result property="reservationType" column="reservation_type" />
         <result property="title" column="title" />
+        <result property="peopleCount" column="people_count" />
         <result property="applicantName" column="applicant_name" />
         <result property="orgName" column="org_name" />
         <result property="reservationStatus" column="reservation_status" />
-        <result property="createBy" column="create_by" />
+        <result property="auditType" column="audit_type" />
+        <result property="createBy" column="create_by" />
         <result property="createTime" column="create_time" />
         <result property="updateBy" column="update_by" />
         <result property="updateTime" column="update_time" />
@@ -40,8 +42,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
                sri.start_time, sri.end_time, sri.item_status, sri.conflict_flag, sri.conflict_reason, sri.conflict_item_id,
                sri.audit_time, sri.auditor_id, sri.auditor_name, sri.reject_reason, sri.create_by, sri.create_time,
                sri.update_by, sri.update_time, sri.remark,
-               sr.reservation_no, sr.reservation_type, sr.title, sr.applicant_name, sr.org_name,
-               sr.status as reservation_status
+               sr.reservation_no, sr.reservation_type, sr.title, sr.people_count, sr.applicant_name, sr.org_name,
+               sr.status as reservation_status, sr.audit_type
         from space_reservation_item sri
         left join space_reservation sr on sr.reservation_id = sri.reservation_id
     </sql>
@@ -60,10 +62,23 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="roomCode != null and roomCode != ''"> and sri.room_code like concat('%', #{roomCode}, '%')</if>
             <if test="roomName != null and roomName != ''"> and sri.room_name like concat('%', #{roomName}, '%')</if>
             <if test="bookingDate != null and bookingDate != ''"> and sri.booking_date like concat('%', #{bookingDate}, '%')</if>
+            <if test="bookingDateStart != null and bookingDateStart != ''"> and sri.booking_date &gt;= #{bookingDateStart}</if>
+            <if test="bookingDateEnd != null and bookingDateEnd != ''"> and sri.booking_date &lt;= #{bookingDateEnd}</if>
             <if test="weekday != null and weekday != ''"> and sri.weekday like concat('%', #{weekday}, '%')</if>
             <if test="startTime != null and startTime != ''"> and sri.start_time like concat('%', #{startTime}, '%')</if>
             <if test="endTime != null and endTime != ''"> and sri.end_time like concat('%', #{endTime}, '%')</if>
-            <if test="itemStatus != null and itemStatus != ''"> and sri.item_status = #{itemStatus}</if>
+            <if test="periodStartTime != null and periodStartTime != '' and periodEndTime != null and periodEndTime != ''">
+                and sri.start_time &lt; #{periodEndTime}
+                and sri.end_time &gt; #{periodStartTime}
+            </if>
+            <choose>
+                <when test="occupiedOnly != null and occupiedOnly">
+                    and sri.item_status in ('1', '2')
+                </when>
+                <otherwise>
+                    <if test="itemStatus != null and itemStatus != ''"> and sri.item_status = #{itemStatus}</if>
+                </otherwise>
+            </choose>
             <if test="conflictFlag != null and conflictFlag != ''"> and sri.conflict_flag = #{conflictFlag}</if>
             <if test="conflictReason != null and conflictReason != ''"> and sri.conflict_reason like concat('%', #{conflictReason}, '%')</if>
             <if test="conflictItemId != null"> and sri.conflict_item_id = #{conflictItemId}</if>

@@ -35,7 +35,12 @@ export function auditActionText(action) {
     '2': '驳回',
     '4': '取消',
     '5': '场次通过',
-    '6': '场次驳回'
+    '6': '场次驳回',
+    '7': '发起取消审核',
+    '8': '取消审核通过',
+    '9': '取消审核驳回',
+    'A': '场次取消通过',
+    'B': '场次取消驳回'
   }[action] || action || '-'
 }
 
@@ -69,7 +74,12 @@ export const auditActionOptions = [
   { label: '驳回', value: '2' },
   { label: '取消', value: '4' },
   { label: '场次通过', value: '5' },
-  { label: '场次驳回', value: '6' }
+  { label: '场次驳回', value: '6' },
+  { label: '发起取消审核', value: '7' },
+  { label: '取消审核通过', value: '8' },
+  { label: '取消审核驳回', value: '9' },
+  { label: '场次取消通过', value: 'A' },
+  { label: '场次取消驳回', value: 'B' }
 ]
 
 export const standardPeriodCodes = ['MORNING', 'AFTERNOON', 'EVENING']

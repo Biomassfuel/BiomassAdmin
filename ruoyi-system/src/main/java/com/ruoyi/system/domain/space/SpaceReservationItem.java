@@ -24,6 +24,11 @@ public class SpaceReservationItem extends BaseEntity
     private String startTime;
     @Excel(name = "结束时间")
     private String endTime;
+    private String periodStartTime;
+    private String periodEndTime;
+    private String bookingDateStart;
+    private String bookingDateEnd;
+    private Boolean occupiedOnly;
     @Excel(name = "场次状态", readConverterExp = "1=待审核,2=已通过,3=已驳回,4=冲突待处理,5=已取消,6=已结束")
     private String itemStatus;
     @Excel(name = "冲突标识", readConverterExp = "0=否,1=是")
@@ -45,12 +50,15 @@ public class SpaceReservationItem extends BaseEntity
     private String reservationType;
     @Excel(name = "预约主题")
     private String title;
+    @Excel(name = "预约人数")
+    private Integer peopleCount;
     @Excel(name = "申请人")
     private String applicantName;
     @Excel(name = "申请单位")
     private String orgName;
     @Excel(name = "预约状态", readConverterExp = "0=草稿,1=待审核,2=已通过,3=部分通过,4=已驳回,5=已取消,6=已结束")
     private String reservationStatus;
+    private String auditType;
 
     public Long getItemId()
     {
@@ -142,7 +150,57 @@ public class SpaceReservationItem extends BaseEntity
         this.endTime = endTime;
     }
 
-    public String getItemStatus()
+    public String getPeriodStartTime()
+    {
+        return periodStartTime;
+    }
+
+    public void setPeriodStartTime(String periodStartTime)
+    {
+        this.periodStartTime = periodStartTime;
+    }
+
+    public String getPeriodEndTime()
+    {
+        return periodEndTime;
+    }
+
+    public void setPeriodEndTime(String periodEndTime)
+    {
+        this.periodEndTime = periodEndTime;
+    }
+
+    public String getBookingDateStart()
+    {
+        return bookingDateStart;
+    }
+
+    public void setBookingDateStart(String bookingDateStart)
+    {
+        this.bookingDateStart = bookingDateStart;
+    }
+
+    public String getBookingDateEnd()
+    {
+        return bookingDateEnd;
+    }
+
+    public void setBookingDateEnd(String bookingDateEnd)
+    {
+        this.bookingDateEnd = bookingDateEnd;
+    }
+
+    public Boolean getOccupiedOnly()
+    {
+        return occupiedOnly;
+    }
+
+    public void setOccupiedOnly(Boolean occupiedOnly)
+    {
+        this.occupiedOnly = occupiedOnly;
+    }
+
+    public String getItemStatus()
     {
         return itemStatus;
     }
@@ -252,6 +310,16 @@ public class SpaceReservationItem extends BaseEntity
         this.title = title;
     }
 
+    public Integer getPeopleCount()
+    {
+        return peopleCount;
+    }
+
+    public void setPeopleCount(Integer peopleCount)
+    {
+        this.peopleCount = peopleCount;
+    }
+
     public String getApplicantName()
     {
         return applicantName;
@@ -280,5 +348,15 @@ public class SpaceReservationItem extends BaseEntity
     public void setReservationStatus(String reservationStatus)
     {
         this.reservationStatus = reservationStatus;
+    }
+
+    public String getAuditType()
+    {
+        return auditType;
+    }
+
+    public void setAuditType(String auditType)
+    {
+        this.auditType = auditType;
     }
 }

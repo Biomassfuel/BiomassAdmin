@@ -46,6 +46,7 @@
         <template slot-scope="scope">
           <el-button size="mini" type="text" icon="el-icon-view" @click="handleView(scope.row)" v-hasPermi="['space:reservation:query']">详情</el-button>
           <el-button v-if="scope.row.status === '1'" size="mini" type="text" icon="el-icon-close" @click="handleCancel(scope.row)" v-hasPermi="['space:reservation:cancel']">取消</el-button>
+          <el-button v-if="scope.row.status === '2' || scope.row.status === '3'" size="mini" type="text" icon="el-icon-close" @click="handleCancelApproved(scope.row)" v-hasPermi="['space:reservation:cancel']">取消已通过</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -123,6 +124,14 @@ export default {
         return cancelReservation(row.reservationId)
       }).then(() => {
         this.$modal.msgSuccess('取消成功')
+        this.getList()
+      }).catch(() => {})
+    },
+    handleCancelApproved(row) {
+      this.$modal.confirm('是否确认发起预约编号为"' + row.reservationNo + '"的取消审核？').then(function() {
+        return cancelReservation(row.reservationId)
+      }).then(() => {
+        this.$modal.msgSuccess('已提交取消审核')
         this.getList()
       }).catch(() => {})
     }

@@ -35,6 +35,7 @@ public class SpaceReservation extends BaseEntity
     private String detailRemark;
     @Excel(name = "状态", readConverterExp = "0=草稿,1=待审核,2=已通过,3=部分通过,4=已驳回,5=已取消,6=已结束")
     private String status;
+    private String auditType;
     @Excel(name = "提交时间", dateFormat = "yyyy-MM-dd HH:mm:ss")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date submitTime;
@@ -49,6 +50,7 @@ public class SpaceReservation extends BaseEntity
     private Integer version;
     private String delFlag;
     private Boolean pendingOnly;
+    private Boolean cancelPendingOnly;
 
     private List<SpaceReservationItem> items;
     private SpaceReservationRule rule;
@@ -193,7 +195,27 @@ public class SpaceReservation extends BaseEntity
         this.status = status;
     }
 
-    public Date getSubmitTime()
+    public String getAuditType()
+
+    {
+
+        return auditType;
+
+    }
+
+
+
+    public void setAuditType(String auditType)
+
+    {
+
+        this.auditType = auditType;
+
+    }
+
+
+
+    public Date getSubmitTime()
     {
         return submitTime;
     }
@@ -278,6 +300,26 @@ public class SpaceReservation extends BaseEntity
     {
 
         this.pendingOnly = pendingOnly;
+
+    }
+
+
+
+    public Boolean getCancelPendingOnly()
+
+    {
+
+        return cancelPendingOnly;
+
+    }
+
+
+
+    public void setCancelPendingOnly(Boolean cancelPendingOnly)
+
+    {
+
+        this.cancelPendingOnly = cancelPendingOnly;
 
     }
 

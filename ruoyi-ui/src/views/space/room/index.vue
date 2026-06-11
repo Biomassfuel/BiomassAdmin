@@ -196,22 +196,11 @@
       </div>
     </el-dialog>
 
-    <el-dialog title="房间详情" :visible.sync="detailOpen" width="760px" append-to-body>
-      <el-descriptions v-if="detail" :column="2" border>
-        <el-descriptions-item label="房间编号">{{ detail.roomCode }}</el-descriptions-item>
-        <el-descriptions-item label="房间名称">{{ detail.roomName }}</el-descriptions-item>
-        <el-descriptions-item label="楼栋">{{ detail.buildingName }}</el-descriptions-item>
-        <el-descriptions-item label="楼层">{{ detail.floorNo }}</el-descriptions-item>
-        <el-descriptions-item label="房间类型">{{ detail.roomType }}</el-descriptions-item>
-        <el-descriptions-item label="面积">{{ detail.area || '-' }}</el-descriptions-item>
-        <el-descriptions-item label="容量">{{ capacityText(detail) }}</el-descriptions-item>
-        <el-descriptions-item label="归属单位">{{ detail.assignedOrgName || '-' }}</el-descriptions-item>
-        <el-descriptions-item label="可预约">{{ detail.bookable === '0' ? '可预约' : '不可预约' }}</el-descriptions-item>
-        <el-descriptions-item label="状态">{{ detail.status === '0' ? '正常' : '停用' }}</el-descriptions-item>
-        <el-descriptions-item label="设备说明" :span="2">{{ detail.equipmentDesc || '-' }}</el-descriptions-item>
-        <el-descriptions-item label="位置说明" :span="2">{{ detail.locationDesc || '-' }}</el-descriptions-item>
-        <el-descriptions-item label="备注" :span="2">{{ detail.remark || '-' }}</el-descriptions-item>
-      </el-descriptions>
+    <el-dialog title="房间详情" :visible.sync="detailOpen" width="92vw" append-to-body class="room-detail-dialog">
+      <div class="room-detail-dialog__body">
+        <room-info-card :room="detail" :column="3" :realtime-status="detailRealtimeStatus" />
+        <room-week-schedule :room-id="detail && detail.roomId" />
+      </div>
     </el-dialog>
 
     <el-dialog :title="upload.title" :visible.sync="upload.open" width="400px" append-to-body>
@@ -249,10 +238,15 @@
 import { getToken } from '@/utils/auth'
 import { listRoom, getRoom, addRoom, updateRoom, delRoom } from '@/api/space/room'
 import { listRoomType } from '@/api/space/room-type'
+import { listReservationItem } from '@/api/space/reservation-item'
 import { fetchAllPages } from '@/utils/paged-list'
+import { formatDate } from '@/views/space/reservation/utils'
+import RoomInfoCard from '@/views/space/components/RoomInfoCard'
+import RoomWeekSchedule from '@/views/space/components/RoomWeekSchedule'
 
 export default {
   name: 'SpaceRoom',
+  components: { RoomInfoCard, RoomWeekSchedule },
   data() {
     return {
       loading: true,
@@ -267,6 +261,10 @@ export default {
       open: false,
       detailOpen: false,
       detail: null,
+      detailRealtimeStatus: {
+        occupied: false,
+        text: '空闲'
+      },
       upload: {
         open: false,
         title: '',
@@ -385,10 +383,38 @@ export default {
       })
     },
     handleDetail(row) {
+      this.detail = null
+      this.detailRealtimeStatus = { occupied: false, text: '空闲' }
+      this.detailOpen = true
       getRoom(row.roomId).then(response => {
         this.detail = response.data
-        this.detailOpen = true
       })
+      this.getDetailRealtimeStatus(row.roomId)
+    },
+    getDetailRealtimeStatus(roomId) {
+      if (!roomId) return
+      const now = new Date()
+      listReservationItem({
+        pageNum: 1,
+        pageSize: 500,
+        roomId,
+        bookingDate: formatDate(now),
+        occupiedOnly: true
+      }).then(response => {
+        const currentMinutes = this.timeToMinutes(`${now.getHours()}:${now.getMinutes()}`)
+        const activeItem = (response.rows || []).find(item => {
+          const start = this.timeToMinutes(item.startTime)
+          const end = this.timeToMinutes(item.endTime)
+          return start <= currentMinutes && currentMinutes < end
+        })
+        this.detailRealtimeStatus = activeItem
+          ? { occupied: true, text: `占用中 ${activeItem.startTime} - ${activeItem.endTime}` }
+          : { occupied: false, text: '空闲' }
+      })
+    },
+    timeToMinutes(value) {
+      const parts = String(value || '0:0').split(':')
+      return Number(parts[0] || 0) * 60 + Number(parts[1] || 0)
     },
     submitForm() {
       this.$refs.form.validate(valid => {
@@ -465,3 +491,11 @@ export default {
   }
 }
 </script>
+
+<style lang="scss" scoped>
+.room-detail-dialog__body {
+  max-height: 72vh;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+</style>

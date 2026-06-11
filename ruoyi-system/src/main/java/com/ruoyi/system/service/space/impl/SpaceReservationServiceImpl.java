@@ -25,6 +25,10 @@ import com.ruoyi.system.service.space.ISpaceReservationService;
 @Service
 public class SpaceReservationServiceImpl implements ISpaceReservationService
 {
+    private static final String AUDIT_TYPE_NORMAL = "0";
+
+    private static final String AUDIT_TYPE_CANCEL = "1";
+
     @Autowired
     private SpaceReservationMapper spaceReservationMapper;
 
@@ -99,6 +103,7 @@ public class SpaceReservationServiceImpl implements ISpaceReservationService
         }
 
         spaceReservation.setStatus("1");
+        spaceReservation.setAuditType(AUDIT_TYPE_NORMAL);
         spaceReservation.setDelFlag("0");
         spaceReservation.setSubmitTime(new Date());
         int rows = spaceReservationMapper.insertSpaceReservation(spaceReservation);
@@ -152,6 +157,10 @@ public class SpaceReservationServiceImpl implements ISpaceReservationService
         {
             throw new ServiceException("预约申请不存在");
         }
+        if (AUDIT_TYPE_CANCEL.equals(reservation.getAuditType()))
+        {
+            throw new ServiceException("取消审核预约请在待取消审核模块处理");
+        }
         for (SpaceReservationItem item : reservation.getItems())
         {
             if ("1".equals(item.getConflictFlag()) || "4".equals(item.getItemStatus()))
@@ -174,6 +183,7 @@ public class SpaceReservationServiceImpl implements ISpaceReservationService
         SpaceReservation update = new SpaceReservation();
         update.setReservationId(reservationId);
         update.setStatus("2");
+        update.setAuditType(AUDIT_TYPE_NORMAL);
         update.setAuditorId(auditorId);
         update.setAuditorName(auditorName);
         update.setRejectReason("");
@@ -192,6 +202,10 @@ public class SpaceReservationServiceImpl implements ISpaceReservationService
         {
             throw new ServiceException("预约申请不存在");
         }
+        if (AUDIT_TYPE_CANCEL.equals(reservation.getAuditType()))
+        {
+            throw new ServiceException("取消审核预约请在待取消审核模块处理");
+        }
         for (SpaceReservationItem item : reservation.getItems())
         {
             item.setItemStatus("3");
@@ -206,6 +220,7 @@ public class SpaceReservationServiceImpl implements ISpaceReservationService
         SpaceReservation update = new SpaceReservation();
         update.setReservationId(reservationId);
         update.setStatus("4");
+        update.setAuditType(AUDIT_TYPE_NORMAL);
         update.setAuditorId(auditorId);
         update.setAuditorName(auditorName);
         update.setRejectReason(reason);
@@ -224,6 +239,18 @@ public class SpaceReservationServiceImpl implements ISpaceReservationService
         {
             throw new ServiceException("预约申请不存在");
         }
+        if (AUDIT_TYPE_CANCEL.equals(reservation.getAuditType()))
+        {
+            throw new ServiceException("取消申请正在审核中");
+        }
+        if ("2".equals(reservation.getStatus()) || "3".equals(reservation.getStatus()))
+        {
+            return submitCancelAudit(reservation, updateBy);
+        }
+        if (!"1".equals(reservation.getStatus()))
+        {
+            throw new ServiceException("当前状态不支持取消");
+        }
         for (SpaceReservationItem item : reservation.getItems())
         {
             item.setItemStatus("5");
@@ -235,9 +262,74 @@ public class SpaceReservationServiceImpl implements ISpaceReservationService
         SpaceReservation update = new SpaceReservation();
         update.setReservationId(reservationId);
         update.setStatus("5");
+        update.setAuditType(AUDIT_TYPE_NORMAL);
         update.setUpdateBy(updateBy);
         int rows = spaceReservationMapper.updateReservationStatus(update);
         writeAuditLog(reservationId, null, "4", reservation.getStatus(), "5", null, updateBy, "取消预约申请", updateBy);
+        return rows;
+    }
+
+    @Override
+    @Transactional
+    public int approveCancelReservation(Long reservationId, Long auditorId, String auditorName, String opinion, String updateBy)
+    {
+        SpaceReservation reservation = selectCancelAuditReservation(reservationId);
+        for (SpaceReservationItem item : reservation.getItems())
+        {
+            if ("1".equals(item.getItemStatus()))
+            {
+                item.setItemStatus("5");
+                item.setConflictFlag("0");
+                item.setConflictReason("");
+                item.setAuditorId(auditorId);
+                item.setAuditorName(auditorName);
+                item.setRejectReason("");
+                item.setUpdateBy(updateBy);
+                spaceReservationItemMapper.updateItemStatus(item);
+            }
+        }
+        SpaceReservation update = new SpaceReservation();
+        update.setReservationId(reservationId);
+        update.setStatus(resolveCancelAuditFinishedStatus(reservationId));
+        update.setAuditType(AUDIT_TYPE_NORMAL);
+        update.setAuditorId(auditorId);
+        update.setAuditorName(auditorName);
+        update.setRejectReason("");
+        update.setUpdateBy(updateBy);
+        int rows = spaceReservationMapper.updateReservationStatus(update);
+        writeAuditLog(reservationId, null, "8", reservation.getStatus(), update.getStatus(), auditorId, auditorName, opinion, updateBy);
+        return rows;
+    }
+
+    @Override
+    @Transactional
+    public int rejectCancelReservation(Long reservationId, Long auditorId, String auditorName, String reason, String updateBy)
+    {
+        SpaceReservation reservation = selectCancelAuditReservation(reservationId);
+        for (SpaceReservationItem item : reservation.getItems())
+        {
+            if ("1".equals(item.getItemStatus()))
+            {
+                item.setItemStatus("2");
+                item.setConflictFlag("0");
+                item.setConflictReason("");
+                item.setAuditorId(auditorId);
+                item.setAuditorName(auditorName);
+                item.setRejectReason(reason);
+                item.setUpdateBy(updateBy);
+                spaceReservationItemMapper.updateItemStatus(item);
+            }
+        }
+        SpaceReservation update = new SpaceReservation();
+        update.setReservationId(reservationId);
+        update.setStatus(resolveCancelAuditFinishedStatus(reservationId));
+        update.setAuditType(AUDIT_TYPE_NORMAL);
+        update.setAuditorId(auditorId);
+        update.setAuditorName(auditorName);
+        update.setRejectReason(reason);
+        update.setUpdateBy(updateBy);
+        int rows = spaceReservationMapper.updateReservationStatus(update);
+        writeAuditLog(reservationId, null, "9", reservation.getStatus(), update.getStatus(), auditorId, auditorName, reason, updateBy);
         return rows;
     }
 
@@ -249,6 +341,11 @@ public class SpaceReservationServiceImpl implements ISpaceReservationService
         if (item == null)
         {
             throw new ServiceException("预约场次不存在");
+        }
+        SpaceReservation reservation = selectSpaceReservationById(item.getReservationId());
+        if (reservation != null && AUDIT_TYPE_CANCEL.equals(reservation.getAuditType()))
+        {
+            throw new ServiceException("取消审核场次请在待取消审核模块处理");
         }
         assertNoConflict(item, updateBy);
         String before = item.getItemStatus();
@@ -274,6 +371,11 @@ public class SpaceReservationServiceImpl implements ISpaceReservationService
         {
             throw new ServiceException("预约场次不存在");
         }
+        SpaceReservation reservation = selectSpaceReservationById(item.getReservationId());
+        if (reservation != null && AUDIT_TYPE_CANCEL.equals(reservation.getAuditType()))
+        {
+            throw new ServiceException("取消审核场次请在待取消审核模块处理");
+        }
         String before = item.getItemStatus();
         item.setItemStatus("3");
         item.setConflictFlag("0");
@@ -286,6 +388,190 @@ public class SpaceReservationServiceImpl implements ISpaceReservationService
         writeAuditLog(item.getReservationId(), itemId, "6", before, "3", auditorId, auditorName, reason, updateBy);
         refreshReservationStatus(item.getReservationId(), auditorId, auditorName, updateBy);
         return rows;
+    }
+
+    @Override
+    @Transactional
+    public int approveCancelItem(Long itemId, Long auditorId, String auditorName, String opinion, String updateBy)
+    {
+        SpaceReservationItem item = selectCancelAuditItem(itemId);
+        String before = item.getItemStatus();
+        item.setItemStatus("5");
+        item.setConflictFlag("0");
+        item.setConflictReason("");
+        item.setAuditorId(auditorId);
+        item.setAuditorName(auditorName);
+        item.setRejectReason("");
+        item.setUpdateBy(updateBy);
+        int rows = spaceReservationItemMapper.updateItemStatus(item);
+        writeAuditLog(item.getReservationId(), itemId, "A", before, "5", auditorId, auditorName, opinion, updateBy);
+        refreshCancelAuditReservationStatus(item.getReservationId(), auditorId, auditorName, updateBy, "");
+        return rows;
+    }
+
+    @Override
+    @Transactional
+    public int rejectCancelItem(Long itemId, Long auditorId, String auditorName, String reason, String updateBy)
+    {
+        SpaceReservationItem item = selectCancelAuditItem(itemId);
+        String before = item.getItemStatus();
+        item.setItemStatus("2");
+        item.setConflictFlag("0");
+        item.setConflictReason("");
+        item.setAuditorId(auditorId);
+        item.setAuditorName(auditorName);
+        item.setRejectReason(reason);
+        item.setUpdateBy(updateBy);
+        int rows = spaceReservationItemMapper.updateItemStatus(item);
+        writeAuditLog(item.getReservationId(), itemId, "B", before, "2", auditorId, auditorName, reason, updateBy);
+        refreshCancelAuditReservationStatus(item.getReservationId(), auditorId, auditorName, updateBy, reason);
+        return rows;
+    }
+
+    private int submitCancelAudit(SpaceReservation reservation, String updateBy)
+    {
+        boolean hasApprovedItem = false;
+        for (SpaceReservationItem item : reservation.getItems())
+        {
+            if ("2".equals(item.getItemStatus()))
+            {
+                hasApprovedItem = true;
+                item.setItemStatus("1");
+                item.setConflictFlag("0");
+                item.setConflictReason("");
+                item.setAuditorId(null);
+                item.setAuditorName("");
+                item.setRejectReason("");
+                item.setUpdateBy(updateBy);
+                spaceReservationItemMapper.updateItemStatus(item);
+            }
+        }
+        if (!hasApprovedItem)
+        {
+            throw new ServiceException("当前预约没有可取消的已通过场次");
+        }
+        SpaceReservation update = new SpaceReservation();
+        update.setReservationId(reservation.getReservationId());
+        update.setStatus("1");
+        update.setAuditType(AUDIT_TYPE_CANCEL);
+        update.setAuditorId(null);
+        update.setAuditorName("");
+        update.setRejectReason("");
+        update.setUpdateBy(updateBy);
+        int rows = spaceReservationMapper.updateReservationStatus(update);
+        writeAuditLog(reservation.getReservationId(), null, "7", reservation.getStatus(), "1", null, updateBy, "发起取消审核", updateBy);
+        return rows;
+    }
+
+    private SpaceReservation selectCancelAuditReservation(Long reservationId)
+    {
+        SpaceReservation reservation = selectSpaceReservationById(reservationId);
+        if (reservation == null)
+        {
+            throw new ServiceException("预约申请不存在");
+        }
+        if (!"1".equals(reservation.getStatus()) || !AUDIT_TYPE_CANCEL.equals(reservation.getAuditType()))
+        {
+            throw new ServiceException("当前预约不在取消审核中");
+        }
+        return reservation;
+    }
+
+    private SpaceReservationItem selectCancelAuditItem(Long itemId)
+    {
+        SpaceReservationItem item = spaceReservationItemMapper.selectSpaceReservationItemById(itemId);
+        if (item == null)
+        {
+            throw new ServiceException("预约场次不存在");
+        }
+        SpaceReservation reservation = selectCancelAuditReservation(item.getReservationId());
+        if (!"1".equals(item.getItemStatus()))
+        {
+            throw new ServiceException("当前场次不在取消审核中");
+        }
+        if (reservation.getItems() == null)
+        {
+            throw new ServiceException("当前预约不在取消审核中");
+        }
+        return item;
+    }
+
+    private void refreshCancelAuditReservationStatus(Long reservationId, Long auditorId, String auditorName, String updateBy, String rejectReason)
+    {
+        SpaceReservationItem query = new SpaceReservationItem();
+        query.setReservationId(reservationId);
+        List<SpaceReservationItem> items = spaceReservationItemMapper.selectSpaceReservationItemList(query);
+        for (SpaceReservationItem item : items)
+        {
+            if ("1".equals(item.getItemStatus()))
+            {
+                SpaceReservation update = new SpaceReservation();
+                update.setReservationId(reservationId);
+                update.setStatus("1");
+                update.setAuditType(AUDIT_TYPE_CANCEL);
+                update.setAuditorId(auditorId);
+                update.setAuditorName(auditorName);
+                update.setRejectReason(rejectReason);
+                update.setUpdateBy(updateBy);
+                spaceReservationMapper.updateReservationStatus(update);
+                return;
+            }
+        }
+        SpaceReservation update = new SpaceReservation();
+        update.setReservationId(reservationId);
+        update.setStatus(resolveFinishedStatus(items));
+        update.setAuditType(AUDIT_TYPE_NORMAL);
+        update.setAuditorId(auditorId);
+        update.setAuditorName(auditorName);
+        update.setRejectReason(rejectReason);
+        update.setUpdateBy(updateBy);
+        spaceReservationMapper.updateReservationStatus(update);
+    }
+
+    private String resolveCancelAuditFinishedStatus(Long reservationId)
+    {
+        SpaceReservationItem query = new SpaceReservationItem();
+        query.setReservationId(reservationId);
+        return resolveFinishedStatus(spaceReservationItemMapper.selectSpaceReservationItemList(query));
+    }
+
+    private String resolveFinishedStatus(List<SpaceReservationItem> items)
+    {
+        int approved = 0;
+        int rejected = 0;
+        int canceled = 0;
+        for (SpaceReservationItem item : items)
+        {
+            if ("2".equals(item.getItemStatus()))
+            {
+                approved++;
+            }
+            else if ("3".equals(item.getItemStatus()))
+            {
+                rejected++;
+            }
+            else if ("5".equals(item.getItemStatus()))
+            {
+                canceled++;
+            }
+        }
+        if (canceled == items.size())
+        {
+            return "5";
+        }
+        if (approved == 0 && canceled > 0)
+        {
+            return "5";
+        }
+        if (approved == items.size())
+        {
+            return "2";
+        }
+        if (rejected == items.size())
+        {
+            return "4";
+        }
+        return "3";
     }
 
     private void fillRoomSnapshot(SpaceReservationItem item)
@@ -406,6 +692,7 @@ public class SpaceReservationServiceImpl implements ISpaceReservationService
         SpaceReservation update = new SpaceReservation();
         update.setReservationId(reservationId);
         update.setStatus(status);
+        update.setAuditType(AUDIT_TYPE_NORMAL);
         update.setAuditorId(auditorId);
         update.setAuditorName(auditorName);
         update.setUpdateBy(updateBy);
