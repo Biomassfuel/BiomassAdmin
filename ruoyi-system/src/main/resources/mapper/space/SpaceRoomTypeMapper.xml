@@ -37,6 +37,16 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
     </select>
 
+    <select id="selectSpaceRoomTypeByName" parameterType="String" resultMap="SpaceRoomTypeResult">
+
+        <include refid="selectSpaceRoomTypeVo"/>
+
+        where type_name = #{typeName}
+
+        limit 1
+
+    </select>
+
 
 
     <select id="selectSpaceRoomTypeList" parameterType="SpaceRoomType" resultMap="SpaceRoomTypeResult">

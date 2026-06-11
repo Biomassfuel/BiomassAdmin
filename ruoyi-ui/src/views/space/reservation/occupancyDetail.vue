@@ -1,25 +1,31 @@
 <template>
   <div class="app-container">
     <div class="detail-toolbar">
+      <el-button plain icon="el-icon-tickets" size="mini" @click="handleReservationRecords" v-hasPermi="['space:reservationItem:publicList']">预约记录</el-button>
       <el-button plain icon="el-icon-back" size="mini" @click="handleBack">返回</el-button>
     </div>
 
     <room-info-card :room="room" :realtime-status="realtimeStatus" :column="3" />
 
     <room-week-schedule :room-id="queryParams.roomId" />
+
+    <el-dialog :title="reservationRecordTitle" :visible.sync="reservationRecordOpen" width="92vw" append-to-body>
+      <public-reservation-items v-if="reservationRecordOpen" :room-id="queryParams.roomId" :toolbar="false" fixed-item-status="2" />
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import { getRoom } from '@/api/space/room'
-import { listReservationItem } from '@/api/space/reservation-item'
+import { listPublicReservationItem } from '@/api/space/reservation-item'
 import { formatDate } from './utils'
 import RoomInfoCard from '@/views/space/components/RoomInfoCard'
 import RoomWeekSchedule from '@/views/space/components/RoomWeekSchedule'
+import PublicReservationItems from '@/views/space/reservation/PublicReservationItems'
 
 export default {
   name: 'SpaceOccupancyDetail',
-  components: { RoomInfoCard, RoomWeekSchedule },
+  components: { RoomInfoCard, RoomWeekSchedule, PublicReservationItems },
   data() {
     return {
       room: null,
@@ -28,6 +34,7 @@ export default {
         occupied: false,
         text: '空闲'
       },
+      reservationRecordOpen: false,
       queryParams: {
         roomId: null
       }
@@ -67,12 +74,11 @@ export default {
     getRealtimeStatus() {
       if (!this.queryParams.roomId) return
       const now = new Date()
-      listReservationItem({
+      listPublicReservationItem({
         pageNum: 1,
         pageSize: 500,
         roomId: this.queryParams.roomId,
-        bookingDate: formatDate(now),
-        occupiedOnly: true
+        bookingDate: formatDate(now)
       }).then(response => {
         const currentMinutes = this.timeToMinutes(`${now.getHours()}:${now.getMinutes()}`)
         const activeItem = (response.rows || []).find(item => {
@@ -92,6 +98,16 @@ export default {
     },
     handleBack() {
       this.$tab.closeOpenPage({ path: '/space-reservation/occupancy' })
+    },
+    handleReservationRecords() {
+      if (!this.queryParams.roomId) return
+      this.reservationRecordOpen = true
+    }
+  },
+  computed: {
+    reservationRecordTitle() {
+      const roomText = this.room ? [this.room.roomCode, this.room.roomName].filter(Boolean).join(' ') : ''
+      return `${roomText} 预约记录`.trim() || '预约记录'
     }
   }
 }
@@ -101,6 +117,7 @@ export default {
 .detail-toolbar {
   display: flex;
   justify-content: flex-end;
+  gap: 8px;
   margin-bottom: 12px;
 }
 

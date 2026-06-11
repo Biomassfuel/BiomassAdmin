@@ -37,6 +37,24 @@ public class SpaceRoomTypeController extends BaseController
         return getDataTable(list);
     }
 
+    @PreAuthorize("@ss.hasPermi('space:reservationItem:publicList')")
+    @GetMapping("/public/list")
+    public TableDataInfo publicList(SpaceRoomType spaceRoomType)
+    {
+        spaceRoomType.setStatus("0");
+        startPage();
+        List<SpaceRoomType> list = spaceRoomTypeService.selectSpaceRoomTypeList(spaceRoomType);
+        list.forEach(this::sanitizePublicType);
+        return getDataTable(list);
+    }
+
+    private void sanitizePublicType(SpaceRoomType type)
+    {
+        type.setCreateBy(null);
+        type.setUpdateBy(null);
+        type.setRemark(null);
+    }
+
     @PreAuthorize("@ss.hasPermi('space:roomType:export')")
     @Log(title = "房间类型", businessType = BusinessType.EXPORT)
     @PostMapping("/export")

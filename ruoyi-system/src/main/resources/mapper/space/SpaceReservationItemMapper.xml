@@ -28,6 +28,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="peopleCount" column="people_count" />
         <result property="applicantName" column="applicant_name" />
         <result property="orgName" column="org_name" />
+        <result property="detailRemark" column="detail_remark" />
         <result property="reservationStatus" column="reservation_status" />
         <result property="auditType" column="audit_type" />
         <result property="createBy" column="create_by" />
@@ -42,7 +43,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
                sri.start_time, sri.end_time, sri.item_status, sri.conflict_flag, sri.conflict_reason, sri.conflict_item_id,
                sri.audit_time, sri.auditor_id, sri.auditor_name, sri.reject_reason, sri.create_by, sri.create_time,
                sri.update_by, sri.update_time, sri.remark,
-               sr.reservation_no, sr.reservation_type, sr.title, sr.people_count, sr.applicant_name, sr.org_name,
+               sr.reservation_no, sr.reservation_type, sr.title, sr.people_count, sr.applicant_name, sr.org_name, sr.detail_remark,
                sr.status as reservation_status, sr.audit_type
         from space_reservation_item sri
         left join space_reservation sr on sr.reservation_id = sri.reservation_id
@@ -72,6 +73,17 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
                 and sri.end_time &gt; #{periodStartTime}
             </if>
             <choose>
+                <when test="publicOnly != null and publicOnly">
+                    and sr.del_flag = '0'
+                    and (
+                        sri.item_status in ('2', '6')
+                        or (sri.item_status = '1' and sr.audit_type = '1')
+                    )
+                    and sr.status in ('1', '2', '3', '6')
+                    <if test="itemStatus != null and itemStatus != ''">
+                        and sri.item_status = #{itemStatus}
+                    </if>
+                </when>
                 <when test="occupiedOnly != null and occupiedOnly">
                     and sri.item_status in ('1', '2')
                 </when>
@@ -89,12 +101,21 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
             <if test="reservationNo != null and reservationNo != ''"> and sr.reservation_no like concat('%', #{reservationNo}, '%')</if>
 
+            <if test="reservationType != null and reservationType != ''"> and sr.reservation_type = #{reservationType}</if>
+
             <if test="title != null and title != ''"> and sr.title like concat('%', #{title}, '%')</if>
 
             <if test="applicantName != null and applicantName != ''"> and sr.applicant_name like concat('%', #{applicantName}, '%')</if>
-        </where>
-        order by sri.item_id desc
-    </select>
+        </where>
+        <choose>
+            <when test="publicOnly != null and publicOnly">
+                order by sri.booking_date desc, sri.start_time desc, sri.item_id desc
+            </when>
+            <otherwise>
+                order by sri.item_id desc
+            </otherwise>
+        </choose>
+    </select>
 
     <insert id="insertSpaceReservationItem" parameterType="SpaceReservationItem" useGeneratedKeys="true" keyProperty="itemId">
         insert into space_reservation_item

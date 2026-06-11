@@ -29,6 +29,7 @@ public class SpaceReservationItem extends BaseEntity
     private String bookingDateStart;
     private String bookingDateEnd;
     private Boolean occupiedOnly;
+    private Boolean publicOnly;
     @Excel(name = "场次状态", readConverterExp = "1=待审核,2=已通过,3=已驳回,4=冲突待处理,5=已取消,6=已结束")
     private String itemStatus;
     @Excel(name = "冲突标识", readConverterExp = "0=否,1=是")
@@ -56,6 +57,8 @@ public class SpaceReservationItem extends BaseEntity
     private String applicantName;
     @Excel(name = "申请单位")
     private String orgName;
+    @Excel(name = "预约备注")
+    private String detailRemark;
     @Excel(name = "预约状态", readConverterExp = "0=草稿,1=待审核,2=已通过,3=部分通过,4=已驳回,5=已取消,6=已结束")
     private String reservationStatus;
     private String auditType;
@@ -200,6 +203,16 @@ public class SpaceReservationItem extends BaseEntity
         this.occupiedOnly = occupiedOnly;
     }
 
+    public Boolean getPublicOnly()
+    {
+        return publicOnly;
+    }
+
+    public void setPublicOnly(Boolean publicOnly)
+    {
+        this.publicOnly = publicOnly;
+    }
+
     public String getItemStatus()
     {
         return itemStatus;
@@ -338,6 +351,16 @@ public class SpaceReservationItem extends BaseEntity
     public void setOrgName(String orgName)
     {
         this.orgName = orgName;
+    }
+
+    public String getDetailRemark()
+    {
+        return detailRemark;
+    }
+
+    public void setDetailRemark(String detailRemark)
+    {
+        this.detailRemark = detailRemark;
     }
 
     public String getReservationStatus()

@@ -4,6 +4,10 @@ export function listRoom(query) {
   return request({ url: '/space/room/list', method: 'get', params: query })
 }
 
+export function listApprovedReservationRoom(query) {
+  return request({ url: '/space/room/approved-reservation/list', method: 'get', params: query })
+}
+
 export function listRecycleRoom(query) {
   return request({ url: '/space/room/recycle/list', method: 'get', params: query })
 }

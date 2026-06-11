@@ -27,4 +27,8 @@ public interface SpaceRoomMapper
     public int restoreSpaceRoomByIds(Long[] roomIds);
 
     public int forceDeleteSpaceRoomByIds(Long[] roomIds);
+
+    public int countSpaceRoomByTypeIds(@Param("typeIds") Long[] typeIds);
+
+    public int updateRoomTypeByTypeId(@Param("typeId") Long typeId, @Param("roomType") String roomType);
 }

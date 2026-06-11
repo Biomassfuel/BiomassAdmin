@@ -9,7 +9,8 @@ public interface SpaceRoomTypeMapper
     public SpaceRoomType selectSpaceRoomTypeById(Long typeId);
 
     public SpaceRoomType selectSpaceRoomTypeByCode(@Param("typeCode") String typeCode);
-    public List<SpaceRoomType> selectSpaceRoomTypeList(SpaceRoomType spaceRoomType);
+    public SpaceRoomType selectSpaceRoomTypeByName(@Param("typeName") String typeName);
+    public List<SpaceRoomType> selectSpaceRoomTypeList(SpaceRoomType spaceRoomType);
     public int insertSpaceRoomType(SpaceRoomType spaceRoomType);
     public int updateSpaceRoomType(SpaceRoomType spaceRoomType);
     public int deleteSpaceRoomTypeById(Long typeId);

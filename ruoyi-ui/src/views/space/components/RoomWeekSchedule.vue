@@ -52,9 +52,9 @@
                   <div>时间：{{ formatTime(item.startTime) }}-{{ formatTime(item.endTime) }}</div>
                   <div>状态：{{ occupancyStatusText(item) }}</div>
                 </div>
-                <div class="schedule-block" :class="blockClass(item)">
+                <div class="schedule-block" :class="blockClass(item)" @click="handleView(item)">
                   <div class="schedule-block__status">{{ occupancyStatusText(item) }}</div>
-                  <div class="schedule-block__org">{{ item.orgName || '未填单位' }}</div>
+                  <div class="schedule-block__org">{{ item.applicantName || '未填预约人' }}</div>
                   <div class="schedule-block__title">{{ item.title || '未填主题' }}</div>
                   <div class="schedule-block__meta">
                     <span>{{ formatTime(item.startTime) }}-{{ formatTime(item.endTime) }}</span>
@@ -70,17 +70,25 @@
         </tbody>
       </table>
     </div>
+
+    <public-detail-dialog
+      :visible.sync="detailOpen"
+      :reservation-id="detailReservationId"
+      :initial-item="detailItem"
+    />
   </el-card>
 </template>
 
 <script>
-import { listReservationItem } from '@/api/space/reservation-item'
+import { listPublicReservationItem } from '@/api/space/reservation-item'
 import { listTimePeriod } from '@/api/space/time-period'
 import { fetchAllPages } from '@/utils/paged-list'
 import { formatDate, standardPeriods } from '@/views/space/reservation/utils'
+import PublicDetailDialog from '@/views/space/reservation/PublicDetailDialog'
 
 export default {
   name: 'RoomWeekSchedule',
+  components: { PublicDetailDialog },
   props: {
     roomId: {
       type: [String, Number],
@@ -100,7 +108,10 @@ export default {
       loading: false,
       itemList: [],
       periods: [],
-      weekPage: 1
+      weekPage: 1,
+      detailOpen: false,
+      detailReservationId: null,
+      detailItem: null
     }
   },
   computed: {
@@ -159,13 +170,12 @@ export default {
         return
       }
       this.loading = true
-      listReservationItem({
+      listPublicReservationItem({
         pageNum: 1,
         pageSize: 500,
         roomId: this.roomId,
         bookingDateStart: this.weekDays[0].date,
-        bookingDateEnd: this.weekDays[this.weekDays.length - 1].date,
-        occupiedOnly: true
+        bookingDateEnd: this.weekDays[this.weekDays.length - 1].date
       }).then(response => {
         this.itemList = response.rows || []
         this.loading = false
@@ -198,12 +208,13 @@ export default {
       return item.peopleCount != null ? `${item.peopleCount}人` : '人数未填'
     },
     occupancyStatusText(item) {
+      if (item.itemStatus === '6' || item.reservationStatus === '6') return '已结束'
       if (item.itemStatus === '2') return '已通过'
       if (item.itemStatus === '1' && item.auditType === '1') return '取消待审占用'
-      if (item.itemStatus === '1') return '待审核占用'
       return '-'
     },
     blockClass(item) {
+      if (item.itemStatus === '6' || item.reservationStatus === '6') return 'is-finished'
       if (item.itemStatus === '2') return 'is-approved'
       if (item.auditType === '1') return 'is-cancel-pending'
       return 'is-pending'
@@ -216,6 +227,11 @@ export default {
       if (page < 1 || page > this.maxWeeks || page === this.weekPage) return
       this.weekPage = page
       this.getList()
+    },
+    handleView(item) {
+      this.detailItem = item
+      this.detailReservationId = item.reservationId
+      this.detailOpen = true
     }
   }
 }
@@ -336,7 +352,7 @@ export default {
   color: #fff;
   font-size: 13px;
   line-height: 1.4;
-  cursor: default;
+  cursor: pointer;
   box-shadow: 0 6px 14px rgba(11, 74, 128, 0.16);
   transition: transform 0.16s ease, box-shadow 0.16s ease;
 }
@@ -373,6 +389,11 @@ export default {
 .schedule-block.is-cancel-pending {
   background: linear-gradient(135deg, #c46d1c 0%, #df8a2d 100%);
   box-shadow: 0 6px 14px rgba(168, 84, 11, 0.16);
+}
+
+.schedule-block.is-finished {
+  background: linear-gradient(135deg, #697586 0%, #8792a2 100%);
+  box-shadow: 0 6px 14px rgba(61, 72, 86, 0.16);
 }
 
 .schedule-block__status {

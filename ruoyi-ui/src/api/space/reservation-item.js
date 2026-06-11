@@ -1,8 +1,12 @@
 import request from '@/utils/request'
 
-export function listReservationItem(query) {
-  return request({ url: '/space/reservation/item/list', method: 'get', params: query })
-}
+export function listReservationItem(query) {
+  return request({ url: '/space/reservation/item/list', method: 'get', params: query })
+}
+
+export function listPublicReservationItem(query) {
+  return request({ url: '/space/reservation/item/public/list', method: 'get', params: query })
+}
 
 export function getReservationItem(itemId) {
   return request({ url: '/space/reservation/item/' + itemId, method: 'get' })

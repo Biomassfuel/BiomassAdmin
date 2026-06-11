@@ -38,6 +38,26 @@ public class SpaceRoomController extends BaseController
         return getDataTable(list);
     }
 
+    @PreAuthorize("@ss.hasPermi('space:reservationItem:publicList')")
+    @GetMapping("/approved-reservation/list")
+    public TableDataInfo approvedReservationRoomList(SpaceRoom spaceRoom)
+    {
+        spaceRoom.setApprovedReservationOnly(true);
+        startPage();
+        List<SpaceRoom> list = spaceRoomService.selectSpaceRoomList(spaceRoom);
+        list.forEach(this::sanitizePublicRoom);
+        return getDataTable(list);
+    }
+
+    private void sanitizePublicRoom(SpaceRoom room)
+    {
+        room.setAssignedOrgId(null);
+        room.setAssignedOrgName(null);
+        room.setDelFlag(null);
+        room.setCreateBy(null);
+        room.setUpdateBy(null);
+    }
+
     @PreAuthorize("@ss.hasPermi('space:room:list')")
     @GetMapping("/recycle/list")
     public TableDataInfo recycleList(SpaceRoom spaceRoom)

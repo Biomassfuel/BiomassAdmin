@@ -593,11 +593,12 @@ insert into sys_menu values(2005, '设备配置管理', '2000', 3, 'equipment', 
 
 insert into sys_menu values(2010, '房间预约模块', '0', 5, 'space-reservation', null, '', 'SpaceReservationManage', 1, 0, 'M', '0', '0', '', 'date', 'admin', sysdate(), '', null, '空间预约-房间预约模块');
 insert into sys_menu values(2011, '房间占用查看', '2010', 1, 'occupancy', 'space/reservation/occupancy', '', 'SpaceOccupancy', 1, 0, 'C', '0', '0', 'space:room:list', 'time', 'admin', sysdate(), '', null, '房间占用查看');
-insert into sys_menu values(2012, '我要预约', '2010', 2, 'apply', 'space/reservation/apply', '', 'SpaceReservationApply', 1, 0, 'C', '0', '0', 'space:reservation:add', 'form', 'admin', sysdate(), '', null, '我要预约');
-insert into sys_menu values(2013, '长期固定预约', '2010', 3, 'long', 'space/reservation/long', '', 'SpaceLongReservation', 1, 0, 'C', '0', '0', 'space:reservation:add', 'date-range', 'admin', sysdate(), '', null, '长期固定预约');
-insert into sys_menu values(2014, '我的预约', '2010', 4, 'my', 'space/reservation/my', '', 'SpaceMyReservation', 1, 0, 'C', '0', '0', 'space:reservation:mine', 'user', 'admin', sysdate(), '', null, '我的预约');
-insert into sys_menu values(2015, '预约详情', '2010', 5, 'detail', 'space/reservation/detail', '', 'SpaceReservationDetail', 1, 0, 'C', '1', '0', 'space:reservation:query', 'eye-open', 'admin', sysdate(), '', null, '预约详情');
-insert into sys_menu values(2016, '房间占用详情', '2010', 6, 'occupancy-detail/index/:roomId', 'space/reservation/occupancyDetail', '', 'SpaceOccupancyDetail', 1, 0, 'C', '1', '0', 'space:room:query', 'eye-open', 'admin', sysdate(), '', null, '房间占用详情');
+insert into sys_menu values(2017, '所有预约', '2010', 2, 'all', 'space/reservation/all', '', 'SpaceAllReservation', 1, 0, 'C', '0', '0', 'space:reservationItem:publicList', 'list', 'admin', sysdate(), '', null, '已通过预约房间列表');
+insert into sys_menu values(2012, '我要预约', '2010', 3, 'apply', 'space/reservation/apply', '', 'SpaceReservationApply', 1, 0, 'C', '0', '0', 'space:reservation:add', 'form', 'admin', sysdate(), '', null, '我要预约');
+insert into sys_menu values(2013, '长期固定预约', '2010', 4, 'long', 'space/reservation/long', '', 'SpaceLongReservation', 1, 0, 'C', '0', '0', 'space:reservation:add', 'date-range', 'admin', sysdate(), '', null, '长期固定预约');
+insert into sys_menu values(2014, '我的预约', '2010', 5, 'my', 'space/reservation/my', '', 'SpaceMyReservation', 1, 0, 'C', '0', '0', 'space:reservation:mine', 'user', 'admin', sysdate(), '', null, '我的预约');
+insert into sys_menu values(2015, '预约详情', '2010', 6, 'detail', 'space/reservation/detail', '', 'SpaceReservationDetail', 1, 0, 'C', '1', '0', 'space:reservation:query', 'eye-open', 'admin', sysdate(), '', null, '预约详情');
+insert into sys_menu values(2016, '房间占用详情', '2010', 7, 'occupancy-detail/index/:roomId', 'space/reservation/occupancyDetail', '', 'SpaceOccupancyDetail', 1, 0, 'C', '1', '0', 'space:room:query', 'eye-open', 'admin', sysdate(), '', null, '房间占用详情');
 
 insert into sys_menu values(2020, '审核管理模块', '0', 6, 'space-audit', null, '', 'SpaceAuditManage', 1, 0, 'M', '0', '0', '', 'audit', 'admin', sysdate(), '', null, '空间预约-审核管理模块');
 insert into sys_menu values(2021, '待审核预约', '2020', 1, 'pending', 'space/audit/pending', '', 'SpaceAuditPending', 1, 0, 'C', '0', '0', 'space:audit:list', 'validCode', 'admin', sysdate(), '', null, '待审核预约');
@@ -624,7 +625,7 @@ insert into sys_menu values(2045, '设备导出', '2005', 5, '', '', '', '', 1, 
 insert into sys_menu values(2046, '预约查询', '2015', 1, '', '', '', '', 1, 0, 'F', '0', '0', 'space:reservation:query', '#', 'admin', sysdate(), '', null, '');
 insert into sys_menu values(2047, '场次导出', '2011', 2, '', '', '', '', 1, 0, 'F', '0', '0', 'space:reservationItem:export', '#', 'admin', sysdate(), '', null, '');
 insert into sys_menu values(2056, '占用房间查询', '2011', 3, '', '', '', '', 1, 0, 'F', '0', '0', 'space:room:query', '#', 'admin', sysdate(), '', null, '房间占用详情页加载房间详情权限');
-insert into sys_menu values(2057, '占用场次查询', '2011', 4, '', '', '', '', 1, 0, 'F', '0', '0', 'space:reservationItem:list', '#', 'admin', sysdate(), '', null, '房间占用详情页加载预约场次权限');
+insert into sys_menu values(2057, '占用公开场次查询', '2011', 4, '', '', '', '', 1, 0, 'F', '0', '0', 'space:reservationItem:publicList', '#', 'admin', sysdate(), '', null, '房间占用详情页加载公开预约场次权限');
 insert into sys_menu values(2048, '取消预约', '2014', 1, '', '', '', '', 1, 0, 'F', '0', '0', 'space:reservation:cancel', '#', 'admin', sysdate(), '', null, '');
 insert into sys_menu values(2049, '预约导出', '2023', 1, '', '', '', '', 1, 0, 'F', '0', '0', 'space:reservation:export', '#', 'admin', sysdate(), '', null, '');
 insert into sys_menu values(2050, '审核通过', '2021', 1, '', '', '', '', 1, 0, 'F', '0', '0', 'space:audit:approve', '#', 'admin', sysdate(), '', null, '');
@@ -636,16 +637,17 @@ insert into sys_menu values(2055, '预约时段下拉查询', '2012', 2, '', '',
 insert into sys_menu values(2058, '待取消审核查询', '2022', 1, '', '', '', '', 1, 0, 'F', '0', '0', 'space:cancelAudit:list', '#', 'admin', sysdate(), '', null, '');
 insert into sys_menu values(2059, '同意取消', '2022', 2, '', '', '', '', 1, 0, 'F', '0', '0', 'space:cancelAudit:approve', '#', 'admin', sysdate(), '', null, '');
 insert into sys_menu values(2060, '驳回取消', '2022', 3, '', '', '', '', 1, 0, 'F', '0', '0', 'space:cancelAudit:reject', '#', 'admin', sysdate(), '', null, '');
+insert into sys_menu values(2061, '所有预约公开查询', '2017', 1, '', '', '', '', 1, 0, 'F', '0', '0', 'space:reservationItem:publicList', '#', 'admin', sysdate(), '', null, '所有预约页面加载已通过预约房间与记录权限');
 
 insert into sys_role_menu(role_id, menu_id)
-select 100, menu_id from sys_menu where menu_id between 2000 and 2060;
+select 100, menu_id from sys_menu where menu_id between 2000 and 2061;
 
 insert into sys_role_menu(role_id, menu_id) values
-(101, 2010), (101, 2011), (101, 2012), (101, 2013), (101, 2014), (101, 2015), (101, 2016),
-(101, 2046), (101, 2048), (101, 2054), (101, 2055), (101, 2056), (101, 2057);
+(101, 2010), (101, 2011), (101, 2017), (101, 2012), (101, 2013), (101, 2014), (101, 2015), (101, 2016),
+(101, 2046), (101, 2048), (101, 2054), (101, 2055), (101, 2056), (101, 2057), (101, 2061);
 
 insert into sys_role_menu(role_id, menu_id) values
-(102, 2010), (102, 2011), (102, 2016), (102, 2055), (102, 2056), (102, 2057);
+(102, 2010), (102, 2011), (102, 2017), (102, 2016), (102, 2055), (102, 2056), (102, 2057), (102, 2061);
 
 -- ----------------------------
 -- 精简RuoYi默认部门和岗位数据

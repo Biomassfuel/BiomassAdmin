@@ -63,6 +63,8 @@ public class SpaceRoom extends BaseEntity
 
     private String delFlag;
 
+    private Boolean approvedReservationOnly;
+
     public Long getRoomId()
     {
         return roomId;
@@ -261,5 +263,15 @@ public class SpaceRoom extends BaseEntity
     public void setDelFlag(String delFlag)
     {
         this.delFlag = delFlag;
+    }
+
+    public Boolean getApprovedReservationOnly()
+    {
+        return approvedReservationOnly;
+    }
+
+    public void setApprovedReservationOnly(Boolean approvedReservationOnly)
+    {
+        this.approvedReservationOnly = approvedReservationOnly;
     }
 }

@@ -10,9 +10,9 @@
       <el-form-item label="楼栋" prop="buildingName">
         <el-input v-model="queryParams.buildingName" placeholder="请输入楼栋" clearable @keyup.enter.native="handleQuery" />
       </el-form-item>
-      <el-form-item label="房间类型" prop="roomType">
-        <el-select v-model="queryParams.roomType" placeholder="请选择房间类型" clearable filterable>
-          <el-option v-for="item in typeOptions" :key="item.typeId" :label="item.typeName" :value="item.typeName" />
+      <el-form-item label="房间类型" prop="typeId">
+        <el-select v-model="queryParams.typeId" placeholder="请选择房间类型" clearable filterable>
+          <el-option v-for="item in typeOptions" :key="item.typeId" :label="item.typeName" :value="item.typeId" />
         </el-select>
       </el-form-item>
       <el-form-item label="可预约" prop="bookable">
@@ -88,9 +88,10 @@
         </template>
       </el-table-column>
       <el-table-column label="归属单位" align="center" prop="assignedOrgName" :show-overflow-tooltip="true" />
-      <el-table-column label="操作" align="center" width="210" class-name="small-padding fixed-width">
+      <el-table-column label="操作" align="center" width="250" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button size="mini" type="text" icon="el-icon-view" @click="handleDetail(scope.row)" v-hasPermi="['space:room:query']">详情</el-button>
+          <el-button size="mini" type="text" icon="el-icon-tickets" @click="handleReservationRecords(scope.row)" v-hasPermi="['space:reservationItem:publicList']">预约记录</el-button>
           <el-button size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row)" v-hasPermi="['space:room:edit']">修改</el-button>
           <el-button size="mini" type="text" icon="el-icon-delete" @click="handleDelete(scope.row)" v-hasPermi="['space:room:remove']">删除</el-button>
         </template>
@@ -241,9 +242,24 @@
 
     <el-dialog title="房间详情" :visible.sync="detailOpen" width="92vw" append-to-body class="room-detail-dialog">
       <div class="room-detail-dialog__body">
+        <div class="room-detail-dialog__actions">
+          <el-button
+            type="primary"
+            plain
+            size="mini"
+            icon="el-icon-tickets"
+            :disabled="!detail || !detail.roomId"
+            @click="handleReservationRecords(detail)"
+            v-hasPermi="['space:reservationItem:publicList']"
+          >预约记录</el-button>
+        </div>
         <room-info-card :room="detail" :column="3" :realtime-status="detailRealtimeStatus" />
         <room-week-schedule :room-id="detail && detail.roomId" />
       </div>
+    </el-dialog>
+
+    <el-dialog :title="reservationRecordTitle" :visible.sync="reservationRecordOpen" width="92vw" append-to-body>
+      <public-reservation-items v-if="reservationRecordOpen" :room-id="reservationRecordRoomId" :toolbar="false" fixed-item-status="2" />
     </el-dialog>
 
     <el-dialog title="房间回收站" :visible.sync="recycleOpen" width="1100px" append-to-body>
@@ -313,15 +329,16 @@ import { getToken } from '@/utils/auth'
 import { listRoom, listRecycleRoom, getRoom, addRoom, updateRoom, delRoom, restoreRoom, forceDelRoom } from '@/api/space/room'
 import { listRoomType } from '@/api/space/room-type'
 import { listEquipment } from '@/api/space/equipment'
-import { listReservationItem } from '@/api/space/reservation-item'
+import { listPublicReservationItem } from '@/api/space/reservation-item'
 import { fetchAllPages } from '@/utils/paged-list'
 import { formatDate } from '@/views/space/reservation/utils'
 import RoomInfoCard from '@/views/space/components/RoomInfoCard'
 import RoomWeekSchedule from '@/views/space/components/RoomWeekSchedule'
+import PublicReservationItems from '@/views/space/reservation/PublicReservationItems'
 
 export default {
   name: 'SpaceRoom',
-  components: { RoomInfoCard, RoomWeekSchedule },
+  components: { RoomInfoCard, RoomWeekSchedule, PublicReservationItems },
   data() {
     return {
       loading: true,
@@ -336,9 +353,12 @@ export default {
       title: '',
       open: false,
       detailOpen: false,
+      reservationRecordOpen: false,
       recycleOpen: false,
       recycleLoading: false,
       detail: null,
+      reservationRecordRoomId: null,
+      reservationRecordTitle: '预约记录',
       recycleList: [],
       recycleTotal: 0,
       detailRealtimeStatus: {
@@ -359,7 +379,7 @@ export default {
         roomCode: null,
         roomName: null,
         buildingName: null,
-        roomType: null,
+        typeId: null,
         bookable: null,
         status: null
       },
@@ -551,18 +571,24 @@ export default {
       })
       this.getDetailRealtimeStatus(row.roomId)
     },
+    handleReservationRecords(row) {
+      if (!row || !row.roomId) return
+      this.reservationRecordRoomId = row.roomId
+      this.reservationRecordTitle = `${row.roomCode || ''} ${row.roomName || ''} 预约记录`.trim()
+      this.reservationRecordOpen = true
+    },
     getDetailRealtimeStatus(roomId) {
       if (!roomId) return
       const now = new Date()
-      listReservationItem({
+      listPublicReservationItem({
         pageNum: 1,
         pageSize: 500,
         roomId,
-        bookingDate: formatDate(now),
-        occupiedOnly: true
+        bookingDate: formatDate(now)
       }).then(response => {
         const currentMinutes = this.timeToMinutes(`${now.getHours()}:${now.getMinutes()}`)
         const activeItem = (response.rows || []).find(item => {
+          if (!['1', '2'].includes(item.itemStatus)) return false
           const start = this.timeToMinutes(item.startTime)
           const end = this.timeToMinutes(item.endTime)
           return start <= currentMinutes && currentMinutes < end
@@ -689,5 +715,11 @@ export default {
   max-height: 72vh;
   overflow-y: auto;
   padding-right: 4px;
+}
+
+.room-detail-dialog__actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 12px;
 }
 </style>

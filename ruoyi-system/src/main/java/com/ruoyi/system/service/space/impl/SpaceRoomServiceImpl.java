@@ -13,10 +13,12 @@ import com.ruoyi.system.domain.space.SpaceImportBatch;
 import com.ruoyi.system.domain.space.SpaceReservationItem;
 import com.ruoyi.system.domain.space.SpaceRoom;
 import com.ruoyi.system.domain.space.SpaceRoomEquipment;
+import com.ruoyi.system.domain.space.SpaceRoomType;
 import com.ruoyi.system.mapper.space.SpaceImportBatchMapper;
 import com.ruoyi.system.mapper.space.SpaceReservationItemMapper;
 import com.ruoyi.system.mapper.space.SpaceRoomEquipmentMapper;
 import com.ruoyi.system.mapper.space.SpaceRoomMapper;
+import com.ruoyi.system.mapper.space.SpaceRoomTypeMapper;
 import com.ruoyi.system.service.space.ISpaceRoomService;
 
 @Service
@@ -33,6 +35,9 @@ public class SpaceRoomServiceImpl implements ISpaceRoomService
 
     @Autowired
     private SpaceReservationItemMapper spaceReservationItemMapper;
+
+    @Autowired
+    private SpaceRoomTypeMapper spaceRoomTypeMapper;
 
     @Override
     public SpaceRoom selectSpaceRoomById(Long roomId)
@@ -64,6 +69,7 @@ public class SpaceRoomServiceImpl implements ISpaceRoomService
     public int insertSpaceRoom(SpaceRoom spaceRoom)
     {
         fillRoomDefaults(spaceRoom);
+        normalizeRoomType(spaceRoom);
         validateRoomCodeUnique(spaceRoom);
         int rows = spaceRoomMapper.insertSpaceRoom(spaceRoom);
         saveRoomEquipment(spaceRoom);
@@ -75,6 +81,7 @@ public class SpaceRoomServiceImpl implements ISpaceRoomService
     public int updateSpaceRoom(SpaceRoom spaceRoom)
     {
         fillRoomDefaults(spaceRoom);
+        normalizeRoomType(spaceRoom);
         validateRoomCodeUnique(spaceRoom);
         int rows = spaceRoomMapper.updateSpaceRoom(spaceRoom);
         saveRoomEquipment(spaceRoom);
@@ -139,6 +146,7 @@ public class SpaceRoomServiceImpl implements ISpaceRoomService
                 if (existing == null)
                 {
                     fillRoomDefaults(room);
+                    normalizeRoomType(room);
                     room.setCreateBy(operName);
                     spaceRoomMapper.insertSpaceRoom(room);
                     successNum++;
@@ -151,7 +159,9 @@ public class SpaceRoomServiceImpl implements ISpaceRoomService
                 else if (isUpdateSupport)
                 {
                     room.setRoomId(existing.getRoomId());
+                    inheritExistingRoomType(room, existing);
                     fillRoomDefaults(room);
+                    normalizeRoomType(room);
                     room.setUpdateBy(operName);
                     spaceRoomMapper.updateSpaceRoom(room);
                     successNum++;
@@ -199,6 +209,45 @@ public class SpaceRoomServiceImpl implements ISpaceRoomService
         if (StringUtils.isBlank(room.getDelFlag()))
         {
             room.setDelFlag("0");
+        }
+    }
+
+    private void normalizeRoomType(SpaceRoom room)
+    {
+        if (room.getTypeId() != null)
+        {
+            SpaceRoomType roomType = spaceRoomTypeMapper.selectSpaceRoomTypeById(room.getTypeId());
+            if (roomType == null)
+            {
+                throw new ServiceException("房间类型不存在");
+            }
+            room.setRoomType(roomType.getTypeName());
+            return;
+        }
+
+        if (StringUtils.isBlank(room.getRoomType()))
+        {
+            throw new ServiceException("房间类型不能为空");
+        }
+
+        SpaceRoomType roomType = spaceRoomTypeMapper.selectSpaceRoomTypeByName(room.getRoomType());
+        if (roomType == null)
+        {
+            throw new ServiceException("房间类型“" + room.getRoomType() + "”不存在，请先在房间类型管理中维护");
+        }
+        room.setTypeId(roomType.getTypeId());
+        room.setRoomType(roomType.getTypeName());
+    }
+
+    private void inheritExistingRoomType(SpaceRoom room, SpaceRoom existing)
+    {
+        if (room.getTypeId() == null)
+        {
+            room.setTypeId(existing.getTypeId());
+        }
+        if (StringUtils.isBlank(room.getRoomType()))
+        {
+            room.setRoomType(existing.getRoomType());
         }
     }
 

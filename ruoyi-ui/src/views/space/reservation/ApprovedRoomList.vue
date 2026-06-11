@@ -1,5 +1,5 @@
 <template>
-  <div class="app-container">
+  <div class="approved-room-list">
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="78px">
       <el-form-item label="房间编号" prop="roomCode">
         <el-input v-model="queryParams.roomCode" placeholder="请输入房间编号" clearable @keyup.enter.native="handleQuery" />
@@ -13,18 +13,6 @@
       <el-form-item label="房间类型" prop="typeId">
         <el-select v-model="queryParams.typeId" placeholder="请选择房间类型" clearable filterable>
           <el-option v-for="item in typeOptions" :key="item.typeId" :label="item.typeName" :value="item.typeId" />
-        </el-select>
-      </el-form-item>
-      <el-form-item label="可预约" prop="bookable">
-        <el-select v-model="queryParams.bookable" placeholder="全部" clearable>
-          <el-option label="可预约" value="0" />
-          <el-option label="不可预约" value="1" />
-        </el-select>
-      </el-form-item>
-      <el-form-item label="状态" prop="status">
-        <el-select v-model="queryParams.status" placeholder="全部" clearable>
-          <el-option label="正常" value="0" />
-          <el-option label="停用" value="1" />
         </el-select>
       </el-form-item>
       <el-form-item>
@@ -42,33 +30,27 @@
       <el-table-column label="房间名称" prop="roomName" align="center" min-width="150" :show-overflow-tooltip="true" />
       <el-table-column label="楼栋" prop="buildingName" align="center" width="110" />
       <el-table-column label="楼层" prop="floorNo" align="center" width="90" />
-      <el-table-column label="类型" prop="roomType" align="center" width="120" />
+      <el-table-column label="房间类型" prop="roomType" align="center" width="120" />
       <el-table-column label="容量" align="center" min-width="130">
         <template slot-scope="scope">{{ capacityText(scope.row) }}</template>
       </el-table-column>
-      <el-table-column label="可预约" align="center" width="100">
+      <el-table-column label="可预约状态" align="center" width="110">
         <template slot-scope="scope">
           <el-tag :type="scope.row.bookable === '0' ? 'success' : 'info'">
             {{ scope.row.bookable === '0' ? '可预约' : '不可预约' }}
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="状态" align="center" width="100">
+      <el-table-column label="房间状态" align="center" width="100">
         <template slot-scope="scope">
-          <el-tag :type="scope.row.status === '0' ? 'success' : 'danger'">
-            {{ scope.row.status === '0' ? '正常' : '停用' }}
+          <el-tag :type="roomStatusTag(scope.row.status)">
+            {{ roomStatusText(scope.row.status) }}
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="操作" align="center" width="90" fixed="right" class-name="small-padding fixed-width">
+      <el-table-column label="操作" align="center" width="100" fixed="right" class-name="small-padding fixed-width">
         <template slot-scope="scope">
-          <el-button
-            size="mini"
-            type="text"
-            icon="el-icon-view"
-            @click="handleDetail(scope.row)"
-            v-hasPermi="['space:room:query']"
-          >详情</el-button>
+          <el-button size="mini" type="text" icon="el-icon-tickets" @click="handleRecords(scope.row)">预约记录</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -80,23 +62,37 @@
       :limit.sync="queryParams.pageSize"
       @pagination="getList"
     />
+
+    <el-dialog :title="recordTitle" :visible.sync="recordOpen" width="92vw" append-to-body>
+      <public-reservation-items
+        v-if="recordOpen"
+        :room-id="recordRoomId"
+        :toolbar="false"
+        fixed-item-status="2"
+      />
+    </el-dialog>
   </div>
 </template>
 
 <script>
-import { listRoom } from '@/api/space/room'
-import { listRoomType } from '@/api/space/room-type'
+import { listApprovedReservationRoom } from '@/api/space/room'
+import { listPublicRoomType } from '@/api/space/room-type'
 import { fetchAllPages } from '@/utils/paged-list'
+import PublicReservationItems from './PublicReservationItems'
 
 export default {
-  name: 'SpaceOccupancy',
+  name: 'ApprovedRoomList',
+  components: { PublicReservationItems },
   data() {
     return {
-      loading: true,
+      loading: false,
       showSearch: true,
       total: 0,
       roomList: [],
       typeOptions: [],
+      recordOpen: false,
+      recordRoomId: null,
+      recordTitle: '已通过预约记录',
       queryParams: {
         pageNum: 1,
         pageSize: 10,
@@ -104,8 +100,7 @@ export default {
         roomName: null,
         buildingName: null,
         typeId: null,
-        bookable: null,
-        status: null
+        approvedReservationOnly: true
       }
     }
   },
@@ -120,14 +115,19 @@ export default {
   methods: {
     getList() {
       this.loading = true
-      listRoom(this.queryParams).then(response => {
-        this.roomList = response.rows
-        this.total = response.total
+      listApprovedReservationRoom({
+        ...this.queryParams,
+        approvedReservationOnly: true
+      }).then(response => {
+        this.roomList = response.rows || []
+        this.total = response.total || 0
+        this.loading = false
+      }).catch(() => {
         this.loading = false
       })
     },
     getTypeOptions() {
-      fetchAllPages(listRoomType, { status: '0' }).then(rows => {
+      fetchAllPages(listPublicRoomType, { status: '0' }).then(rows => {
         this.typeOptions = rows
       })
     },
@@ -137,18 +137,30 @@ export default {
       if (row.capacityMax != null) return `${row.capacityMax}人以内`
       return '-'
     },
+    roomStatusText(status) {
+      if (status === '0') return '正常'
+      if (status === '2') return '维护'
+      if (status === '1') return '停用'
+      return '-'
+    },
+    roomStatusTag(status) {
+      if (status === '0') return 'success'
+      if (status === '2') return 'warning'
+      return 'danger'
+    },
     handleQuery() {
       this.queryParams.pageNum = 1
       this.getList()
     },
     resetQuery() {
       this.resetForm('queryForm')
+      this.queryParams.approvedReservationOnly = true
       this.handleQuery()
     },
-    handleDetail(row) {
-      this.$router.push({
-        path: `/space-reservation/occupancy-detail/index/${row.roomId}`
-      })
+    handleRecords(row) {
+      this.recordRoomId = row.roomId
+      this.recordTitle = `${row.roomCode || ''} ${row.roomName || ''} 已通过预约记录`.trim()
+      this.recordOpen = true
     }
   }
 }

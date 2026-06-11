@@ -4,7 +4,15 @@ export function listRoomType(query) {
   return request({ url: '/space/room/type/list', method: 'get', params: query })
 }
 
-export function getRoomType(typeId) {
+export function listPublicRoomType(query) {
+
+  return request({ url: '/space/room/type/public/list', method: 'get', params: query })
+
+}
+
+
+
+export function getRoomType(typeId) {
   return request({ url: '/space/room/type/' + typeId, method: 'get' })
 }
 

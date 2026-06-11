@@ -37,6 +37,29 @@ public class SpaceReservationItemController extends BaseController
         return getDataTable(list);
     }
 
+    @PreAuthorize("@ss.hasPermi('space:reservationItem:publicList')")
+    @GetMapping("/public/list")
+    public TableDataInfo publicList(SpaceReservationItem spaceReservationItem)
+    {
+        spaceReservationItem.setPublicOnly(true);
+        startPage();
+        List<SpaceReservationItem> list = spaceReservationItemService.selectSpaceReservationItemList(spaceReservationItem);
+        list.forEach(this::sanitizePublicItem);
+        return getDataTable(list);
+    }
+
+    private void sanitizePublicItem(SpaceReservationItem item)
+    {
+        item.setOrgName(null);
+        item.setAuditorId(null);
+        item.setAuditorName(null);
+        item.setRejectReason(null);
+        item.setConflictReason(null);
+        item.setConflictItemId(null);
+        item.setCreateBy(null);
+        item.setUpdateBy(null);
+    }
+
     @PreAuthorize("@ss.hasPermi('space:reservationItem:export')")
     @Log(title = "预约场次", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
