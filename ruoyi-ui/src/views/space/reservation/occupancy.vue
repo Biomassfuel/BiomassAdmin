@@ -67,7 +67,7 @@
             type="text"
             icon="el-icon-view"
             @click="handleDetail(scope.row)"
-            v-hasPermi="['space:room:query']"
+            v-hasPermi="['space:reservationItem:publicList']"
           >详情</el-button>
         </template>
       </el-table-column>
@@ -84,8 +84,8 @@
 </template>
 
 <script>
-import { listRoom } from '@/api/space/room'
-import { listRoomType } from '@/api/space/room-type'
+import { listPublicRoom } from '@/api/space/room'
+import { listPublicRoomType } from '@/api/space/room-type'
 import { fetchAllPages } from '@/utils/paged-list'
 
 export default {
@@ -120,14 +120,14 @@ export default {
   methods: {
     getList() {
       this.loading = true
-      listRoom(this.queryParams).then(response => {
+      listPublicRoom(this.queryParams).then(response => {
         this.roomList = response.rows
         this.total = response.total
         this.loading = false
       })
     },
     getTypeOptions() {
-      fetchAllPages(listRoomType, { status: '0' }).then(rows => {
+      fetchAllPages(listPublicRoomType, { status: '0' }).then(rows => {
         this.typeOptions = rows
       })
     },

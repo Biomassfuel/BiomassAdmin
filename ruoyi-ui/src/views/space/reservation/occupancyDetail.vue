@@ -16,7 +16,7 @@
 </template>
 
 <script>
-import { getRoom } from '@/api/space/room'
+import { getPublicRoom } from '@/api/space/room'
 import { listPublicReservationItem } from '@/api/space/reservation-item'
 import { formatDate } from './utils'
 import RoomInfoCard from '@/views/space/components/RoomInfoCard'
@@ -67,7 +67,7 @@ export default {
     },
     getRoomInfo() {
       if (!this.queryParams.roomId) return
-      getRoom(this.queryParams.roomId).then(response => {
+      getPublicRoom(this.queryParams.roomId).then(response => {
         this.room = response.data
       })
     },

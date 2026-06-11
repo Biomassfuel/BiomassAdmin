@@ -81,7 +81,7 @@
 
 <script>
 import { listPublicReservationItem } from '@/api/space/reservation-item'
-import { listTimePeriod } from '@/api/space/time-period'
+import { listPublicTimePeriod } from '@/api/space/time-period'
 import { fetchAllPages } from '@/utils/paged-list'
 import { formatDate, standardPeriods } from '@/views/space/reservation/utils'
 import PublicDetailDialog from '@/views/space/reservation/PublicDetailDialog'
@@ -154,7 +154,7 @@ export default {
   },
   methods: {
     getPeriods() {
-      fetchAllPages(listTimePeriod, { status: '0' }).then(rows => {
+      fetchAllPages(listPublicTimePeriod, { status: '0' }).then(rows => {
         this.periods = standardPeriods(rows).sort((a, b) => {
           const orderA = a.orderNum == null ? 0 : Number(a.orderNum)
           const orderB = b.orderNum == null ? 0 : Number(b.orderNum)

@@ -4,6 +4,10 @@ export function listRoom(query) {
   return request({ url: '/space/room/list', method: 'get', params: query })
 }
 
+export function listPublicRoom(query) {
+  return request({ url: '/space/room/public/list', method: 'get', params: query })
+}
+
 export function listApprovedReservationRoom(query) {
   return request({ url: '/space/room/approved-reservation/list', method: 'get', params: query })
 }
@@ -14,6 +18,10 @@ export function listRecycleRoom(query) {
 
 export function getRoom(roomId) {
   return request({ url: '/space/room/' + roomId, method: 'get' })
+}
+
+export function getPublicRoom(roomId) {
+  return request({ url: '/space/room/public/' + roomId, method: 'get' })
 }
 
 export function addRoom(data) {

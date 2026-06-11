@@ -28,13 +28,35 @@ public class SpaceTimePeriodController extends BaseController
 
     @PreAuthorize("@ss.hasPermi('space:timePeriod:list')")
     @GetMapping("/list")
-    public TableDataInfo list(SpaceTimePeriod spaceTimePeriod)
-    {
-        startPage();
-        List<SpaceTimePeriod> list = spaceTimePeriodService.selectSpaceTimePeriodList(spaceTimePeriod);
-        return getDataTable(list);
-    }
-
+    public TableDataInfo list(SpaceTimePeriod spaceTimePeriod)
+    {
+        startPage();
+        List<SpaceTimePeriod> list = spaceTimePeriodService.selectSpaceTimePeriodList(spaceTimePeriod);
+        return getDataTable(list);
+    }
+
+    @PreAuthorize("@ss.hasPermi('space:reservationItem:publicList')")
+    @GetMapping("/public/list")
+    public TableDataInfo publicList(SpaceTimePeriod spaceTimePeriod)
+    {
+        spaceTimePeriod.setStatus("0");
+        startPage();
+        List<SpaceTimePeriod> list = spaceTimePeriodService.selectSpaceTimePeriodList(spaceTimePeriod);
+        list.forEach(this::sanitizePublicTimePeriod);
+        return getDataTable(list);
+    }
+
+    private void sanitizePublicTimePeriod(SpaceTimePeriod period)
+    {
+        if (period == null)
+        {
+            return;
+        }
+        period.setCreateBy(null);
+        period.setUpdateBy(null);
+        period.setRemark(null);
+    }
+
     @PreAuthorize("@ss.hasPermi('space:timePeriod:query')")
     @GetMapping(value = "/{periodId}")
     public AjaxResult getInfo(@PathVariable Long periodId)

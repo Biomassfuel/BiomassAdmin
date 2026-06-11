@@ -20,6 +20,8 @@ import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.system.domain.space.SpaceRoom;
+import com.ruoyi.system.domain.space.SpaceRoomEquipment;
+import com.ruoyi.system.service.space.ISpaceReservationService;
 import com.ruoyi.system.service.space.ISpaceRoomService;
 
 @RestController
@@ -28,6 +30,9 @@ public class SpaceRoomController extends BaseController
 {
     @Autowired
     private ISpaceRoomService spaceRoomService;
+
+    @Autowired
+    private ISpaceReservationService spaceReservationService;
 
     @PreAuthorize("@ss.hasPermi('space:room:list')")
     @GetMapping("/list")
@@ -39,10 +44,21 @@ public class SpaceRoomController extends BaseController
     }
 
     @PreAuthorize("@ss.hasPermi('space:reservationItem:publicList')")
+    @GetMapping("/public/list")
+    public TableDataInfo publicList(SpaceRoom spaceRoom)
+    {
+        startPage();
+        List<SpaceRoom> list = spaceRoomService.selectSpaceRoomList(spaceRoom);
+        list.forEach(this::sanitizePublicRoom);
+        return getDataTable(list);
+    }
+
+    @PreAuthorize("@ss.hasPermi('space:reservationItem:publicList')")
     @GetMapping("/approved-reservation/list")
     public TableDataInfo approvedReservationRoomList(SpaceRoom spaceRoom)
     {
         spaceRoom.setApprovedReservationOnly(true);
+        spaceReservationService.refreshFinishedReservations();
         startPage();
         List<SpaceRoom> list = spaceRoomService.selectSpaceRoomList(spaceRoom);
         list.forEach(this::sanitizePublicRoom);
@@ -51,11 +67,31 @@ public class SpaceRoomController extends BaseController
 
     private void sanitizePublicRoom(SpaceRoom room)
     {
+        if (room == null)
+        {
+            return;
+        }
         room.setAssignedOrgId(null);
         room.setAssignedOrgName(null);
         room.setDelFlag(null);
         room.setCreateBy(null);
         room.setUpdateBy(null);
+        room.setRemark(null);
+        if (room.getRoomEquipmentList() != null)
+        {
+            room.getRoomEquipmentList().forEach(this::sanitizePublicRoomEquipment);
+        }
+    }
+
+    private void sanitizePublicRoomEquipment(SpaceRoomEquipment equipment)
+    {
+        if (equipment == null)
+        {
+            return;
+        }
+        equipment.setCreateBy(null);
+        equipment.setUpdateBy(null);
+        equipment.setRemark(null);
     }
 
     @PreAuthorize("@ss.hasPermi('space:room:list')")
@@ -82,6 +118,15 @@ public class SpaceRoomController extends BaseController
     public AjaxResult getInfo(@PathVariable Long roomId)
     {
         return success(spaceRoomService.selectSpaceRoomById(roomId));
+    }
+
+    @PreAuthorize("@ss.hasPermi('space:reservationItem:publicList')")
+    @GetMapping(value = "/public/{roomId}")
+    public AjaxResult publicInfo(@PathVariable Long roomId)
+    {
+        SpaceRoom room = spaceRoomService.selectSpaceRoomById(roomId);
+        sanitizePublicRoom(room);
+        return success(room);
     }
 
     @PreAuthorize("@ss.hasPermi('space:room:add')")

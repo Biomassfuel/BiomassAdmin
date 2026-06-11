@@ -20,6 +20,7 @@ import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.system.domain.space.SpaceReservationItem;
 import com.ruoyi.system.service.space.ISpaceReservationItemService;
+import com.ruoyi.system.service.space.ISpaceReservationService;
 
 @RestController
 @RequestMapping("/space/reservation/item")
@@ -28,10 +29,14 @@ public class SpaceReservationItemController extends BaseController
     @Autowired
     private ISpaceReservationItemService spaceReservationItemService;
 
+    @Autowired
+    private ISpaceReservationService spaceReservationService;
+
     @PreAuthorize("@ss.hasPermi('space:reservationItem:list')")
     @GetMapping("/list")
     public TableDataInfo list(SpaceReservationItem spaceReservationItem)
     {
+        spaceReservationService.refreshFinishedReservations();
         startPage();
         List<SpaceReservationItem> list = spaceReservationItemService.selectSpaceReservationItemList(spaceReservationItem);
         return getDataTable(list);
@@ -42,6 +47,7 @@ public class SpaceReservationItemController extends BaseController
     public TableDataInfo publicList(SpaceReservationItem spaceReservationItem)
     {
         spaceReservationItem.setPublicOnly(true);
+        spaceReservationService.refreshFinishedReservations();
         startPage();
         List<SpaceReservationItem> list = spaceReservationItemService.selectSpaceReservationItemList(spaceReservationItem);
         list.forEach(this::sanitizePublicItem);
@@ -65,6 +71,7 @@ public class SpaceReservationItemController extends BaseController
     @PostMapping("/export")
     public void export(HttpServletResponse response, SpaceReservationItem spaceReservationItem)
     {
+        spaceReservationService.refreshFinishedReservations();
         List<SpaceReservationItem> list = spaceReservationItemService.selectSpaceReservationItemList(spaceReservationItem);
         ExcelUtil<SpaceReservationItem> util = new ExcelUtil<SpaceReservationItem>(SpaceReservationItem.class);
         util.exportExcel(response, list, "预约场次数据");
@@ -74,6 +81,7 @@ public class SpaceReservationItemController extends BaseController
     @GetMapping(value = "/{itemId}")
     public AjaxResult getInfo(@PathVariable Long itemId)
     {
+        spaceReservationService.refreshFinishedReservations();
         return success(spaceReservationItemService.selectSpaceReservationItemById(itemId));
     }
 

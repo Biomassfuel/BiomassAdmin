@@ -80,8 +80,8 @@
 </template>
 
 <script>
-import { listRoom } from '@/api/space/room'
-import { listTimePeriod } from '@/api/space/time-period'
+import { listPublicRoom } from '@/api/space/room'
+import { listPublicTimePeriod } from '@/api/space/time-period'
 import { addReservation } from '@/api/space/reservation'
 import { fetchAllPages } from '@/utils/paged-list'
 import { disablePastDate, findStartedReservation, isReservationStarted, standardPeriods, weekdayText, weekdayValue } from './utils'
@@ -143,7 +143,7 @@ export default {
     getRooms() {
       const seq = ++this.roomLoadSeq
       this.loadingRooms = true
-      fetchAllPages(listRoom, { status: '0', bookable: '0' }).then(rows => {
+      fetchAllPages(listPublicRoom, { status: '0', bookable: '0' }).then(rows => {
         if (seq !== this.roomLoadSeq) return
         this.rooms = rows
         if (this.itemForm.roomId && !rows.some(item => item.roomId === this.itemForm.roomId)) {
@@ -159,7 +159,7 @@ export default {
       if (visible) this.getRooms()
     },
     getPeriods() {
-      fetchAllPages(listTimePeriod, { status: '0' }).then(rows => {
+      fetchAllPages(listPublicTimePeriod, { status: '0' }).then(rows => {
         this.periods = standardPeriods(rows)
         if (this.periods.length) {
           this.itemForm.periodId = this.periods[0].periodId

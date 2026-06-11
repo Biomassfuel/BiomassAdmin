@@ -37,6 +37,7 @@ public class SpaceReservationController extends BaseController
     @GetMapping("/list")
     public TableDataInfo list(SpaceReservation spaceReservation)
     {
+        spaceReservationService.refreshFinishedReservations();
         startPage();
         List<SpaceReservation> list = spaceReservationService.selectSpaceReservationList(spaceReservation);
         return getDataTable(list);
@@ -47,6 +48,7 @@ public class SpaceReservationController extends BaseController
     @PostMapping("/export")
     public void export(HttpServletResponse response, SpaceReservation spaceReservation)
     {
+        spaceReservationService.refreshFinishedReservations();
         List<SpaceReservation> list = spaceReservationService.selectSpaceReservationList(spaceReservation);
         ExcelUtil<SpaceReservation> util = new ExcelUtil<SpaceReservation>(SpaceReservation.class);
         util.exportExcel(response, list, "预约申请数据");
@@ -57,6 +59,7 @@ public class SpaceReservationController extends BaseController
     public TableDataInfo myList(SpaceReservation spaceReservation)
     {
         spaceReservation.setApplicantId(getUserId());
+        spaceReservationService.refreshFinishedReservations();
         startPage();
         List<SpaceReservation> list = spaceReservationService.selectSpaceReservationList(spaceReservation);
         return getDataTable(list);
@@ -67,6 +70,7 @@ public class SpaceReservationController extends BaseController
     public TableDataInfo pendingList(SpaceReservation spaceReservation)
     {
         spaceReservation.setPendingOnly(true);
+        spaceReservationService.refreshFinishedReservations();
         startPage();
         List<SpaceReservation> list = spaceReservationService.selectSpaceReservationList(spaceReservation);
         return getDataTable(list);
@@ -77,6 +81,7 @@ public class SpaceReservationController extends BaseController
     public TableDataInfo cancelPendingList(SpaceReservation spaceReservation)
     {
         spaceReservation.setCancelPendingOnly(true);
+        spaceReservationService.refreshFinishedReservations();
         startPage();
         List<SpaceReservation> list = spaceReservationService.selectSpaceReservationList(spaceReservation);
         return getDataTable(list);
@@ -86,6 +91,7 @@ public class SpaceReservationController extends BaseController
     @GetMapping(value = "/{reservationId}")
     public AjaxResult getInfo(@PathVariable Long reservationId)
     {
+        spaceReservationService.refreshFinishedReservations();
         return success(spaceReservationService.selectSpaceReservationById(reservationId));
     }
 
