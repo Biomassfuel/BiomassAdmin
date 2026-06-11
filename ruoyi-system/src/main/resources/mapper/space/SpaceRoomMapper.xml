@@ -52,6 +52,18 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
 
 
+    <select id="selectSpaceRoomByCodeAll" parameterType="String" resultMap="SpaceRoomResult">
+
+        <include refid="selectSpaceRoomVo"/>
+
+        where room_code = #{roomCode}
+
+        limit 1
+
+    </select>
+
+
+
     <select id="selectSpaceRoomList" parameterType="SpaceRoom" resultMap="SpaceRoomResult">
         <include refid="selectSpaceRoomVo"/>
         <where>
@@ -78,7 +90,40 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         order by room_id desc
     </select>
 
-    <insert id="insertSpaceRoom" parameterType="SpaceRoom" useGeneratedKeys="true" keyProperty="roomId">
+    <select id="selectDeletedSpaceRoomList" parameterType="SpaceRoom" resultMap="SpaceRoomResult">
+        <include refid="selectSpaceRoomVo"/>
+
+        <where>
+
+            and del_flag = '2'
+
+            <if test="roomId != null"> and room_id = #{roomId}</if>
+
+            <if test="roomCode != null and roomCode != ''"> and room_code like concat('%', #{roomCode}, '%')</if>
+
+            <if test="roomName != null and roomName != ''"> and room_name like concat('%', #{roomName}, '%')</if>
+
+            <if test="buildingId != null"> and building_id = #{buildingId}</if>
+
+            <if test="buildingName != null and buildingName != ''"> and building_name like concat('%', #{buildingName}, '%')</if>
+
+            <if test="floorNo != null and floorNo != ''"> and floor_no like concat('%', #{floorNo}, '%')</if>
+
+            <if test="typeId != null"> and type_id = #{typeId}</if>
+
+            <if test="roomType != null and roomType != ''"> and room_type like concat('%', #{roomType}, '%')</if>
+
+            <if test="assignedOrgName != null and assignedOrgName != ''"> and assigned_org_name like concat('%', #{assignedOrgName}, '%')</if>
+
+        </where>
+
+        order by update_time desc, room_id desc
+
+    </select>
+
+
+
+    <insert id="insertSpaceRoom" parameterType="SpaceRoom" useGeneratedKeys="true" keyProperty="roomId">
         insert into space_room
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="roomId != null"> room_id,</if>
@@ -161,14 +206,42 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </update>
 
     <delete id="deleteSpaceRoomById" parameterType="Long">
-        update space_room set del_flag = '2' where room_id = #{roomId}
+        update space_room set del_flag = '2', update_time = sysdate() where room_id = #{roomId}
     </delete>
 
     <delete id="deleteSpaceRoomByIds" parameterType="Long">
-        update space_room set del_flag = '2' where room_id in
+        update space_room set del_flag = '2', update_time = sysdate() where room_id in
         <foreach collection="array" item="roomId" open="(" separator="," close=")">
             #{roomId}
         </foreach>
     </delete>
 
+    <update id="restoreSpaceRoomByIds" parameterType="Long">
+
+        update space_room set del_flag = '0', update_time = sysdate() where room_id in
+
+        <foreach collection="array" item="roomId" open="(" separator="," close=")">
+
+            #{roomId}
+
+        </foreach>
+
+    </update>
+
+
+
+    <delete id="forceDeleteSpaceRoomByIds" parameterType="Long">
+
+        delete from space_room where room_id in
+
+        <foreach collection="array" item="roomId" open="(" separator="," close=")">
+
+            #{roomId}
+
+        </foreach>
+
+    </delete>
+
+
+
 </mapper>

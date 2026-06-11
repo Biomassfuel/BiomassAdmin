@@ -34,4 +34,6 @@ public interface ISpaceReservationService
     public int approveCancelItem(Long itemId, Long auditorId, String auditorName, String opinion, String updateBy);
 
     public int rejectCancelItem(Long itemId, Long auditorId, String auditorName, String reason, String updateBy);
+
+    public int refreshFinishedReservations();
 }

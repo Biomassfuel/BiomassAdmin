@@ -7,7 +7,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <resultMap type="SpaceRoomEquipment" id="SpaceRoomEquipmentResult">
         <id property="roomEquipmentId" column="room_equipment_id" />
         <result property="roomId" column="room_id" />
-        <result property="equipmentId" column="equipment_id" />
+        <result property="equipmentId" column="equipment_id" />
+
+        <result property="equipmentCode" column="equipment_code" />
+
+        <result property="equipmentName" column="equipment_name" />
         <result property="quantity" column="quantity" />
         <result property="status" column="status" />
         <result property="createBy" column="create_by" />
@@ -18,24 +22,27 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 
     <sql id="selectSpaceRoomEquipmentVo">
-        select room_equipment_id, room_id, equipment_id, quantity, status, create_by, create_time, update_by, update_time, remark from space_room_equipment
+        select re.room_equipment_id, re.room_id, re.equipment_id, e.equipment_code, e.equipment_name,
+               re.quantity, re.status, re.create_by, re.create_time, re.update_by, re.update_time, re.remark
+        from space_room_equipment re
+        left join space_equipment e on e.equipment_id = re.equipment_id
     </sql>
 
     <select id="selectSpaceRoomEquipmentById" parameterType="Long" resultMap="SpaceRoomEquipmentResult">
         <include refid="selectSpaceRoomEquipmentVo"/>
-        where room_equipment_id = #{roomEquipmentId}
+        where re.room_equipment_id = #{roomEquipmentId}
     </select>
 
     <select id="selectSpaceRoomEquipmentList" parameterType="SpaceRoomEquipment" resultMap="SpaceRoomEquipmentResult">
         <include refid="selectSpaceRoomEquipmentVo"/>
         <where>
-            <if test="roomEquipmentId != null"> and room_equipment_id = #{roomEquipmentId}</if>
-            <if test="roomId != null"> and room_id = #{roomId}</if>
-            <if test="equipmentId != null"> and equipment_id = #{equipmentId}</if>
-            <if test="quantity != null"> and quantity = #{quantity}</if>
-            <if test="status != null and status != ''"> and status = #{status}</if>
+            <if test="roomEquipmentId != null"> and re.room_equipment_id = #{roomEquipmentId}</if>
+            <if test="roomId != null"> and re.room_id = #{roomId}</if>
+            <if test="equipmentId != null"> and re.equipment_id = #{equipmentId}</if>
+            <if test="quantity != null"> and re.quantity = #{quantity}</if>
+            <if test="status != null and status != ''"> and re.status = #{status}</if>
         </where>
-        order by room_equipment_id desc
+        order by re.room_equipment_id desc
     </select>
 
     <insert id="insertSpaceRoomEquipment" parameterType="SpaceRoomEquipment" useGeneratedKeys="true" keyProperty="roomEquipmentId">
@@ -64,7 +71,23 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         </trim>
     </insert>
 
-    <update id="updateSpaceRoomEquipment" parameterType="SpaceRoomEquipment">
+    <insert id="batchInsertSpaceRoomEquipment">
+
+        insert into space_room_equipment(room_id, equipment_id, quantity, status, create_by, create_time, remark)
+
+        values
+
+        <foreach collection="list" item="item" separator=",">
+
+            (#{item.roomId}, #{item.equipmentId}, #{item.quantity}, #{item.status}, #{item.createBy}, sysdate(), #{item.remark})
+
+        </foreach>
+
+    </insert>
+
+
+
+    <update id="updateSpaceRoomEquipment" parameterType="SpaceRoomEquipment">
         update space_room_equipment
         <set>
             <if test="roomId != null"> room_id = #{roomId},</if>
@@ -89,4 +112,26 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         </foreach>
     </delete>
 
+    <delete id="deleteSpaceRoomEquipmentByRoomId" parameterType="Long">
+
+        delete from space_room_equipment where room_id = #{roomId}
+
+    </delete>
+
+
+
+    <delete id="deleteSpaceRoomEquipmentByRoomIds" parameterType="Long">
+
+        delete from space_room_equipment where room_id in
+
+        <foreach collection="array" item="roomId" open="(" separator="," close=")">
+
+            #{roomId}
+
+        </foreach>
+
+    </delete>
+
+
+
 </mapper>

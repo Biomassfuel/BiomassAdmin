@@ -1,6 +1,7 @@
 package com.ruoyi.system.domain.space;
 
 import java.math.BigDecimal;
+import java.util.List;
 import com.ruoyi.common.annotation.Excel;
 import com.ruoyi.common.core.domain.BaseEntity;
 
@@ -48,6 +49,8 @@ public class SpaceRoom extends BaseEntity
 
     @Excel(name = "设备说明")
     private String equipmentDesc;
+
+    private List<SpaceRoomEquipment> roomEquipmentList;
 
     @Excel(name = "位置说明")
     private String locationDesc;
@@ -208,6 +211,16 @@ public class SpaceRoom extends BaseEntity
     public void setEquipmentDesc(String equipmentDesc)
     {
         this.equipmentDesc = equipmentDesc;
+    }
+
+    public List<SpaceRoomEquipment> getRoomEquipmentList()
+    {
+        return roomEquipmentList;
+    }
+
+    public void setRoomEquipmentList(List<SpaceRoomEquipment> roomEquipmentList)
+    {
+        this.roomEquipmentList = roomEquipmentList;
     }
 
     public String getLocationDesc()

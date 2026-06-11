@@ -37,12 +37,12 @@
         </el-col>
         <el-col :span="8">
           <el-form-item label="开始日期" prop="startDate">
-            <el-date-picker v-model="rule.startDate" value-format="yyyy-MM-dd" type="date" placeholder="请选择开始日期" style="width: 100%" />
+            <el-date-picker v-model="rule.startDate" value-format="yyyy-MM-dd" type="date" placeholder="请选择开始日期" style="width: 100%" :picker-options="datePickerOptions" />
           </el-form-item>
         </el-col>
         <el-col :span="8">
           <el-form-item label="结束日期" prop="endDate">
-            <el-date-picker v-model="rule.endDate" value-format="yyyy-MM-dd" type="date" placeholder="请选择结束日期" style="width: 100%" />
+            <el-date-picker v-model="rule.endDate" value-format="yyyy-MM-dd" type="date" placeholder="请选择结束日期" style="width: 100%" :picker-options="datePickerOptions" />
           </el-form-item>
         </el-col>
         <el-col :span="12">
@@ -85,6 +85,11 @@
       <el-table-column label="时段" align="center" width="180">
         <template slot-scope="scope">{{ scope.row.periodName }} {{ scope.row.startTime }}-{{ scope.row.endTime }}</template>
       </el-table-column>
+      <el-table-column label="操作" align="center" width="90" class-name="small-padding fixed-width">
+        <template slot-scope="scope">
+          <el-button type="text" size="mini" icon="el-icon-delete" @click="removeItem(scope.$index)">取消</el-button>
+        </template>
+      </el-table-column>
     </el-table>
 
     <pagination
@@ -101,7 +106,7 @@ import { listRoom } from '@/api/space/room'
 import { listTimePeriod } from '@/api/space/time-period'
 import { addReservation } from '@/api/space/reservation'
 import { fetchAllPages } from '@/utils/paged-list'
-import { formatDate, standardPeriods, weekdayText } from './utils'
+import { disablePastDate, findStartedReservation, formatDate, isBeforeToday, parseLocalDate, standardPeriods, weekdayText } from './utils'
 
 export default {
   name: 'SpaceLongReservation',
@@ -111,6 +116,9 @@ export default {
       roomLoadSeq: 0,
       rooms: [],
       periods: [],
+      datePickerOptions: {
+        disabledDate: disablePastDate
+      },
       days: [
         { value: '1', label: '周一' },
         { value: '2', label: '周二' },
@@ -218,20 +226,29 @@ export default {
           done(false)
           return
         }
-        if (new Date(this.rule.startDate) > new Date(this.rule.endDate)) {
+        if (parseLocalDate(this.rule.startDate) > parseLocalDate(this.rule.endDate)) {
           this.$modal.msgWarning('开始日期不能晚于结束日期')
+          done(false)
+          return
+        }
+        if (isBeforeToday(this.rule.startDate)) {
+          this.$modal.msgWarning('开始日期不能早于今天')
           done(false)
           return
         }
         done(true)
       })
     },
-    buildItems() {
+    startedMessage(item) {
+      const roomText = [item.roomCode, item.roomName].filter(Boolean).join(' ')
+      return `${roomText ? roomText + ' ' : ''}${item.bookingDate} ${item.startTime} 的场次已开始，不能预约`
+    },
+    buildCandidateItems() {
       const room = this.rooms.find(item => item.roomId === this.rule.roomId)
       const period = this.periods.find(item => item.periodId === this.rule.periodId)
       const rows = []
-      const cur = new Date(this.rule.startDate)
-      const end = new Date(this.rule.endDate)
+      const cur = parseLocalDate(this.rule.startDate)
+      const end = parseLocalDate(this.rule.endDate)
       while (cur <= end) {
         const weekday = String(cur.getDay())
         if (this.rule.weekdays.includes(weekday)) {
@@ -249,6 +266,14 @@ export default {
         }
         cur.setDate(cur.getDate() + 1)
       }
+      return rows
+    },
+    clearGeneratedItems() {
+      this.form.items = []
+      this.form.rule = null
+      this.itemPager.pageNum = 1
+    },
+    applyBuiltItems(rows) {
       this.form.items = rows
       this.itemPager.pageNum = 1
       this.form.rule = {
@@ -257,6 +282,17 @@ export default {
         ruleDesc: `每周${this.rule.weekdays.map(weekdayText).join('/')} ${this.rule.startTime}-${this.rule.endTime}`
       }
       if (!rows.length) this.$modal.msgWarning('当前规则没有生成任何场次')
+      return rows.length > 0
+    },
+    buildItems() {
+      const rows = this.buildCandidateItems()
+      const started = findStartedReservation(rows)
+      if (started) {
+        this.clearGeneratedItems()
+        this.$modal.msgWarning(this.startedMessage(started))
+        return false
+      }
+      return this.applyBuiltItems(rows)
     },
     preview() {
       this.validateRule(valid => {
@@ -264,13 +300,26 @@ export default {
         this.buildItems()
       })
     },
+    removeItem(pageIndex) {
+      const index = (this.itemPager.pageNum - 1) * this.itemPager.pageSize + pageIndex
+      this.form.items.splice(index, 1)
+      const maxPage = Math.max(1, Math.ceil(this.form.items.length / this.itemPager.pageSize))
+      this.itemPager.pageNum = Math.min(this.itemPager.pageNum, maxPage)
+    },
     submit() {
       this.$refs.form.validate(valid => {
         if (!valid) return
         this.validateRule(ruleValid => {
           if (!ruleValid) return
-          this.buildItems()
-          if (!this.form.items.length) return
+          if (!this.form.items.length) {
+            this.$modal.msgWarning('请先生成场次')
+            return
+          }
+          const started = findStartedReservation(this.form.items)
+          if (started) {
+            this.$modal.msgWarning(this.startedMessage(started))
+            return
+          }
           addReservation(this.form).then(() => {
             this.$modal.msgSuccess('长期预约已提交')
             this.resetAll()

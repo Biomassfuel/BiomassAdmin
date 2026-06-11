@@ -193,7 +193,96 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
           <if test="itemId != null"> and sri.item_id &lt;&gt; #{itemId}</if>
     </select>
 
-    <update id="updateItemStatus" parameterType="SpaceReservationItem">
+    <select id="selectBlockingRoomReservationItems" resultMap="SpaceReservationItemResult">
+
+        <include refid="selectSpaceReservationItemVo"/>
+
+        where sri.room_id in
+
+        <foreach collection="roomIds" item="roomId" open="(" separator="," close=")">
+
+            #{roomId}
+
+        </foreach>
+          and sri.item_status in ('1', '2', '4')
+          and str_to_date(
+                concat(
+                    sri.booking_date,
+                    ' ',
+                    case
+                        when char_length(sri.end_time) = 4 then concat('0', sri.end_time, ':00')
+                        when char_length(sri.end_time) = 5 then concat(sri.end_time, ':00')
+                        when char_length(sri.end_time) = 7 then concat('0', sri.end_time)
+                        else sri.end_time
+                    end
+                ),
+                '%Y-%m-%d %H:%i:%s'
+              ) &gt; sysdate()
+        order by sri.booking_date asc, sri.start_time asc, sri.item_id asc
+
+    </select>
+
+
+
+    <select id="selectReservationIdsToFinish" resultType="Long">
+
+        select distinct sri.reservation_id
+        from space_reservation_item sri
+        inner join space_reservation sr on sr.reservation_id = sri.reservation_id
+        where sri.item_status = '2'
+          and sr.status in ('2', '3')
+          and str_to_date(
+                concat(
+                    sri.booking_date,
+                    ' ',
+                    case
+                        when char_length(sri.end_time) = 4 then concat('0', sri.end_time, ':00')
+                        when char_length(sri.end_time) = 5 then concat(sri.end_time, ':00')
+                        when char_length(sri.end_time) = 7 then concat('0', sri.end_time)
+                        else sri.end_time
+                    end
+                ),
+                '%Y-%m-%d %H:%i:%s'
+              ) &lt;= sysdate()
+
+    </select>
+
+
+
+    <update id="updateFinishedItems">
+
+        update space_reservation_item sri
+        inner join space_reservation sr on sr.reservation_id = sri.reservation_id
+        set sri.item_status = '6',
+            sri.conflict_flag = '0',
+            sri.conflict_reason = '',
+            sri.update_by = 'system',
+            sri.update_time = sysdate()
+        where sri.item_status = '2'
+          and sr.status in ('2', '3')
+          and sri.reservation_id in
+          <foreach collection="reservationIds" item="reservationId" open="(" separator="," close=")">
+              #{reservationId}
+          </foreach>
+          and str_to_date(
+                concat(
+                    sri.booking_date,
+                    ' ',
+                    case
+                        when char_length(sri.end_time) = 4 then concat('0', sri.end_time, ':00')
+                        when char_length(sri.end_time) = 5 then concat(sri.end_time, ':00')
+                        when char_length(sri.end_time) = 7 then concat('0', sri.end_time)
+                        else sri.end_time
+                    end
+                ),
+                '%Y-%m-%d %H:%i:%s'
+              ) &lt;= sysdate()
+
+    </update>
+
+
+
+    <update id="updateItemStatus" parameterType="SpaceReservationItem">
         update space_reservation_item
         set item_status = #{itemStatus},
             conflict_flag = #{conflictFlag},

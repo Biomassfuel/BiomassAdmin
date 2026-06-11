@@ -27,7 +27,19 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         where type_id = #{typeId}
     </select>
 
-    <select id="selectSpaceRoomTypeList" parameterType="SpaceRoomType" resultMap="SpaceRoomTypeResult">
+    <select id="selectSpaceRoomTypeByCode" parameterType="String" resultMap="SpaceRoomTypeResult">
+
+        <include refid="selectSpaceRoomTypeVo"/>
+
+        where type_code = #{typeCode}
+
+        limit 1
+
+    </select>
+
+
+
+    <select id="selectSpaceRoomTypeList" parameterType="SpaceRoomType" resultMap="SpaceRoomTypeResult">
         <include refid="selectSpaceRoomTypeVo"/>
         <where>
             <if test="typeId != null"> and type_id = #{typeId}</if>

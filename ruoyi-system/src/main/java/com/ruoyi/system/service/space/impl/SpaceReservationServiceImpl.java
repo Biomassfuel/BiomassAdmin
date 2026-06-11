@@ -1,5 +1,10 @@
 package com.ruoyi.system.service.space.impl;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.Date;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +33,10 @@ public class SpaceReservationServiceImpl implements ISpaceReservationService
     private static final String AUDIT_TYPE_NORMAL = "0";
 
     private static final String AUDIT_TYPE_CANCEL = "1";
+
+    private static final DateTimeFormatter BOOKING_DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+    private static final DateTimeFormatter BOOKING_TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm:ss");
 
     @Autowired
     private SpaceReservationMapper spaceReservationMapper;
@@ -146,6 +155,23 @@ public class SpaceReservationServiceImpl implements ISpaceReservationService
     public int deleteSpaceReservationById(Long reservationId)
     {
         return spaceReservationMapper.deleteSpaceReservationById(reservationId);
+    }
+
+    @Override
+    @Transactional
+    public int refreshFinishedReservations()
+    {
+        List<Long> reservationIds = spaceReservationItemMapper.selectReservationIdsToFinish();
+        if (reservationIds == null || reservationIds.isEmpty())
+        {
+            return 0;
+        }
+        int rows = spaceReservationItemMapper.updateFinishedItems(reservationIds);
+        for (Long reservationId : reservationIds)
+        {
+            refreshFinishedReservationStatus(reservationId);
+        }
+        return rows;
     }
 
     @Override
@@ -537,9 +563,15 @@ public class SpaceReservationServiceImpl implements ISpaceReservationService
 
     private String resolveFinishedStatus(List<SpaceReservationItem> items)
     {
+        if (items == null || items.isEmpty())
+        {
+            return "3";
+        }
         int approved = 0;
         int rejected = 0;
         int canceled = 0;
+        int finished = 0;
+        int pending = 0;
         for (SpaceReservationItem item : items)
         {
             if ("2".equals(item.getItemStatus()))
@@ -554,12 +586,20 @@ public class SpaceReservationServiceImpl implements ISpaceReservationService
             {
                 canceled++;
             }
+            else if ("6".equals(item.getItemStatus()))
+            {
+                finished++;
+            }
+            else if ("1".equals(item.getItemStatus()) || "4".equals(item.getItemStatus()))
+            {
+                pending++;
+            }
         }
         if (canceled == items.size())
         {
             return "5";
         }
-        if (approved == 0 && canceled > 0)
+        if (approved == 0 && canceled > 0 && finished == 0)
         {
             return "5";
         }
@@ -571,7 +611,35 @@ public class SpaceReservationServiceImpl implements ISpaceReservationService
         {
             return "4";
         }
+        if (approved > 0)
+        {
+            return rejected > 0 || canceled > 0 || pending > 0 ? "3" : "2";
+        }
+        if (finished > 0 && pending == 0)
+        {
+            return rejected > 0 ? "3" : "6";
+        }
+        if (approved == 0 && rejected == 0 && canceled == 0 && finished == 0 && pending > 0)
+        {
+            return "1";
+        }
         return "3";
+    }
+
+    private void refreshFinishedReservationStatus(Long reservationId)
+    {
+        SpaceReservationItem query = new SpaceReservationItem();
+        query.setReservationId(reservationId);
+        List<SpaceReservationItem> items = spaceReservationItemMapper.selectSpaceReservationItemList(query);
+        if (items == null || items.isEmpty())
+        {
+            return;
+        }
+        SpaceReservation update = new SpaceReservation();
+        update.setReservationId(reservationId);
+        update.setStatus(resolveFinishedStatus(items));
+        update.setUpdateBy("system");
+        spaceReservationMapper.updateReservationStatus(update);
     }
 
     private void fillRoomSnapshot(SpaceReservationItem item)
@@ -580,6 +648,10 @@ public class SpaceReservationServiceImpl implements ISpaceReservationService
         if (room == null)
         {
             throw new ServiceException("房间不存在");
+        }
+        if (!"0".equals(room.getDelFlag()))
+        {
+            throw new ServiceException("房间已删除，不能预约：" + room.getRoomCode());
         }
         if (!"0".equals(room.getStatus()) || !"0".equals(room.getBookable()))
         {
@@ -596,6 +668,7 @@ public class SpaceReservationServiceImpl implements ISpaceReservationService
             throw new ServiceException("预约房间、日期、开始时间和结束时间不能为空");
         }
         assertStandardPeriod(item);
+        assertNotStarted(item);
         spaceRoomDayLockMapper.insertIgnore(item.getRoomId(), item.getBookingDate(), operator);
         spaceRoomDayLockMapper.lockRoomDay(item.getRoomId(), item.getBookingDate());
         SpaceReservationItem conflict = selectFirstConflict(item);
@@ -631,6 +704,37 @@ public class SpaceReservationServiceImpl implements ISpaceReservationService
         throw new ServiceException("预约时间必须选择标准时段：上午、下午或晚间");
     }
 
+    private void assertNotStarted(SpaceReservationItem item)
+    {
+        try
+        {
+            LocalDate bookingDate = LocalDate.parse(item.getBookingDate(), BOOKING_DATE_FORMATTER);
+            LocalTime startTime = LocalTime.parse(normalizeBookingTime(item.getStartTime()), BOOKING_TIME_FORMATTER);
+            if (!LocalDateTime.of(bookingDate, startTime).isAfter(LocalDateTime.now()))
+            {
+                throw new ServiceException("不能预约当前时间之前的场次");
+            }
+        }
+        catch (DateTimeParseException e)
+        {
+            throw new ServiceException("预约日期或开始时间格式不正确");
+        }
+    }
+
+    private String normalizeBookingTime(String time)
+    {
+        String normalized = normalizeTime(time);
+        if (normalized.length() == 4)
+        {
+            return "0" + normalized + ":00";
+        }
+        if (normalized.length() == 5)
+        {
+            return normalized + ":00";
+        }
+        return normalized.length() == 7 ? "0" + normalized : normalized;
+    }
+
     private boolean isStandardPeriod(SpaceTimePeriod period)
     {
         String code = period.getPeriodCode();
@@ -658,40 +762,9 @@ public class SpaceReservationServiceImpl implements ISpaceReservationService
         SpaceReservationItem query = new SpaceReservationItem();
         query.setReservationId(reservationId);
         List<SpaceReservationItem> items = spaceReservationItemMapper.selectSpaceReservationItemList(query);
-        int approved = 0;
-        int rejected = 0;
-        int pending = 0;
-        for (SpaceReservationItem item : items)
-        {
-            if ("2".equals(item.getItemStatus()))
-            {
-                approved++;
-            }
-            else if ("3".equals(item.getItemStatus()))
-            {
-                rejected++;
-            }
-            else if ("1".equals(item.getItemStatus()) || "4".equals(item.getItemStatus()))
-            {
-                pending++;
-            }
-        }
-        String status = "3";
-        if (approved == items.size())
-        {
-            status = "2";
-        }
-        else if (rejected == items.size())
-        {
-            status = "4";
-        }
-        else if (approved == 0 && rejected == 0 && pending > 0)
-        {
-            status = "1";
-        }
         SpaceReservation update = new SpaceReservation();
         update.setReservationId(reservationId);
-        update.setStatus(status);
+        update.setStatus(resolveFinishedStatus(items));
         update.setAuditType(AUDIT_TYPE_NORMAL);
         update.setAuditorId(auditorId);
         update.setAuditorName(auditorName);

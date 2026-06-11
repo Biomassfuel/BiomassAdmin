@@ -49,6 +49,9 @@
       <el-col :span="1.5">
         <el-button type="warning" plain icon="el-icon-download" size="mini" @click="handleExport" v-hasPermi="['space:room:export']">导出</el-button>
       </el-col>
+      <el-col :span="1.5">
+        <el-button type="info" plain icon="el-icon-delete" size="mini" @click="handleRecycle" v-hasPermi="['space:room:list']">回收站</el-button>
+      </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" />
     </el-row>
 
@@ -179,6 +182,46 @@
             </el-form-item>
           </el-col>
           <el-col :span="24">
+            <el-form-item label="设备明细">
+              <div class="room-equipment-editor">
+                <el-table :data="form.roomEquipmentList || []" border size="mini" empty-text="暂无设备明细">
+                  <el-table-column label="设备" min-width="220">
+                    <template slot-scope="scope">
+                      <el-select v-model="scope.row.equipmentId" placeholder="请选择设备" filterable clearable style="width: 100%" @change="handleRoomEquipmentChange(scope.row)">
+                        <el-option
+                          v-for="item in equipmentOptions"
+                          :key="item.equipmentId"
+                          :label="item.equipmentName"
+                          :value="item.equipmentId"
+                          :disabled="isEquipmentSelected(item.equipmentId, scope.$index)"
+                        />
+                      </el-select>
+                    </template>
+                  </el-table-column>
+                  <el-table-column label="数量" width="140">
+                    <template slot-scope="scope">
+                      <el-input-number v-model="scope.row.quantity" :min="1" :precision="0" controls-position="right" style="width: 100%" />
+                    </template>
+                  </el-table-column>
+                  <el-table-column label="状态" width="140">
+                    <template slot-scope="scope">
+                      <el-select v-model="scope.row.status" placeholder="请选择" style="width: 100%">
+                        <el-option label="正常" value="0" />
+                        <el-option label="停用" value="1" />
+                      </el-select>
+                    </template>
+                  </el-table-column>
+                  <el-table-column label="操作" width="90" align="center">
+                    <template slot-scope="scope">
+                      <el-button type="text" icon="el-icon-delete" @click="removeRoomEquipment(scope.$index)">删除</el-button>
+                    </template>
+                  </el-table-column>
+                </el-table>
+                <el-button class="room-equipment-editor__add" type="primary" plain size="mini" icon="el-icon-plus" @click="addRoomEquipment">添加设备</el-button>
+              </div>
+            </el-form-item>
+          </el-col>
+          <el-col :span="24">
             <el-form-item label="位置说明">
               <el-input v-model="form.locationDesc" type="textarea" placeholder="请输入位置说明" />
             </el-form-item>
@@ -200,6 +243,37 @@
       <div class="room-detail-dialog__body">
         <room-info-card :room="detail" :column="3" :realtime-status="detailRealtimeStatus" />
         <room-week-schedule :room-id="detail && detail.roomId" />
+      </div>
+    </el-dialog>
+
+    <el-dialog title="房间回收站" :visible.sync="recycleOpen" width="1100px" append-to-body>
+      <el-table v-loading="recycleLoading" :data="recycleList">
+        <el-table-column label="房间编号" align="center" prop="roomCode" width="120" />
+        <el-table-column label="房间名称" align="center" prop="roomName" :show-overflow-tooltip="true" />
+        <el-table-column label="楼栋" align="center" prop="buildingName" width="110" />
+        <el-table-column label="楼层" align="center" prop="floorNo" width="90" />
+        <el-table-column label="类型" align="center" prop="roomType" width="120" />
+        <el-table-column label="容量" align="center" min-width="120">
+          <template slot-scope="scope">{{ capacityText(scope.row) }}</template>
+        </el-table-column>
+        <el-table-column label="归属单位" align="center" prop="assignedOrgName" :show-overflow-tooltip="true" />
+        <el-table-column label="删除时间" align="center" prop="updateTime" width="160" />
+        <el-table-column label="操作" align="center" width="150" class-name="small-padding fixed-width">
+          <template slot-scope="scope">
+            <el-button size="mini" type="text" icon="el-icon-refresh-left" @click="handleRestore(scope.row)" v-hasPermi="['space:room:edit']">恢复</el-button>
+            <el-button size="mini" type="text" icon="el-icon-delete" @click="handleForceDelete(scope.row)" v-hasPermi="['space:room:remove']">删除</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <pagination
+        v-show="recycleTotal > 0"
+        :total="recycleTotal"
+        :page.sync="recycleQueryParams.pageNum"
+        :limit.sync="recycleQueryParams.pageSize"
+        @pagination="getRecycleList"
+      />
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="recycleOpen = false">关闭</el-button>
       </div>
     </el-dialog>
 
@@ -236,8 +310,9 @@
 
 <script>
 import { getToken } from '@/utils/auth'
-import { listRoom, getRoom, addRoom, updateRoom, delRoom } from '@/api/space/room'
+import { listRoom, listRecycleRoom, getRoom, addRoom, updateRoom, delRoom, restoreRoom, forceDelRoom } from '@/api/space/room'
 import { listRoomType } from '@/api/space/room-type'
+import { listEquipment } from '@/api/space/equipment'
 import { listReservationItem } from '@/api/space/reservation-item'
 import { fetchAllPages } from '@/utils/paged-list'
 import { formatDate } from '@/views/space/reservation/utils'
@@ -257,10 +332,15 @@ export default {
       total: 0,
       roomList: [],
       typeOptions: [],
+      equipmentOptions: [],
       title: '',
       open: false,
       detailOpen: false,
+      recycleOpen: false,
+      recycleLoading: false,
       detail: null,
+      recycleList: [],
+      recycleTotal: 0,
       detailRealtimeStatus: {
         occupied: false,
         text: '空闲'
@@ -283,6 +363,10 @@ export default {
         bookable: null,
         status: null
       },
+      recycleQueryParams: {
+        pageNum: 1,
+        pageSize: 10
+      },
       form: {},
       rules: {
         roomCode: [{ required: true, message: '房间编号不能为空', trigger: 'blur' }],
@@ -297,10 +381,12 @@ export default {
   },
   created() {
     this.getTypeOptions()
+    this.getEquipmentOptions()
     this.getList()
   },
   activated() {
     this.getTypeOptions()
+    this.getEquipmentOptions()
     this.getList()
   },
   methods: {
@@ -312,9 +398,22 @@ export default {
         this.loading = false
       })
     },
+    getRecycleList() {
+      this.recycleLoading = true
+      listRecycleRoom(this.recycleQueryParams).then(response => {
+        this.recycleList = response.rows
+        this.recycleTotal = response.total
+        this.recycleLoading = false
+      })
+    },
     getTypeOptions() {
       fetchAllPages(listRoomType, { status: '0' }).then(rows => {
         this.typeOptions = rows
+      })
+    },
+    getEquipmentOptions() {
+      fetchAllPages(listEquipment, { status: '0' }).then(rows => {
+        this.equipmentOptions = rows
       })
     },
     capacityText(row) {
@@ -326,6 +425,65 @@ export default {
     handleTypeChange(typeId) {
       const type = this.typeOptions.find(item => item.typeId === typeId)
       this.form.roomType = type ? type.typeName : null
+    },
+    normalizeRoomEquipmentList(list) {
+      return (list || []).map(item => ({
+        roomEquipmentId: item.roomEquipmentId || null,
+        roomId: item.roomId || this.form.roomId || null,
+        equipmentId: item.equipmentId || null,
+        equipmentCode: item.equipmentCode || null,
+        equipmentName: item.equipmentName || null,
+        quantity: item.quantity || 1,
+        status: item.status || '0',
+        remark: item.remark || null
+      }))
+    },
+    addRoomEquipment() {
+      if (!this.form.roomEquipmentList) {
+        this.$set(this.form, 'roomEquipmentList', [])
+      }
+      this.form.roomEquipmentList.push({
+        roomEquipmentId: null,
+        roomId: this.form.roomId || null,
+        equipmentId: null,
+        equipmentCode: null,
+        equipmentName: null,
+        quantity: 1,
+        status: '0',
+        remark: null
+      })
+    },
+    removeRoomEquipment(index) {
+      this.form.roomEquipmentList.splice(index, 1)
+    },
+    handleRoomEquipmentChange(row) {
+      const equipment = this.equipmentOptions.find(item => item.equipmentId === row.equipmentId)
+      row.equipmentCode = equipment ? equipment.equipmentCode : null
+      row.equipmentName = equipment ? equipment.equipmentName : null
+    },
+    isEquipmentSelected(equipmentId, currentIndex) {
+      return (this.form.roomEquipmentList || []).some((item, index) => index !== currentIndex && item.equipmentId === equipmentId)
+    },
+    validateRoomEquipmentList() {
+      const selectedIds = (this.form.roomEquipmentList || []).filter(item => item.equipmentId).map(item => item.equipmentId)
+      if (new Set(selectedIds).size !== selectedIds.length) {
+        this.$modal.msgError('同一房间不能重复选择同一个设备')
+        return false
+      }
+      return true
+    },
+    buildRoomPayload() {
+      const payload = {
+        ...this.form,
+        roomEquipmentList: this.normalizeRoomEquipmentList(this.form.roomEquipmentList)
+          .filter(item => item.equipmentId)
+          .map(item => ({
+            ...item,
+            quantity: item.quantity || 1,
+            status: item.status || '0'
+          }))
+      }
+      return payload
     },
     cancel() {
       this.open = false
@@ -348,6 +506,7 @@ export default {
         assignedOrgId: null,
         assignedOrgName: null,
         equipmentDesc: null,
+        roomEquipmentList: [],
         locationDesc: null,
         bookable: '0',
         status: '0',
@@ -378,6 +537,7 @@ export default {
       const roomId = row && row.roomId ? row.roomId : this.ids[0]
       getRoom(roomId).then(response => {
         this.form = response.data
+        this.form.roomEquipmentList = this.normalizeRoomEquipmentList(response.data.roomEquipmentList)
         this.open = true
         this.title = '修改房间'
       })
@@ -419,14 +579,16 @@ export default {
     submitForm() {
       this.$refs.form.validate(valid => {
         if (!valid) return
+        if (!this.validateRoomEquipmentList()) return
+        const payload = this.buildRoomPayload()
         if (this.form.roomId != null) {
-          updateRoom(this.form).then(() => {
+          updateRoom(payload).then(() => {
             this.$modal.msgSuccess('修改成功')
             this.open = false
             this.getList()
           })
         } else {
-          addRoom(this.form).then(() => {
+          addRoom(payload).then(() => {
             this.$modal.msgSuccess('新增成功')
             this.open = false
             this.getList()
@@ -441,6 +603,28 @@ export default {
       }).then(() => {
         this.getList()
         this.$modal.msgSuccess('删除成功')
+      }).catch(() => {})
+    },
+    handleRecycle() {
+      this.recycleQueryParams.pageNum = 1
+      this.recycleOpen = true
+      this.getRecycleList()
+    },
+    handleRestore(row) {
+      this.$modal.confirm('是否确认恢复房间编号为"' + row.roomCode + '"的数据项？').then(() => {
+        return restoreRoom(row.roomId)
+      }).then(() => {
+        this.getRecycleList()
+        this.getList()
+        this.$modal.msgSuccess('恢复成功')
+      }).catch(() => {})
+    },
+    handleForceDelete(row) {
+      this.$modal.confirm('永久删除后不可恢复，是否确认永久删除房间编号为"' + row.roomCode + '"的数据项？').then(() => {
+        return forceDelRoom(row.roomId)
+      }).then(() => {
+        this.getRecycleList()
+        this.$modal.msgSuccess('永久删除成功')
       }).catch(() => {})
     },
     handleBookableChange(row) {
@@ -493,6 +677,14 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.room-equipment-editor {
+  width: 100%;
+}
+
+.room-equipment-editor__add {
+  margin-top: 8px;
+}
+
 .room-detail-dialog__body {
   max-height: 72vh;
   overflow-y: auto;

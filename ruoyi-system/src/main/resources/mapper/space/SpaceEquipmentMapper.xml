@@ -26,7 +26,19 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         where equipment_id = #{equipmentId}
     </select>
 
-    <select id="selectSpaceEquipmentList" parameterType="SpaceEquipment" resultMap="SpaceEquipmentResult">
+    <select id="selectSpaceEquipmentByCode" parameterType="String" resultMap="SpaceEquipmentResult">
+
+        <include refid="selectSpaceEquipmentVo"/>
+
+        where equipment_code = #{equipmentCode}
+
+        limit 1
+
+    </select>
+
+
+
+    <select id="selectSpaceEquipmentList" parameterType="SpaceEquipment" resultMap="SpaceEquipmentResult">
         <include refid="selectSpaceEquipmentVo"/>
         <where>
             <if test="equipmentId != null"> and equipment_id = #{equipmentId}</if>

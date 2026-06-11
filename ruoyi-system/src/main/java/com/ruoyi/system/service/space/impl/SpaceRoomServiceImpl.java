@@ -1,14 +1,21 @@
 package com.ruoyi.system.service.space.impl;
 
 import java.util.List;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.system.domain.space.SpaceImportBatch;
+import com.ruoyi.system.domain.space.SpaceReservationItem;
 import com.ruoyi.system.domain.space.SpaceRoom;
+import com.ruoyi.system.domain.space.SpaceRoomEquipment;
 import com.ruoyi.system.mapper.space.SpaceImportBatchMapper;
+import com.ruoyi.system.mapper.space.SpaceReservationItemMapper;
+import com.ruoyi.system.mapper.space.SpaceRoomEquipmentMapper;
 import com.ruoyi.system.mapper.space.SpaceRoomMapper;
 import com.ruoyi.system.service.space.ISpaceRoomService;
 
@@ -21,10 +28,23 @@ public class SpaceRoomServiceImpl implements ISpaceRoomService
     @Autowired
     private SpaceImportBatchMapper spaceImportBatchMapper;
 
+    @Autowired
+    private SpaceRoomEquipmentMapper spaceRoomEquipmentMapper;
+
+    @Autowired
+    private SpaceReservationItemMapper spaceReservationItemMapper;
+
     @Override
     public SpaceRoom selectSpaceRoomById(Long roomId)
     {
-        return spaceRoomMapper.selectSpaceRoomById(roomId);
+        SpaceRoom room = spaceRoomMapper.selectSpaceRoomById(roomId);
+        if (room != null)
+        {
+            SpaceRoomEquipment query = new SpaceRoomEquipment();
+            query.setRoomId(roomId);
+            room.setRoomEquipmentList(spaceRoomEquipmentMapper.selectSpaceRoomEquipmentList(query));
+        }
+        return room;
     }
 
     @Override
@@ -34,29 +54,62 @@ public class SpaceRoomServiceImpl implements ISpaceRoomService
     }
 
     @Override
+    public List<SpaceRoom> selectDeletedSpaceRoomList(SpaceRoom spaceRoom)
+    {
+        return spaceRoomMapper.selectDeletedSpaceRoomList(spaceRoom);
+    }
+
+    @Override
+    @Transactional
     public int insertSpaceRoom(SpaceRoom spaceRoom)
     {
         fillRoomDefaults(spaceRoom);
-        return spaceRoomMapper.insertSpaceRoom(spaceRoom);
+        validateRoomCodeUnique(spaceRoom);
+        int rows = spaceRoomMapper.insertSpaceRoom(spaceRoom);
+        saveRoomEquipment(spaceRoom);
+        return rows;
     }
 
     @Override
+    @Transactional
     public int updateSpaceRoom(SpaceRoom spaceRoom)
     {
         fillRoomDefaults(spaceRoom);
-        return spaceRoomMapper.updateSpaceRoom(spaceRoom);
+        validateRoomCodeUnique(spaceRoom);
+        int rows = spaceRoomMapper.updateSpaceRoom(spaceRoom);
+        saveRoomEquipment(spaceRoom);
+        return rows;
     }
 
     @Override
+    @Transactional
     public int deleteSpaceRoomByIds(Long[] roomIds)
     {
+        assertNoActiveReservations(roomIds);
         return spaceRoomMapper.deleteSpaceRoomByIds(roomIds);
     }
 
     @Override
+    @Transactional
     public int deleteSpaceRoomById(Long roomId)
     {
+        assertNoActiveReservations(new Long[] { roomId });
         return spaceRoomMapper.deleteSpaceRoomById(roomId);
+    }
+
+    @Override
+    public int restoreSpaceRoomByIds(Long[] roomIds)
+    {
+        return spaceRoomMapper.restoreSpaceRoomByIds(roomIds);
+    }
+
+    @Override
+    @Transactional
+    public int forceDeleteSpaceRoomByIds(Long[] roomIds)
+    {
+        assertNoActiveReservations(roomIds);
+        spaceRoomEquipmentMapper.deleteSpaceRoomEquipmentByRoomIds(roomIds);
+        return spaceRoomMapper.forceDeleteSpaceRoomByIds(roomIds);
     }
 
     @Override
@@ -82,7 +135,7 @@ public class SpaceRoomServiceImpl implements ISpaceRoomService
                     throw new ServiceException("房间编号不能为空");
                 }
 
-                SpaceRoom existing = spaceRoomMapper.selectSpaceRoomByCode(room.getRoomCode());
+                SpaceRoom existing = spaceRoomMapper.selectSpaceRoomByCodeAll(room.getRoomCode());
                 if (existing == null)
                 {
                     fillRoomDefaults(room);
@@ -90,6 +143,10 @@ public class SpaceRoomServiceImpl implements ISpaceRoomService
                     spaceRoomMapper.insertSpaceRoom(room);
                     successNum++;
                     successMsg.append("<br/>").append(successNum).append("、房间 ").append(room.getRoomCode()).append(" 导入成功");
+                }
+                else if ("2".equals(existing.getDelFlag()))
+                {
+                    throw new ServiceException("房间编号已在回收站中，请先恢复或永久删除");
                 }
                 else if (isUpdateSupport)
                 {
@@ -142,6 +199,84 @@ public class SpaceRoomServiceImpl implements ISpaceRoomService
         if (StringUtils.isBlank(room.getDelFlag()))
         {
             room.setDelFlag("0");
+        }
+    }
+
+    private void validateRoomCodeUnique(SpaceRoom room)
+    {
+        if (StringUtils.isBlank(room.getRoomCode()))
+        {
+            throw new ServiceException("房间编号不能为空");
+        }
+        SpaceRoom existing = spaceRoomMapper.selectSpaceRoomByCodeAll(room.getRoomCode());
+        if (existing != null && (room.getRoomId() == null || !existing.getRoomId().equals(room.getRoomId())))
+        {
+            if ("2".equals(existing.getDelFlag()))
+            {
+                throw new ServiceException("房间编号“" + room.getRoomCode() + "”已在回收站中，请先恢复或永久删除");
+            }
+            throw new ServiceException("房间编号“" + room.getRoomCode() + "”已存在");
+        }
+    }
+
+    private void assertNoActiveReservations(Long[] roomIds)
+    {
+        if (roomIds == null || roomIds.length == 0)
+        {
+            return;
+        }
+        List<SpaceReservationItem> blockingItems = spaceReservationItemMapper.selectBlockingRoomReservationItems(roomIds);
+        if (blockingItems == null || blockingItems.isEmpty())
+        {
+            return;
+        }
+        SpaceReservationItem item = blockingItems.get(0);
+        String roomText = StringUtils.isBlank(item.getRoomCode()) ? String.valueOf(item.getRoomId()) : item.getRoomCode();
+        String reservationText = StringUtils.isBlank(item.getReservationNo()) ? String.valueOf(item.getReservationId()) : item.getReservationNo();
+        throw new ServiceException("房间 " + roomText + " 存在未结束预约 " + reservationText + "（" + item.getBookingDate() + " " + item.getStartTime() + "-" + item.getEndTime() + "），不能删除，请先取消预约或等待结束");
+    }
+
+    private void saveRoomEquipment(SpaceRoom room)
+    {
+        if (room.getRoomId() == null || room.getRoomEquipmentList() == null)
+        {
+            return;
+        }
+        spaceRoomEquipmentMapper.deleteSpaceRoomEquipmentByRoomId(room.getRoomId());
+        if (room.getRoomEquipmentList().isEmpty())
+        {
+            return;
+        }
+        List<SpaceRoomEquipment> validList = new ArrayList<>();
+        Set<Long> equipmentIds = new HashSet<>();
+        for (SpaceRoomEquipment item : room.getRoomEquipmentList())
+        {
+            if (item.getEquipmentId() == null)
+            {
+                continue;
+            }
+            if (!equipmentIds.add(item.getEquipmentId()))
+            {
+                throw new ServiceException("同一房间不能重复配置同一个设备");
+            }
+            item.setRoomId(room.getRoomId());
+            if (item.getQuantity() == null || item.getQuantity() < 1)
+            {
+                item.setQuantity(1);
+            }
+            if (StringUtils.isBlank(item.getStatus()))
+            {
+                item.setStatus("0");
+            }
+            if (StringUtils.isBlank(item.getCreateBy()))
+            {
+                item.setCreateBy(StringUtils.isBlank(room.getUpdateBy()) ? room.getCreateBy() : room.getUpdateBy());
+            }
+            validList.add(item);
+        }
+        if (!validList.isEmpty())
+        {
+            spaceRoomEquipmentMapper.batchInsertSpaceRoomEquipment(validList);
         }
     }
 

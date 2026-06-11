@@ -3,7 +3,11 @@ package com.ruoyi.system.service.space.impl;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.ruoyi.system.domain.space.SpaceRoomType;
+import com.ruoyi.common.exception.ServiceException;
+
+import com.ruoyi.common.utils.StringUtils;
+
+import com.ruoyi.system.domain.space.SpaceRoomType;
 import com.ruoyi.system.mapper.space.SpaceRoomTypeMapper;
 import com.ruoyi.system.service.space.ISpaceRoomTypeService;
 
@@ -28,13 +32,17 @@ public class SpaceRoomTypeServiceImpl implements ISpaceRoomTypeService
     @Override
     public int insertSpaceRoomType(SpaceRoomType spaceRoomType)
     {
-        return spaceRoomTypeMapper.insertSpaceRoomType(spaceRoomType);
+        validateTypeCodeUnique(spaceRoomType);
+
+        return spaceRoomTypeMapper.insertSpaceRoomType(spaceRoomType);
     }
 
     @Override
     public int updateSpaceRoomType(SpaceRoomType spaceRoomType)
     {
-        return spaceRoomTypeMapper.updateSpaceRoomType(spaceRoomType);
+        validateTypeCodeUnique(spaceRoomType);
+
+        return spaceRoomTypeMapper.updateSpaceRoomType(spaceRoomType);
     }
 
     @Override
@@ -48,4 +56,28 @@ public class SpaceRoomTypeServiceImpl implements ISpaceRoomTypeService
     {
         return spaceRoomTypeMapper.deleteSpaceRoomTypeById(typeId);
     }
+    private void validateTypeCodeUnique(SpaceRoomType spaceRoomType)
+
+    {
+
+        if (StringUtils.isBlank(spaceRoomType.getTypeCode()))
+
+        {
+
+            throw new ServiceException("类型编码不能为空");
+
+        }
+
+        SpaceRoomType existing = spaceRoomTypeMapper.selectSpaceRoomTypeByCode(spaceRoomType.getTypeCode());
+
+        if (existing != null && (spaceRoomType.getTypeId() == null || !existing.getTypeId().equals(spaceRoomType.getTypeId())))
+
+        {
+
+            throw new ServiceException("类型编码“" + spaceRoomType.getTypeCode() + "”已存在");
+
+        }
+
+    }
+
 }

@@ -6,7 +6,9 @@ import com.ruoyi.system.domain.space.SpaceEquipment;
 
 public interface SpaceEquipmentMapper
 {
-    public SpaceEquipment selectSpaceEquipmentById(Long equipmentId);
+    public SpaceEquipment selectSpaceEquipmentById(Long equipmentId);
+
+    public SpaceEquipment selectSpaceEquipmentByCode(@Param("equipmentCode") String equipmentCode);
     public List<SpaceEquipment> selectSpaceEquipmentList(SpaceEquipment spaceEquipment);
     public int insertSpaceEquipment(SpaceEquipment spaceEquipment);
     public int updateSpaceEquipment(SpaceEquipment spaceEquipment);

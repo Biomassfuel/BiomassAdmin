@@ -38,6 +38,15 @@ public class SpaceRoomController extends BaseController
         return getDataTable(list);
     }
 
+    @PreAuthorize("@ss.hasPermi('space:room:list')")
+    @GetMapping("/recycle/list")
+    public TableDataInfo recycleList(SpaceRoom spaceRoom)
+    {
+        startPage();
+        List<SpaceRoom> list = spaceRoomService.selectDeletedSpaceRoomList(spaceRoom);
+        return getDataTable(list);
+    }
+
     @PreAuthorize("@ss.hasPermi('space:room:export')")
     @Log(title = "房间", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
@@ -97,5 +106,21 @@ public class SpaceRoomController extends BaseController
     public AjaxResult remove(@PathVariable Long[] roomIds)
     {
         return toAjax(spaceRoomService.deleteSpaceRoomByIds(roomIds));
+    }
+
+    @PreAuthorize("@ss.hasPermi('space:room:edit')")
+    @Log(title = "房间恢复", businessType = BusinessType.UPDATE)
+    @PutMapping("/restore/{roomIds}")
+    public AjaxResult restore(@PathVariable Long[] roomIds)
+    {
+        return toAjax(spaceRoomService.restoreSpaceRoomByIds(roomIds));
+    }
+
+    @PreAuthorize("@ss.hasPermi('space:room:remove')")
+    @Log(title = "房间永久删除", businessType = BusinessType.DELETE)
+    @DeleteMapping("/force/{roomIds}")
+    public AjaxResult forceRemove(@PathVariable Long[] roomIds)
+    {
+        return toAjax(spaceRoomService.forceDeleteSpaceRoomByIds(roomIds));
     }
 }

@@ -10,7 +10,11 @@ public interface SpaceRoomMapper
 
     public SpaceRoom selectSpaceRoomByCode(@Param("roomCode") String roomCode);
 
+    public SpaceRoom selectSpaceRoomByCodeAll(@Param("roomCode") String roomCode);
+
     public List<SpaceRoom> selectSpaceRoomList(SpaceRoom spaceRoom);
+
+    public List<SpaceRoom> selectDeletedSpaceRoomList(SpaceRoom spaceRoom);
 
     public int insertSpaceRoom(SpaceRoom spaceRoom);
 
@@ -19,4 +23,8 @@ public interface SpaceRoomMapper
     public int deleteSpaceRoomById(Long roomId);
 
     public int deleteSpaceRoomByIds(Long[] roomIds);
+
+    public int restoreSpaceRoomByIds(Long[] roomIds);
+
+    public int forceDeleteSpaceRoomByIds(Long[] roomIds);
 }

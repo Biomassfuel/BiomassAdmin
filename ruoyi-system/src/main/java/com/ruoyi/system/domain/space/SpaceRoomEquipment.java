@@ -8,7 +8,11 @@ public class SpaceRoomEquipment extends BaseEntity
 
     private Long roomEquipmentId;
     private Long roomId;
-    private Long equipmentId;
+    private Long equipmentId;
+
+    private String equipmentCode;
+
+    private String equipmentName;
     private Integer quantity;
     private String status;
 
@@ -42,7 +46,47 @@ public class SpaceRoomEquipment extends BaseEntity
         this.equipmentId = equipmentId;
     }
 
-    public Integer getQuantity()
+    public String getEquipmentCode()
+
+    {
+
+        return equipmentCode;
+
+    }
+
+
+
+    public void setEquipmentCode(String equipmentCode)
+
+    {
+
+        this.equipmentCode = equipmentCode;
+
+    }
+
+
+
+    public String getEquipmentName()
+
+    {
+
+        return equipmentName;
+
+    }
+
+
+
+    public void setEquipmentName(String equipmentName)
+
+    {
+
+        this.equipmentName = equipmentName;
+
+    }
+
+
+
+    public Integer getQuantity()
     {
         return quantity;
     }

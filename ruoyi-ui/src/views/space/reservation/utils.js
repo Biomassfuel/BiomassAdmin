@@ -94,8 +94,8 @@ export function standardPeriods(rows) {
 }
 
 export function weekdayValue(dateText) {
-  const day = new Date(dateText).getDay()
-  return String(day)
+  const date = parseLocalDate(dateText)
+  return date ? String(date.getDay()) : ''
 }
 
 export function weekdayText(value) {
@@ -107,4 +107,57 @@ export function formatDate(date) {
   const m = String(date.getMonth() + 1).padStart(2, '0')
   const d = String(date.getDate()).padStart(2, '0')
   return `${y}-${m}-${d}`
+}
+
+export function parseLocalDate(dateText) {
+  if (!dateText) return null
+  const parts = String(dateText).split('-').map(Number)
+  if (parts.length !== 3 || parts.some(Number.isNaN)) return null
+  const date = new Date(parts[0], parts[1] - 1, parts[2])
+  if (date.getFullYear() !== parts[0] || date.getMonth() !== parts[1] - 1 || date.getDate() !== parts[2]) {
+    return null
+  }
+  return date
+}
+
+function parseTime(timeText) {
+  if (!timeText) return null
+  const parts = String(timeText).trim().split(':').map(Number)
+  if (parts.length < 2 || parts.length > 3 || parts.some(Number.isNaN)) return null
+  const [hours, minutes, seconds = 0] = parts
+  if (hours < 0 || hours > 23 || minutes < 0 || minutes > 59 || seconds < 0 || seconds > 59) {
+    return null
+  }
+  return { hours, minutes, seconds }
+}
+
+export function parseLocalDateTime(dateText, timeText) {
+  const date = parseLocalDate(dateText)
+  const time = parseTime(timeText)
+  if (!date || !time) return null
+  date.setHours(time.hours, time.minutes, time.seconds, 0)
+  return date
+}
+
+function todayStart() {
+  const now = new Date()
+  return new Date(now.getFullYear(), now.getMonth(), now.getDate())
+}
+
+export function disablePastDate(time) {
+  return time.getTime() < todayStart().getTime()
+}
+
+export function isBeforeToday(dateText) {
+  const date = parseLocalDate(dateText)
+  return !!date && date.getTime() < todayStart().getTime()
+}
+
+export function isReservationStarted(item, now = new Date()) {
+  const startTime = parseLocalDateTime(item && item.bookingDate, item && item.startTime)
+  return !!startTime && startTime.getTime() <= now.getTime()
+}
+
+export function findStartedReservation(items, now = new Date()) {
+  return (items || []).find(item => isReservationStarted(item, now)) || null
 }

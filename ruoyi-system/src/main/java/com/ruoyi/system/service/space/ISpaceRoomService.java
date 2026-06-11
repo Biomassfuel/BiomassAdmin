@@ -9,6 +9,8 @@ public interface ISpaceRoomService
 
     public List<SpaceRoom> selectSpaceRoomList(SpaceRoom spaceRoom);
 
+    public List<SpaceRoom> selectDeletedSpaceRoomList(SpaceRoom spaceRoom);
+
     public int insertSpaceRoom(SpaceRoom spaceRoom);
 
     public int updateSpaceRoom(SpaceRoom spaceRoom);
@@ -16,6 +18,10 @@ public interface ISpaceRoomService
     public int deleteSpaceRoomByIds(Long[] roomIds);
 
     public int deleteSpaceRoomById(Long roomId);
+
+    public int restoreSpaceRoomByIds(Long[] roomIds);
+
+    public int forceDeleteSpaceRoomByIds(Long[] roomIds);
 
     public String importRoom(List<SpaceRoom> roomList, Boolean isUpdateSupport, String operName, String fileName);
 }

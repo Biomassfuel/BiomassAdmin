@@ -31,7 +31,7 @@
         <template slot-scope="scope">{{ itemStatusText(scope.row.itemStatus) }}</template>
       </el-table-column>
       <el-table-column label="驳回原因" prop="rejectReason" align="center" :show-overflow-tooltip="true" />
-      <el-table-column v-if="auditItem && detail.reservationType === '1'" label="操作" align="center" width="150" fixed="right">
+      <el-table-column v-if="auditItem" label="操作" align="center" width="150" fixed="right">
         <template slot-scope="scope">
           <el-button v-if="canAuditItem(scope.row)" size="mini" type="text" icon="el-icon-check" @click="$emit('approve-item', scope.row)">{{ approveItemText }}</el-button>
           <el-button v-if="canAuditItem(scope.row)" size="mini" type="text" icon="el-icon-close" @click="$emit('reject-item', scope.row)">{{ rejectItemText }}</el-button>

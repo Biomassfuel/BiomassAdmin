@@ -11,7 +11,9 @@
         <el-input v-model="queryParams.buildingName" placeholder="请输入楼栋" clearable @keyup.enter.native="handleQuery" />
       </el-form-item>
       <el-form-item label="房间类型" prop="roomType">
-        <el-input v-model="queryParams.roomType" placeholder="请输入房间类型" clearable @keyup.enter.native="handleQuery" />
+        <el-select v-model="queryParams.roomType" placeholder="请选择房间类型" clearable filterable>
+          <el-option v-for="item in typeOptions" :key="item.typeId" :label="item.typeName" :value="item.typeName" />
+        </el-select>
       </el-form-item>
       <el-form-item label="可预约" prop="bookable">
         <el-select v-model="queryParams.bookable" placeholder="全部" clearable>
@@ -83,6 +85,8 @@
 
 <script>
 import { listRoom } from '@/api/space/room'
+import { listRoomType } from '@/api/space/room-type'
+import { fetchAllPages } from '@/utils/paged-list'
 
 export default {
   name: 'SpaceOccupancy',
@@ -92,6 +96,7 @@ export default {
       showSearch: true,
       total: 0,
       roomList: [],
+      typeOptions: [],
       queryParams: {
         pageNum: 1,
         pageSize: 10,
@@ -105,9 +110,11 @@ export default {
     }
   },
   created() {
+    this.getTypeOptions()
     this.getList()
   },
   activated() {
+    this.getTypeOptions()
     this.getList()
   },
   methods: {
@@ -117,6 +124,11 @@ export default {
         this.roomList = response.rows
         this.total = response.total
         this.loading = false
+      })
+    },
+    getTypeOptions() {
+      fetchAllPages(listRoomType, { status: '0' }).then(rows => {
+        this.typeOptions = rows
       })
     },
     capacityText(row) {

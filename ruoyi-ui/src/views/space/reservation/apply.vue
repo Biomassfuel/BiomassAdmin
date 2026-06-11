@@ -35,11 +35,11 @@
         </el-select>
       </el-form-item>
       <el-form-item label="日期" prop="bookingDate">
-        <el-date-picker v-model="itemForm.bookingDate" value-format="yyyy-MM-dd" type="date" placeholder="请选择日期" />
+        <el-date-picker v-model="itemForm.bookingDate" value-format="yyyy-MM-dd" type="date" placeholder="请选择日期" :picker-options="datePickerOptions" />
       </el-form-item>
       <el-form-item label="时段" prop="periodId">
         <el-select v-model="itemForm.periodId" placeholder="请选择时段" style="width: 220px" @change="setItemPeriod">
-          <el-option v-for="period in periods" :key="period.periodId" :label="periodLabel(period)" :value="period.periodId" />
+          <el-option v-for="period in periods" :key="period.periodId" :label="periodLabel(period)" :value="period.periodId" :disabled="isPeriodStarted(period)" />
         </el-select>
       </el-form-item>
       <el-form-item>
@@ -84,7 +84,7 @@ import { listRoom } from '@/api/space/room'
 import { listTimePeriod } from '@/api/space/time-period'
 import { addReservation } from '@/api/space/reservation'
 import { fetchAllPages } from '@/utils/paged-list'
-import { standardPeriods, weekdayText, weekdayValue } from './utils'
+import { disablePastDate, findStartedReservation, isReservationStarted, standardPeriods, weekdayText, weekdayValue } from './utils'
 
 export default {
   name: 'SpaceReservationApply',
@@ -94,6 +94,9 @@ export default {
       roomLoadSeq: 0,
       rooms: [],
       periods: [],
+      datePickerOptions: {
+        disabledDate: disablePastDate
+      },
       form: {
         reservationType: '0',
         title: '',
@@ -170,6 +173,16 @@ export default {
     periodLabel(period) {
       return `${period.periodName} ${period.startTime}-${period.endTime}`
     },
+    isPeriodStarted(period) {
+      return isReservationStarted({
+        bookingDate: this.itemForm.bookingDate,
+        startTime: period.startTime
+      })
+    },
+    startedMessage(item) {
+      const roomText = [item.roomCode, item.roomName].filter(Boolean).join(' ')
+      return `${roomText ? roomText + ' ' : ''}${item.bookingDate} ${item.startTime} 的场次已开始，不能预约`
+    },
     setItemPeriod(periodId) {
       const period = this.periods.find(item => item.periodId === periodId)
       if (!period) return
@@ -182,6 +195,16 @@ export default {
         if (!valid) return
         const room = this.rooms.find(item => item.roomId === this.itemForm.roomId)
         const period = this.periods.find(item => item.periodId === this.itemForm.periodId)
+        const currentItem = {
+          ...this.itemForm,
+          roomCode: room ? room.roomCode : '',
+          roomName: room ? room.roomName : '',
+          periodName: period ? period.periodName : ''
+        }
+        if (isReservationStarted(currentItem)) {
+          this.$modal.msgWarning(this.startedMessage(currentItem))
+          return
+        }
         const duplicate = this.form.items.some(item => {
           return item.roomId === this.itemForm.roomId && item.bookingDate === this.itemForm.bookingDate && item.periodId === this.itemForm.periodId
         })
@@ -190,10 +213,7 @@ export default {
           return
         }
         this.form.items.push({
-          ...this.itemForm,
-          roomCode: room ? room.roomCode : '',
-          roomName: room ? room.roomName : '',
-          periodName: period ? period.periodName : '',
+          ...currentItem,
           weekday: weekdayValue(this.itemForm.bookingDate)
         })
         this.itemPager.pageNum = Math.ceil(this.form.items.length / this.itemPager.pageSize)
@@ -210,6 +230,11 @@ export default {
         if (!valid) return
         if (!this.form.items.length) {
           this.$modal.msgWarning('请至少添加一个场次')
+          return
+        }
+        const started = findStartedReservation(this.form.items)
+        if (started) {
+          this.$modal.msgWarning(this.startedMessage(started))
           return
         }
         addReservation(this.form).then(() => {
