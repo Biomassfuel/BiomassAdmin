@@ -161,10 +161,6 @@ export default {
     getPeriods() {
       fetchAllPages(listPublicTimePeriod, { status: '0' }).then(rows => {
         this.periods = standardPeriods(rows)
-        if (this.periods.length) {
-          this.itemForm.periodId = this.periods[0].periodId
-          this.setItemPeriod(this.itemForm.periodId)
-        }
       })
     },
     roomLabel(room) {
@@ -185,7 +181,12 @@ export default {
     },
     setItemPeriod(periodId) {
       const period = this.periods.find(item => item.periodId === periodId)
-      if (!period) return
+      if (!period) {
+        this.itemForm.startTime = null
+        this.itemForm.endTime = null
+        this.itemForm.periodName = null
+        return
+      }
       this.itemForm.startTime = period.startTime
       this.itemForm.endTime = period.endTime
       this.itemForm.periodName = period.periodName
@@ -245,8 +246,7 @@ export default {
     },
     resetAll() {
       this.form = { reservationType: '0', title: '', purpose: '', peopleCount: 1, detailRemark: '', items: [] }
-      this.itemForm = { roomId: null, bookingDate: null, periodId: this.periods[0] && this.periods[0].periodId, startTime: null, endTime: null }
-      if (this.itemForm.periodId) this.setItemPeriod(this.itemForm.periodId)
+      this.itemForm = { roomId: null, bookingDate: null, periodId: null, startTime: null, endTime: null, periodName: null }
       this.itemPager.pageNum = 1
       this.resetForm('form')
       this.resetForm('itemForm')

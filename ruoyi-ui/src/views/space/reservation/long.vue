@@ -136,7 +136,8 @@ export default {
         periodId: null,
         weekdays: ['1'],
         startTime: null,
-        endTime: null
+        endTime: null,
+        periodName: null
       },
       form: {
         reservationType: '1',
@@ -201,10 +202,6 @@ export default {
     getPeriods() {
       fetchAllPages(listPublicTimePeriod, { status: '0' }).then(rows => {
         this.periods = standardPeriods(rows)
-        if (this.periods.length) {
-          this.rule.periodId = this.periods[0].periodId
-          this.setRulePeriod(this.rule.periodId)
-        }
       })
     },
     roomLabel(room) {
@@ -215,7 +212,12 @@ export default {
     },
     setRulePeriod(periodId) {
       const period = this.periods.find(item => item.periodId === periodId)
-      if (!period) return
+      if (!period) {
+        this.rule.startTime = null
+        this.rule.endTime = null
+        this.rule.periodName = null
+        return
+      }
       this.rule.startTime = period.startTime
       this.rule.endTime = period.endTime
       this.rule.periodName = period.periodName
@@ -328,8 +330,7 @@ export default {
       })
     },
     resetAll() {
-      this.rule = { ruleType: '0', roomId: null, startDate: null, endDate: null, periodId: this.periods[0] && this.periods[0].periodId, weekdays: ['1'], startTime: null, endTime: null }
-      if (this.rule.periodId) this.setRulePeriod(this.rule.periodId)
+      this.rule = { ruleType: '0', roomId: null, startDate: null, endDate: null, periodId: null, weekdays: ['1'], startTime: null, endTime: null, periodName: null }
       this.form = { reservationType: '1', title: '', purpose: '课程教学', peopleCount: 1, detailRemark: '', items: [], rule: null }
       this.itemPager.pageNum = 1
       this.resetForm('form')
