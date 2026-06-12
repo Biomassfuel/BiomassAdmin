@@ -9,6 +9,8 @@ public interface ISpaceReservationService
 
     public List<SpaceReservation> selectSpaceReservationList(SpaceReservation spaceReservation);
 
+    public List<SpaceReservation> selectPublicReservationSummaryList(SpaceReservation spaceReservation);
+
     public int insertSpaceReservation(SpaceReservation spaceReservation);
 
     public int updateSpaceReservation(SpaceReservation spaceReservation);

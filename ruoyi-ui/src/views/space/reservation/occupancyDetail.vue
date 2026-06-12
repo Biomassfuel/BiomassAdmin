@@ -10,7 +10,7 @@
     <room-week-schedule :room-id="queryParams.roomId" />
 
     <el-dialog :title="reservationRecordTitle" :visible.sync="reservationRecordOpen" width="92vw" append-to-body>
-      <public-reservation-items v-if="reservationRecordOpen" :room-id="queryParams.roomId" :toolbar="false" fixed-item-status="2" />
+      <public-reservation-summaries v-if="reservationRecordOpen" :room-id="queryParams.roomId" :toolbar="false" />
     </el-dialog>
   </div>
 </template>
@@ -21,11 +21,11 @@ import { listPublicReservationItem } from '@/api/space/reservation-item'
 import { formatDate } from './utils'
 import RoomInfoCard from '@/views/space/components/RoomInfoCard'
 import RoomWeekSchedule from '@/views/space/components/RoomWeekSchedule'
-import PublicReservationItems from '@/views/space/reservation/PublicReservationItems'
+import PublicReservationSummaries from '@/views/space/reservation/PublicReservationSummaries'
 
 export default {
   name: 'SpaceOccupancyDetail',
-  components: { RoomInfoCard, RoomWeekSchedule, PublicReservationItems },
+  components: { RoomInfoCard, RoomWeekSchedule, PublicReservationSummaries },
   data() {
     return {
       room: null,

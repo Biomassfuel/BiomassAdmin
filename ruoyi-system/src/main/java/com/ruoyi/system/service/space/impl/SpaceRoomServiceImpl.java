@@ -83,6 +83,7 @@ public class SpaceRoomServiceImpl implements ISpaceRoomService
         fillRoomDefaults(spaceRoom);
         normalizeRoomType(spaceRoom);
         validateRoomCodeUnique(spaceRoom);
+        assertCanCloseRoom(spaceRoom);
         int rows = spaceRoomMapper.updateSpaceRoom(spaceRoom);
         saveRoomEquipment(spaceRoom);
         return rows;
@@ -162,6 +163,7 @@ public class SpaceRoomServiceImpl implements ISpaceRoomService
                     inheritExistingRoomType(room, existing);
                     fillRoomDefaults(room);
                     normalizeRoomType(room);
+                    assertCanCloseRoom(room);
                     room.setUpdateBy(operName);
                     spaceRoomMapper.updateSpaceRoom(room);
                     successNum++;
@@ -268,7 +270,33 @@ public class SpaceRoomServiceImpl implements ISpaceRoomService
         }
     }
 
+    private void assertCanCloseRoom(SpaceRoom room)
+    {
+        if (room.getRoomId() == null)
+        {
+            return;
+        }
+        SpaceRoom existing = spaceRoomMapper.selectSpaceRoomById(room.getRoomId());
+        if (existing == null)
+        {
+            return;
+        }
+        if ("1".equals(room.getBookable()) && !"1".equals(existing.getBookable()))
+        {
+            assertNoActiveReservations(new Long[] { room.getRoomId() }, "设置为不可预约");
+        }
+        if ("1".equals(room.getStatus()) && !"1".equals(existing.getStatus()))
+        {
+            assertNoActiveReservations(new Long[] { room.getRoomId() }, "停用");
+        }
+    }
+
     private void assertNoActiveReservations(Long[] roomIds)
+    {
+        assertNoActiveReservations(roomIds, "删除");
+    }
+
+    private void assertNoActiveReservations(Long[] roomIds, String action)
     {
         if (roomIds == null || roomIds.length == 0)
         {
@@ -282,7 +310,7 @@ public class SpaceRoomServiceImpl implements ISpaceRoomService
         SpaceReservationItem item = blockingItems.get(0);
         String roomText = StringUtils.isBlank(item.getRoomCode()) ? String.valueOf(item.getRoomId()) : item.getRoomCode();
         String reservationText = StringUtils.isBlank(item.getReservationNo()) ? String.valueOf(item.getReservationId()) : item.getReservationNo();
-        throw new ServiceException("房间 " + roomText + " 存在未结束预约 " + reservationText + "（" + item.getBookingDate() + " " + item.getStartTime() + "-" + item.getEndTime() + "），不能删除，请先取消预约或等待结束");
+        throw new ServiceException("房间 " + roomText + " 存在未结束预约或待审核记录 " + reservationText + "（" + item.getBookingDate() + " " + item.getStartTime() + "-" + item.getEndTime() + "），不能" + action + "，请先取消预约或等待结束");
     }
 
     private void saveRoomEquipment(SpaceRoom room)

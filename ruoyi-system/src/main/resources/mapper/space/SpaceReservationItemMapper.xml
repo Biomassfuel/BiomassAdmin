@@ -9,7 +9,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="reservationId" column="reservation_id" />
         <result property="roomId" column="room_id" />
         <result property="roomCode" column="room_code" />
-        <result property="roomName" column="room_name" />
+        <result property="roomName" column="room_name" />
+
+        <result property="roomType" column="room_type" />
         <result property="bookingDate" column="booking_date" />
         <result property="weekday" column="weekday" />
         <result property="startTime" column="start_time" />
@@ -39,7 +41,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 
     <sql id="selectSpaceReservationItemVo">
-        select sri.item_id, sri.reservation_id, sri.room_id, sri.room_code, sri.room_name, sri.booking_date, sri.weekday,
+        select sri.item_id, sri.reservation_id, sri.room_id, sri.room_code, sri.room_name,
+               coalesce(srt.type_name, srm.room_type) as room_type,
+               sri.booking_date, sri.weekday,
                sri.start_time, sri.end_time, sri.item_status, sri.conflict_flag, sri.conflict_reason, sri.conflict_item_id,
                sri.audit_time, sri.auditor_id, sri.auditor_name, sri.reject_reason, sri.create_by, sri.create_time,
                sri.update_by, sri.update_time, sri.remark,
@@ -47,6 +51,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
                sr.status as reservation_status, sr.audit_type
         from space_reservation_item sri
         left join space_reservation sr on sr.reservation_id = sri.reservation_id
+        left join space_room srm on srm.room_id = sri.room_id
+        left join space_room_type srt on srt.type_id = srm.type_id
     </sql>
 
     <select id="selectSpaceReservationItemById" parameterType="Long" resultMap="SpaceReservationItemResult">

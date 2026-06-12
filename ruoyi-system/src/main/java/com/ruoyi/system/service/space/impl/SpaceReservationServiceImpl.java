@@ -88,6 +88,12 @@ public class SpaceReservationServiceImpl implements ISpaceReservationService
     }
 
     @Override
+    public List<SpaceReservation> selectPublicReservationSummaryList(SpaceReservation spaceReservation)
+    {
+        return spaceReservationMapper.selectPublicReservationSummaryList(spaceReservation);
+    }
+
+    @Override
     @Transactional
     public int insertSpaceReservation(SpaceReservation spaceReservation)
     {

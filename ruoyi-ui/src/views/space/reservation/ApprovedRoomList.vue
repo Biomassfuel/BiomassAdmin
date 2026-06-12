@@ -64,11 +64,10 @@
     />
 
     <el-dialog :title="recordTitle" :visible.sync="recordOpen" width="92vw" append-to-body>
-      <public-reservation-items
+      <public-reservation-summaries
         v-if="recordOpen"
         :room-id="recordRoomId"
         :toolbar="false"
-        fixed-item-status="2"
       />
     </el-dialog>
   </div>
@@ -78,11 +77,11 @@
 import { listApprovedReservationRoom } from '@/api/space/room'
 import { listPublicRoomType } from '@/api/space/room-type'
 import { fetchAllPages } from '@/utils/paged-list'
-import PublicReservationItems from './PublicReservationItems'
+import PublicReservationSummaries from './PublicReservationSummaries'
 
 export default {
   name: 'ApprovedRoomList',
-  components: { PublicReservationItems },
+  components: { PublicReservationSummaries },
   data() {
     return {
       loading: false,

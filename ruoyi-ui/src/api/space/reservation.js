@@ -4,6 +4,10 @@ export function listReservation(query) {
   return request({ url: '/space/reservation/list', method: 'get', params: query })
 }
 
+export function listPublicReservationSummary(query) {
+  return request({ url: '/space/reservation/public/summary/list', method: 'get', params: query })
+}
+
 export function listMyReservation(query) {
   return request({ url: '/space/reservation/my/list', method: 'get', params: query })
 }

@@ -16,6 +16,8 @@ public class SpaceReservationItem extends BaseEntity
     private String roomCode;
     @Excel(name = "房间名称")
     private String roomName;
+    @Excel(name = "房间类型")
+    private String roomType;
     @Excel(name = "预约日期")
     private String bookingDate;
     @Excel(name = "星期")
@@ -113,7 +115,17 @@ public class SpaceReservationItem extends BaseEntity
         this.roomName = roomName;
     }
 
-    public String getBookingDate()
+    public String getRoomType()
+    {
+        return roomType;
+    }
+
+    public void setRoomType(String roomType)
+    {
+        this.roomType = roomType;
+    }
+
+    public String getBookingDate()
     {
         return bookingDate;
     }

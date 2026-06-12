@@ -259,7 +259,7 @@
     </el-dialog>
 
     <el-dialog :title="reservationRecordTitle" :visible.sync="reservationRecordOpen" width="92vw" append-to-body>
-      <public-reservation-items v-if="reservationRecordOpen" :room-id="reservationRecordRoomId" :toolbar="false" fixed-item-status="2" />
+      <public-reservation-summaries v-if="reservationRecordOpen" :room-id="reservationRecordRoomId" :toolbar="false" />
     </el-dialog>
 
     <el-dialog title="房间回收站" :visible.sync="recycleOpen" width="1100px" append-to-body>
@@ -334,11 +334,11 @@ import { fetchAllPages } from '@/utils/paged-list'
 import { formatDate } from '@/views/space/reservation/utils'
 import RoomInfoCard from '@/views/space/components/RoomInfoCard'
 import RoomWeekSchedule from '@/views/space/components/RoomWeekSchedule'
-import PublicReservationItems from '@/views/space/reservation/PublicReservationItems'
+import PublicReservationSummaries from '@/views/space/reservation/PublicReservationSummaries'
 
 export default {
   name: 'SpaceRoom',
-  components: { RoomInfoCard, RoomWeekSchedule, PublicReservationItems },
+  components: { RoomInfoCard, RoomWeekSchedule, PublicReservationSummaries },
   data() {
     return {
       loading: true,
@@ -661,6 +661,7 @@ export default {
         this.$modal.msgSuccess('设置成功')
       }).catch(() => {
         row.bookable = row.bookable === '0' ? '1' : '0'
+        this.getList()
       })
     },
     handleStatusChange(row) {
@@ -671,6 +672,7 @@ export default {
         this.$modal.msgSuccess(text + '成功')
       }).catch(() => {
         row.status = row.status === '0' ? '1' : '0'
+        this.getList()
       })
     },
     handleImport() {

@@ -27,6 +27,7 @@
         <el-table-column label="房间" align="center" min-width="150">
           <template slot-scope="scope">{{ scope.row.roomCode }} {{ scope.row.roomName }}</template>
         </el-table-column>
+        <el-table-column label="房间类型" prop="roomType" align="center" width="120" :show-overflow-tooltip="true" />
         <el-table-column label="日期" prop="bookingDate" align="center" width="120" />
         <el-table-column label="星期" align="center" width="90">
           <template slot-scope="scope">{{ weekdayText(scope.row.weekday) }}</template>

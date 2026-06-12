@@ -51,6 +51,15 @@ public class SpaceReservation extends BaseEntity
     private String delFlag;
     private Boolean pendingOnly;
     private Boolean cancelPendingOnly;
+    private Boolean publicOnly;
+    private Long roomId;
+    private String roomCode;
+    private String roomName;
+    private String bookingDateStart;
+    private String bookingDateEnd;
+    private String dateRangeText;
+    private String timeRangeText;
+    private Integer approvedItemCount;
 
     private List<SpaceReservationItem> items;
     private SpaceReservationRule rule;
@@ -321,6 +330,96 @@ public class SpaceReservation extends BaseEntity
 
         this.cancelPendingOnly = cancelPendingOnly;
 
+    }
+
+    public Boolean getPublicOnly()
+    {
+        return publicOnly;
+    }
+
+    public void setPublicOnly(Boolean publicOnly)
+    {
+        this.publicOnly = publicOnly;
+    }
+
+    public Long getRoomId()
+    {
+        return roomId;
+    }
+
+    public void setRoomId(Long roomId)
+    {
+        this.roomId = roomId;
+    }
+
+    public String getRoomCode()
+    {
+        return roomCode;
+    }
+
+    public void setRoomCode(String roomCode)
+    {
+        this.roomCode = roomCode;
+    }
+
+    public String getRoomName()
+    {
+        return roomName;
+    }
+
+    public void setRoomName(String roomName)
+    {
+        this.roomName = roomName;
+    }
+
+    public String getBookingDateStart()
+    {
+        return bookingDateStart;
+    }
+
+    public void setBookingDateStart(String bookingDateStart)
+    {
+        this.bookingDateStart = bookingDateStart;
+    }
+
+    public String getBookingDateEnd()
+    {
+        return bookingDateEnd;
+    }
+
+    public void setBookingDateEnd(String bookingDateEnd)
+    {
+        this.bookingDateEnd = bookingDateEnd;
+    }
+
+    public String getDateRangeText()
+    {
+        return dateRangeText;
+    }
+
+    public void setDateRangeText(String dateRangeText)
+    {
+        this.dateRangeText = dateRangeText;
+    }
+
+    public String getTimeRangeText()
+    {
+        return timeRangeText;
+    }
+
+    public void setTimeRangeText(String timeRangeText)
+    {
+        this.timeRangeText = timeRangeText;
+    }
+
+    public Integer getApprovedItemCount()
+    {
+        return approvedItemCount;
+    }
+
+    public void setApprovedItemCount(Integer approvedItemCount)
+    {
+        this.approvedItemCount = approvedItemCount;
     }
 
 

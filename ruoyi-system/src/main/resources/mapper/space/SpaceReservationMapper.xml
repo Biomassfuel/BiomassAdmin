@@ -53,6 +53,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="version" column="version" />
 
         <result property="delFlag" column="del_flag" />
+        <result property="roomId" column="room_id" />
+        <result property="roomCode" column="room_code" />
+        <result property="roomName" column="room_name" />
+        <result property="dateRangeText" column="date_range_text" />
+        <result property="timeRangeText" column="time_range_text" />
+        <result property="approvedItemCount" column="approved_item_count" />
 
         <result property="createBy" column="create_by" />
 
@@ -158,6 +164,76 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
         order by reservation_id desc
 
+    </select>
+
+    <select id="selectPublicReservationSummaryList" parameterType="SpaceReservation" resultMap="SpaceReservationResult">
+        select sr.reservation_id,
+               sr.reservation_no,
+               sr.reservation_type,
+               sr.applicant_id,
+               sr.applicant_name,
+               sr.applicant_role,
+               null as applicant_phone,
+               null as org_id,
+               null as org_name,
+               sr.title,
+               sr.purpose,
+               sr.people_count,
+               sr.detail_remark,
+               sr.status,
+               sr.audit_type,
+               sr.submit_time,
+               null as auditor_id,
+               null as auditor_name,
+               sr.audit_time,
+               null as reject_reason,
+               sr.version,
+               null as del_flag,
+               null as create_by,
+               sr.create_time,
+               null as update_by,
+               sr.update_time,
+               null as remark,
+               summary.room_id,
+               summary.room_code,
+               summary.room_name,
+               case
+                   when summary.min_booking_date = summary.max_booking_date then summary.min_booking_date
+                   else concat(summary.min_booking_date, ' 至 ', summary.max_booking_date)
+               end as date_range_text,
+               case
+                   when summary.time_range_count = 1 then summary.min_time_range
+                   else '多时段'
+               end as time_range_text,
+               summary.approved_item_count
+        from space_reservation sr
+        inner join (
+            select sri.reservation_id,
+                   min(sri.room_id) as room_id,
+                   case when count(distinct sri.room_id) = 1 then min(sri.room_code) else '多房间' end as room_code,
+                   case when count(distinct sri.room_id) = 1 then min(sri.room_name) else '多房间' end as room_name,
+                   min(sri.booking_date) as min_booking_date,
+                   max(sri.booking_date) as max_booking_date,
+                   min(concat(left(sri.start_time, 5), ' - ', left(sri.end_time, 5))) as min_time_range,
+                   count(distinct concat(left(sri.start_time, 5), ' - ', left(sri.end_time, 5))) as time_range_count,
+                   count(1) as approved_item_count
+            from space_reservation_item sri
+            where sri.item_status = '2'
+              <if test="roomId != null"> and sri.room_id = #{roomId}</if>
+              <if test="bookingDateStart != null and bookingDateStart != ''"> and sri.booking_date &gt;= #{bookingDateStart}</if>
+              <if test="bookingDateEnd != null and bookingDateEnd != ''"> and sri.booking_date &lt;= #{bookingDateEnd}</if>
+            group by sri.reservation_id
+        ) summary on summary.reservation_id = sr.reservation_id
+        <where>
+            and sr.del_flag = '0'
+            and sr.status in ('2', '3', '6')
+            <if test="reservationId != null"> and sr.reservation_id = #{reservationId}</if>
+            <if test="reservationNo != null and reservationNo != ''"> and sr.reservation_no like concat('%', #{reservationNo}, '%')</if>
+            <if test="reservationType != null and reservationType != ''"> and sr.reservation_type = #{reservationType}</if>
+            <if test="applicantName != null and applicantName != ''"> and sr.applicant_name like concat('%', #{applicantName}, '%')</if>
+            <if test="title != null and title != ''"> and sr.title like concat('%', #{title}, '%')</if>
+        </where>
+        order by summary.max_booking_date desc, sr.reservation_id desc
     </select>
 
 

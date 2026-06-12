@@ -38,6 +38,7 @@
         <template slot-scope="scope">{{ reservationTypeText(scope.row.reservationType) }}</template>
       </el-table-column>
       <el-table-column label="申请人" prop="applicantName" align="center" width="110" />
+      <el-table-column label="权限角色" prop="applicantRole" align="center" width="120" :show-overflow-tooltip="true" />
       <el-table-column label="人数" prop="peopleCount" align="center" width="80" />
       <el-table-column label="状态" align="center" width="110">
         <template slot-scope="scope">{{ statusText(scope.row.status) }}</template>

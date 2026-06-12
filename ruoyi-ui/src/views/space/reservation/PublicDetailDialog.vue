@@ -118,10 +118,22 @@ export default {
     },
     publicStatusText(row) {
       if (!row) return '-'
+      if (row.status) return this.reservationStatusText(row.status)
       if (row.itemStatus === '6' || row.reservationStatus === '6') return '已结束'
       if (row.itemStatus === '1' && row.auditType === '1') return '取消待审占用'
       if (row.itemStatus === '2') return '已通过'
       return '-'
+    },
+    reservationStatusText(status) {
+      return {
+        '0': '草稿',
+        '1': '待审核',
+        '2': '已通过',
+        '3': '部分通过',
+        '4': '已驳回',
+        '5': '已取消',
+        '6': '已结束'
+      }[status] || status || '-'
     }
   }
 }
