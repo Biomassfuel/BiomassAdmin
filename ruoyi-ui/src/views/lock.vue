@@ -6,16 +6,15 @@
     <section class="lock-shell">
       <div class="lock-time-panel">
         <div class="brand-lockup">
-          <img :src="logo" class="brand-mark" alt="BiomassAdmin">
-          <span class="brand-name">BiomassAdmin</span>
+          <img :src="logo" class="brand-mark" alt="澳琴空间预约系统">
+          <span class="brand-name">澳琴空间预约系统</span>
         </div>
         <div class="lock-time">{{ currentTime }}</div>
         <div class="lock-date">{{ currentDate }}</div>
       </div>
 
       <div class="lock-card">
-        <div class="avatar-wrap">
-          <img :src="avatar" class="lock-avatar" @error="onAvatarError" />
+        <div class="lock-icon-wrap">
           <div class="lock-icon"><i class="el-icon-lock"></i></div>
         </div>
         <div class="lock-username">{{ nickName }}</div>
@@ -42,7 +41,6 @@
 <script>
 import { mapGetters } from 'vuex'
 import { unlockScreen } from '@/api/login'
-import defAva from '@/assets/images/profile.jpg'
 import logo from '@/assets/logo/logo.png'
 
 export default {
@@ -62,7 +60,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['avatar', 'nickName'])
+    ...mapGetters(['nickName'])
   },
   mounted() {
     this.startClock()
@@ -76,9 +74,6 @@ export default {
     cancelAnimationFrame(this.animationId)
   },
   methods: {
-    onAvatarError(e) {
-      e.target.src = defAva
-    },
     startClock() {
       const update = () => {
         const now = new Date()
@@ -313,34 +308,22 @@ export default {
   padding: 38px 36px;
 }
 
-.avatar-wrap {
+.lock-icon-wrap {
   position: relative;
   margin-bottom: 16px;
 }
 
-.lock-avatar {
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  border: 3px solid #ffffff;
-  object-fit: cover;
-  display: block;
-  box-shadow: 0 10px 24px rgba(46, 88, 56, .13);
-}
-
 .lock-icon {
-  position: absolute;
-  bottom: -4px;
-  right: -4px;
+  position: static;
   background: #eff7e8;
   color: #3f8f4d;
   border-radius: 50%;
-  width: 26px;
-  height: 26px;
+  width: 56px;
+  height: 56px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 13px;
+  font-size: 24px;
   box-shadow: 0 4px 10px rgba(63, 143, 77, .18);
 }
 

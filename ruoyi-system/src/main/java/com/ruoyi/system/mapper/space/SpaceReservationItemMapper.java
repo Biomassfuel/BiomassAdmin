@@ -8,6 +8,8 @@ public interface SpaceReservationItemMapper
 {
     public SpaceReservationItem selectSpaceReservationItemById(Long itemId);
 
+    public SpaceReservationItem selectSpaceReservationItemByIdForUpdate(Long itemId);
+
     public List<SpaceReservationItem> selectSpaceReservationItemList(SpaceReservationItem spaceReservationItem);
 
     public int insertSpaceReservationItem(SpaceReservationItem spaceReservationItem);
@@ -20,9 +22,15 @@ public interface SpaceReservationItemMapper
 
     public List<SpaceReservationItem> selectConflictItems(SpaceReservationItem item);
 
+    public List<SpaceReservationItem> selectBlockingItemsByReservationIds(@Param("reservationIds") Long[] reservationIds);
+
     public List<SpaceReservationItem> selectBlockingRoomReservationItems(@Param("roomIds") Long[] roomIds);
 
     public int updateItemStatus(SpaceReservationItem item);
+
+    public int updateItemStatusIfCurrent(@Param("item") SpaceReservationItem item, @Param("expectedStatus") String expectedStatus);
+
+    public int countItemsByReservationId(@Param("reservationId") Long reservationId);
 
     public List<Long> selectReservationIdsToFinish();
 

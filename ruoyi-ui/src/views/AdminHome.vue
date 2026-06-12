@@ -2,7 +2,7 @@
   <div class="dashboard-page">
     <div class="dashboard-hero">
       <div class="hero-copy">
-        <h1>BiomassAdmin</h1>
+        <h1>澳琴空间预约系统</h1>
         <p>系统运行概览、公告与最近操作</p>
       </div>
       <el-button icon="el-icon-refresh" size="small" :loading="refreshing" @click="refreshDashboard">刷新</el-button>

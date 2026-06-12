@@ -9,7 +9,7 @@
     <version>3.9.2</version>
 
     <name>biomass-admin</name>
-    <description>BiomassAdmin</description>
+    <description>澳琴空间预约系统</description>
     
     <properties>
         <ruoyi.version>3.9.2</ruoyi.version>

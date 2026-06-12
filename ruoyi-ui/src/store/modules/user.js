@@ -4,8 +4,6 @@ import cache from '@/plugins/cache'
 import { MessageBox, } from 'element-ui'
 import { login, logout, getInfo } from '@/api/login'
 import { getToken, setToken, removeToken } from '@/utils/auth'
-import { isHttp, isEmpty } from "@/utils/validate"
-import defAva from '@/assets/images/profile.jpg'
 
 const user = {
   state: {
@@ -13,7 +11,6 @@ const user = {
     id: '',
     name: '',
     nickName: '',
-    avatar: '',
     roles: [],
     permissions: []
   },
@@ -30,9 +27,6 @@ const user = {
     },
     SET_NICK_NAME: (state, nickName) => {
       state.nickName = nickName
-    },
-    SET_AVATAR: (state, avatar) => {
-      state.avatar = avatar
     },
     SET_ROLES: (state, roles) => {
       state.roles = roles
@@ -66,10 +60,6 @@ const user = {
       return new Promise((resolve, reject) => {
         getInfo().then(res => {
           const user = res.user
-          let avatar = user.avatar || ""
-          if (!isHttp(avatar)) {
-            avatar = (isEmpty(avatar)) ? defAva : process.env.VUE_APP_BASE_API + avatar
-          }
           if (res.roles && res.roles.length > 0) { // 验证返回的roles是否是一个非空数组
             commit('SET_ROLES', res.roles)
             commit('SET_PERMISSIONS', res.permissions)
@@ -79,7 +69,6 @@ const user = {
           commit('SET_ID', user.userId)
           commit('SET_NAME', user.userName)
           commit('SET_NICK_NAME', user.nickName)
-          commit('SET_AVATAR', avatar)
           cache.session.set('pwrChrtype', res.pwdChrtype)
           /* 初始密码提示 */
           if(res.isDefaultModifyPwd) {

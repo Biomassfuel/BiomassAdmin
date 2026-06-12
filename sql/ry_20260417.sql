@@ -23,7 +23,7 @@ create table sys_dept (
 -- ----------------------------
 -- 初始化-部门表数据
 -- ----------------------------
-insert into sys_dept values(100,  0,   '0',          'BiomassAdmin', 0, 'admin', '15888888888', 'admin@biomass.local', '0', '0', 'admin', sysdate(), '', null);
+insert into sys_dept values(100,  0,   '0',          '澳琴空间预约系统', 0, 'admin', '15888888888', 'admin@biomass.local', '0', '0', 'admin', sysdate(), '', null);
 insert into sys_dept values(101,  100, '0,100',      '总部',         1, 'admin', '15888888888', 'admin@biomass.local', '0', '0', 'admin', sysdate(), '', null);
 insert into sys_dept values(102,  100, '0,100',      '运营中心',     2, 'admin', '15888888888', 'admin@biomass.local', '0', '0', 'admin', sysdate(), '', null);
 insert into sys_dept values(103,  101, '0,100,101',  '研发部门',     1, 'admin', '15888888888', 'admin@biomass.local', '0', '0', 'admin', sysdate(), '', null);
@@ -459,6 +459,20 @@ insert into sys_config values(6, '用户登录-黑名单列表',           'sys.
 insert into sys_config values(7, '用户管理-初始密码修改策略',     'sys.account.initPasswordModify',   '1',             'Y', 'admin', sysdate(), '', null, '0：初始密码修改策略关闭，没有任何提示，1：提醒用户，如果未修改初始密码，则在登录时就会提醒修改密码对话框');
 insert into sys_config values(8, '用户管理-账号密码更新周期',     'sys.account.passwordValidateDays', '0',             'Y', 'admin', sysdate(), '', null, '密码更新周期（填写数字，数据初始化值为0不限制，若修改必须为大于0小于365的正整数），如果超过这个周期登录系统时，则在登录时就会提醒修改密码对话框');
 insert into sys_config values(9, '用户管理-密码字符范围',         'sys.account.chrtype',              '0',             'Y', 'admin', sysdate(), '', null, '默认任意字符范围，0任意（密码可以输入任意字符），1数字（密码只能为0-9数字），2英文字母（密码只能为a-z和A-Z字母），3字母和数字（密码必须包含字母，数字）,4字母数字和特殊字符（目前支持的特殊字符包括：~!@#$%^&*()-=_+）');
+insert into sys_config values(10, '找回密码-邮箱开关',            'sys.password.reset.emailEnabled',  'true',          'Y', 'admin', sysdate(), '', null, '是否开启邮箱找回登录密码功能');
+insert into sys_config values(11, '找回密码-短信开关',            'sys.password.reset.smsEnabled',    'false',         'Y', 'admin', sysdate(), '', null, '是否开启短信找回登录密码功能，需短信服务接入后启用');
+insert into sys_config values(12, '找回密码-验证码有效分钟数',    'sys.password.reset.codeExpireMinutes', '10',         'Y', 'admin', sysdate(), '', null, '邮箱验证码有效时间，单位分钟');
+insert into sys_config values(13, '找回密码-重发间隔秒数',        'sys.password.reset.resendSeconds', '60',             'Y', 'admin', sysdate(), '', null, '同一账号邮箱再次发送验证码的最小间隔，单位秒');
+insert into sys_config values(14, '找回密码-验证码错误上限',      'sys.password.reset.maxErrorCount', '5',              'Y', 'admin', sysdate(), '', null, '同一验证码最多允许输入错误次数');
+insert into sys_config values(15, '邮件服务-SMTP主机',            'sys.mail.smtp.host', '',                            'Y', 'admin', sysdate(), '', null, 'SMTP服务器地址，例如smtp.qq.com、smtp.163.com');
+insert into sys_config values(16, '邮件服务-SMTP端口',            'sys.mail.smtp.port', '465',                         'Y', 'admin', sysdate(), '', null, 'SMTP服务器端口，SSL通常为465，STARTTLS通常为587');
+insert into sys_config values(17, '邮件服务-SMTP账号',            'sys.mail.smtp.username', '',                        'Y', 'admin', sysdate(), '', null, 'SMTP登录账号，通常为发件邮箱地址');
+insert into sys_config values(18, '邮件服务-SMTP授权码',          'sys.mail.smtp.password', '',                        'Y', 'admin', sysdate(), '', null, '邮箱SMTP授权码或客户端专用密码');
+insert into sys_config values(19, '邮件服务-发件邮箱',            'sys.mail.smtp.from', '',                            'Y', 'admin', sysdate(), '', null, '发件邮箱地址，为空时默认使用SMTP账号');
+insert into sys_config values(20, '邮件服务-SMTP认证开关',        'sys.mail.smtp.auth', 'true',                        'Y', 'admin', sysdate(), '', null, '是否开启SMTP认证');
+insert into sys_config values(21, '邮件服务-SSL开关',             'sys.mail.smtp.sslEnable', 'true',                   'Y', 'admin', sysdate(), '', null, '是否开启SMTP SSL连接');
+insert into sys_config values(22, '邮件服务-STARTTLS开关',        'sys.mail.smtp.starttlsEnable', 'false',              'Y', 'admin', sysdate(), '', null, '是否开启SMTP STARTTLS连接');
+insert into sys_config values(23, '邮件服务-超时时间毫秒',        'sys.mail.smtp.timeout', '10000',                    'Y', 'admin', sysdate(), '', null, 'SMTP连接、读取、写入超时时间，单位毫秒');
 
 
 -- ----------------------------
@@ -547,7 +561,7 @@ create table sys_notice (
 -- ----------------------------
 -- 初始化-公告信息表数据
 -- ----------------------------
-insert into sys_notice values('1', 'BiomassAdmin 控制台已启用', '2', '系统管理、权限配置与代码生成能力已就绪。', '0', 'admin', sysdate(), '', null, '管理员');
+insert into sys_notice values('1', '澳琴空间预约系统已启用', '2', '空间预约、审核、房间资源与系统管理能力已就绪。', '0', 'admin', sysdate(), '', null, '管理员');
 insert into sys_notice values('2', '安全提醒：请定期复核管理员权限', '1', '建议定期检查用户、角色、菜单与数据权限配置，保持最小授权原则。', '0', 'admin', sysdate(), '', null, '管理员');
 insert into sys_notice values('3', '开发提示：代码生成模板已更新', '2', '代码生成保留 Vue2 与 Element UI 兼容。', '0', 'admin', sysdate(), '', null, '管理员');
 

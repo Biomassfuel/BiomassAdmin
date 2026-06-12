@@ -89,6 +89,15 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
     </select>
 
+    <select id="selectSpaceReservationByIdForUpdate" parameterType="Long" resultMap="SpaceReservationResult">
+
+        <include refid="selectSpaceReservationVo"/>
+
+        where reservation_id = #{reservationId}
+        for update
+
+    </select>
+
 
 
     <select id="selectSpaceReservationList" parameterType="SpaceReservation" resultMap="SpaceReservationResult">
@@ -458,6 +467,34 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             version = version + 1
 
         where reservation_id = #{reservationId}
+
+    </update>
+
+    <update id="updateReservationStatusIfCurrent">
+
+        update space_reservation
+
+        set status = #{reservation.status},
+
+            audit_type = #{reservation.auditType},
+            auditor_id = #{reservation.auditorId},
+
+            auditor_name = #{reservation.auditorName},
+
+            audit_time = sysdate(),
+
+            reject_reason = #{reservation.rejectReason},
+
+            update_by = #{reservation.updateBy},
+
+            update_time = sysdate(),
+
+            version = version + 1
+
+        where reservation_id = #{reservation.reservationId}
+          and status = #{expectedStatus}
+          and audit_type = #{expectedAuditType}
+          and del_flag = '0'
 
     </update>
 

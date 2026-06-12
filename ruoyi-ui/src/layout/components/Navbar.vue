@@ -19,9 +19,8 @@
 
       </template>
 
-      <el-dropdown class="avatar-container right-menu-item hover-effect" trigger="hover">
-        <div class="avatar-wrapper">
-          <img :src="avatar" class="user-avatar">
+      <el-dropdown class="user-container right-menu-item hover-effect" trigger="hover">
+        <div class="user-wrapper">
           <span class="user-nickname"> {{ nickName }} </span>
         </div>
         <el-dropdown-menu slot="dropdown">
@@ -68,7 +67,6 @@ export default {
   computed: {
     ...mapGetters([
       'sidebar',
-      'avatar',
       'device',
       'nickName'
     ]),
@@ -219,11 +217,11 @@ export default {
       }
     }
 
-    .avatar-container {
+    .user-container {
       margin-right: 0px;
       padding-right: 0px;
 
-      .avatar-wrapper {
+      .user-wrapper {
         display: flex;
         align-items: center;
         gap: 8px;
@@ -231,21 +229,13 @@ export default {
         right: 0;
         position: relative;
         height: 34px;
-        padding: 0 8px 0 4px;
+        padding: 0 10px;
         border-radius: 999px;
         transition: background .18s ease, box-shadow .18s ease;
 
         &:hover {
           background: #f3f4f6;
           box-shadow: inset 0 0 0 1px #e5e7eb;
-        }
-
-        .user-avatar {
-          cursor: pointer;
-          width: 28px;
-          height: 28px;
-          border: 1px solid #e5e7eb;
-          border-radius: 50%;
         }
 
         .user-nickname{

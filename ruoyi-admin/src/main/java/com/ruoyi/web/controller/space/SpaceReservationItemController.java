@@ -91,7 +91,7 @@ public class SpaceReservationItemController extends BaseController
     public AjaxResult add(@RequestBody SpaceReservationItem spaceReservationItem)
     {
         spaceReservationItem.setCreateBy(getUsername());
-        return toAjax(spaceReservationItemService.insertSpaceReservationItem(spaceReservationItem));
+        return toAjax(spaceReservationService.insertSpaceReservationItem(spaceReservationItem));
     }
 
     @PreAuthorize("@ss.hasPermi('space:reservationItem:edit')")
@@ -100,7 +100,7 @@ public class SpaceReservationItemController extends BaseController
     public AjaxResult edit(@RequestBody SpaceReservationItem spaceReservationItem)
     {
         spaceReservationItem.setUpdateBy(getUsername());
-        return toAjax(spaceReservationItemService.updateSpaceReservationItem(spaceReservationItem));
+        return toAjax(spaceReservationService.updateSpaceReservationItem(spaceReservationItem));
     }
 
     @PreAuthorize("@ss.hasPermi('space:reservationItem:remove')")
@@ -108,6 +108,6 @@ public class SpaceReservationItemController extends BaseController
     @DeleteMapping("/{itemIds}")
     public AjaxResult remove(@PathVariable Long[] itemIds)
     {
-        return toAjax(spaceReservationItemService.deleteSpaceReservationItemByIds(itemIds));
+        return toAjax(spaceReservationService.deleteSpaceReservationItemByIds(itemIds, getUsername()));
     }
 }

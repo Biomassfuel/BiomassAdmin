@@ -42,7 +42,94 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         order by blackout_id desc
     </select>
 
-    <insert id="insertSpaceBlackout" parameterType="SpaceBlackout" useGeneratedKeys="true" keyProperty="blackoutId">
+    <select id="selectConflictBlackouts" parameterType="SpaceReservationItem" resultMap="SpaceBlackoutResult">
+
+        <include refid="selectSpaceBlackoutVo"/>
+
+        where room_id = #{roomId}
+          and status = '0'
+          and start_time &lt; str_to_date(
+                concat(
+                    #{bookingDate},
+                    ' ',
+                    case
+                        when char_length(#{endTime}) = 4 then concat('0', #{endTime}, ':00')
+                        when char_length(#{endTime}) = 5 then concat(#{endTime}, ':00')
+                        when char_length(#{endTime}) = 7 then concat('0', #{endTime})
+                        else #{endTime}
+                    end
+                ),
+                '%Y-%m-%d %H:%i:%s'
+              )
+          and end_time &gt; str_to_date(
+                concat(
+                    #{bookingDate},
+                    ' ',
+                    case
+                        when char_length(#{startTime}) = 4 then concat('0', #{startTime}, ':00')
+                        when char_length(#{startTime}) = 5 then concat(#{startTime}, ':00')
+                        when char_length(#{startTime}) = 7 then concat('0', #{startTime})
+                        else #{startTime}
+                    end
+                ),
+                '%Y-%m-%d %H:%i:%s'
+              )
+        order by start_time asc, blackout_id asc
+
+    </select>
+
+
+
+    <select id="selectConflictReservationItems" parameterType="SpaceBlackout" resultMap="com.ruoyi.system.mapper.space.SpaceReservationItemMapper.SpaceReservationItemResult">
+
+        select sri.item_id, sri.reservation_id, sri.room_id, sri.room_code, sri.room_name,
+               coalesce(srt.type_name, srm.room_type) as room_type,
+               sri.booking_date, sri.weekday,
+               sri.start_time, sri.end_time, sri.item_status, sri.conflict_flag, sri.conflict_reason, sri.conflict_item_id,
+               sri.audit_time, sri.auditor_id, sri.auditor_name, sri.reject_reason, sri.create_by, sri.create_time,
+               sri.update_by, sri.update_time, sri.remark,
+               sr.reservation_no, sr.reservation_type, sr.title, sr.people_count, sr.applicant_name, sr.org_name, sr.detail_remark,
+               sr.status as reservation_status, sr.audit_type
+        from space_reservation_item sri
+        left join space_reservation sr on sr.reservation_id = sri.reservation_id
+        left join space_room srm on srm.room_id = sri.room_id
+        left join space_room_type srt on srt.type_id = srm.type_id
+        where sri.room_id = #{roomId}
+          and sri.item_status in ('1', '2', '4')
+          and sr.del_flag = '0'
+          and str_to_date(
+                concat(
+                    sri.booking_date,
+                    ' ',
+                    case
+                        when char_length(sri.start_time) = 4 then concat('0', sri.start_time, ':00')
+                        when char_length(sri.start_time) = 5 then concat(sri.start_time, ':00')
+                        when char_length(sri.start_time) = 7 then concat('0', sri.start_time)
+                        else sri.start_time
+                    end
+                ),
+                '%Y-%m-%d %H:%i:%s'
+              ) &lt; #{endTime}
+          and str_to_date(
+                concat(
+                    sri.booking_date,
+                    ' ',
+                    case
+                        when char_length(sri.end_time) = 4 then concat('0', sri.end_time, ':00')
+                        when char_length(sri.end_time) = 5 then concat(sri.end_time, ':00')
+                        when char_length(sri.end_time) = 7 then concat('0', sri.end_time)
+                        else sri.end_time
+                    end
+                ),
+                '%Y-%m-%d %H:%i:%s'
+              ) &gt; #{startTime}
+        order by sri.booking_date asc, sri.start_time asc, sri.item_id asc
+
+    </select>
+
+
+
+    <insert id="insertSpaceBlackout" parameterType="SpaceBlackout" useGeneratedKeys="true" keyProperty="blackoutId">
         insert into space_blackout
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="blackoutId != null"> blackout_id,</if>

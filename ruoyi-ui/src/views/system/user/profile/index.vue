@@ -7,9 +7,6 @@
             <span>个人信息</span>
           </div>
           <div>
-            <div class="text-center">
-              <userAvatar />
-            </div>
             <ul class="list-group list-group-striped">
               <li class="list-group-item">
                 <svg-icon icon-class="user" />用户名称
@@ -59,14 +56,13 @@
 </template>
 
 <script>
-import userAvatar from "./userAvatar"
 import userInfo from "./userInfo"
 import resetPwd from "./resetPwd"
 import { getUserProfile } from "@/api/system/user"
 
 export default {
   name: "Profile",
-  components: { userAvatar, userInfo, resetPwd },
+  components: { userInfo, resetPwd },
   data() {
     return {
       user: {},

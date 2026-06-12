@@ -2,6 +2,7 @@ package com.ruoyi.system.service.space;
 
 import java.util.List;
 import com.ruoyi.system.domain.space.SpaceReservation;
+import com.ruoyi.system.domain.space.SpaceReservationItem;
 
 public interface ISpaceReservationService
 {
@@ -18,6 +19,12 @@ public interface ISpaceReservationService
     public int deleteSpaceReservationByIds(Long[] reservationIds);
 
     public int deleteSpaceReservationById(Long reservationId);
+
+    public int insertSpaceReservationItem(SpaceReservationItem spaceReservationItem);
+
+    public int updateSpaceReservationItem(SpaceReservationItem spaceReservationItem);
+
+    public int deleteSpaceReservationItemByIds(Long[] itemIds, String updateBy);
 
     public int approveReservation(Long reservationId, Long auditorId, String auditorName, String opinion, String updateBy);
 

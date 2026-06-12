@@ -1,8 +1,8 @@
 {
   "name": "biomass-admin",
   "version": "3.9.2",
-  "description": "BiomassAdmin",
-  "author": "BiomassAdmin",
+  "description": "澳琴空间预约系统",
+  "author": "澳琴空间预约系统",
   "license": "MIT",
   "scripts": {
     "dev": "vue-cli-service serve",
@@ -42,7 +42,6 @@
     "sortablejs": "1.10.2",
     "vue": "2.6.12",
     "vue-count-to": "1.0.13",
-    "vue-cropper": "0.5.5",
     "vue-router": "3.4.9",
     "vuedraggable": "2.24.3",
     "vuex": "3.6.0"

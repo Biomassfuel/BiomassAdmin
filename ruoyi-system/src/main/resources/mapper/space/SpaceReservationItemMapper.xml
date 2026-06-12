@@ -55,10 +55,18 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         left join space_room_type srt on srt.type_id = srm.type_id
     </sql>
 
-    <select id="selectSpaceReservationItemById" parameterType="Long" resultMap="SpaceReservationItemResult">
+    <select id="selectSpaceReservationItemById" parameterType="Long" resultMap="SpaceReservationItemResult">
         <include refid="selectSpaceReservationItemVo"/>
         where sri.item_id = #{itemId}
-    </select>
+    </select>
+
+    <select id="selectSpaceReservationItemByIdForUpdate" parameterType="Long" resultMap="SpaceReservationItemResult">
+
+        <include refid="selectSpaceReservationItemVo"/>
+
+        where sri.item_id = #{itemId}
+        for update
+    </select>
 
     <select id="selectSpaceReservationItemList" parameterType="SpaceReservationItem" resultMap="SpaceReservationItemResult">
         <include refid="selectSpaceReservationItemVo"/>
@@ -91,6 +99,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
                     </if>
                 </when>
                 <when test="occupiedOnly != null and occupiedOnly">
+                    and sr.del_flag = '0'
                     and sri.item_status in ('1', '2')
                 </when>
                 <otherwise>
@@ -214,12 +223,42 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <include refid="selectSpaceReservationItemVo"/>
         where sri.room_id = #{roomId}
           and sri.booking_date = #{bookingDate}
-          and sri.item_status in ('1', '2')
+          and sri.item_status in ('1', '2', '4')
+          and sr.del_flag = '0'
           and sri.start_time &lt; #{endTime}
           and sri.end_time &gt; #{startTime}
           <if test="itemId != null"> and sri.item_id &lt;&gt; #{itemId}</if>
     </select>
 
+    <select id="selectBlockingItemsByReservationIds" resultMap="SpaceReservationItemResult">
+
+        <include refid="selectSpaceReservationItemVo"/>
+
+        where sri.reservation_id in
+        <foreach collection="reservationIds" item="reservationId" open="(" separator="," close=")">
+            #{reservationId}
+        </foreach>
+          and sri.item_status in ('1', '2', '4')
+          and sr.del_flag = '0'
+          and str_to_date(
+                concat(
+                    sri.booking_date,
+                    ' ',
+                    case
+                        when char_length(sri.end_time) = 4 then concat('0', sri.end_time, ':00')
+                        when char_length(sri.end_time) = 5 then concat(sri.end_time, ':00')
+                        when char_length(sri.end_time) = 7 then concat('0', sri.end_time)
+                        else sri.end_time
+                    end
+                ),
+                '%Y-%m-%d %H:%i:%s'
+              ) &gt; sysdate()
+        order by sri.booking_date asc, sri.start_time asc, sri.item_id asc
+
+    </select>
+
+
+
     <select id="selectBlockingRoomReservationItems" resultMap="SpaceReservationItemResult">
 
         <include refid="selectSpaceReservationItemVo"/>
@@ -232,6 +271,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
         </foreach>
           and sri.item_status in ('1', '2', '4')
+          and sr.del_flag = '0'
           and str_to_date(
                 concat(
                     sri.booking_date,
@@ -258,6 +298,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         inner join space_reservation sr on sr.reservation_id = sri.reservation_id
         where sri.item_status = '2'
           and sr.status in ('2', '3')
+          and sr.audit_type = '0'
+          and sr.del_flag = '0'
           and str_to_date(
                 concat(
                     sri.booking_date,
@@ -287,6 +329,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             sri.update_time = sysdate()
         where sri.item_status = '2'
           and sr.status in ('2', '3')
+          and sr.audit_type = '0'
+          and sr.del_flag = '0'
           and sri.reservation_id in
           <foreach collection="reservationIds" item="reservationId" open="(" separator="," close=")">
               #{reservationId}
@@ -313,7 +357,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         update space_reservation_item
         set item_status = #{itemStatus},
             conflict_flag = #{conflictFlag},
-            conflict_reason = #{conflictReason},
+            conflict_reason = #{conflictReason},
+
+            conflict_item_id = #{conflictItemId},
             audit_time = sysdate(),
             auditor_id = #{auditorId},
             auditor_name = #{auditorName},
@@ -323,4 +369,38 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         where item_id = #{itemId}
     </update>
 
+    <update id="updateItemStatusIfCurrent">
+        update space_reservation_item
+
+        set item_status = #{item.itemStatus},
+
+            conflict_flag = #{item.conflictFlag},
+
+            conflict_reason = #{item.conflictReason},
+
+            conflict_item_id = #{item.conflictItemId},
+
+            audit_time = sysdate(),
+
+            auditor_id = #{item.auditorId},
+
+            auditor_name = #{item.auditorName},
+
+            reject_reason = #{item.rejectReason},
+
+            update_by = #{item.updateBy},
+
+            update_time = sysdate()
+
+        where item_id = #{item.itemId}
+          and item_status = #{expectedStatus}
+
+    </update>
+
+    <select id="countItemsByReservationId" resultType="int">
+        select count(1)
+        from space_reservation_item
+        where reservation_id = #{reservationId}
+    </select>
+
 </mapper>

@@ -2,23 +2,35 @@
   <div class="login">
     <section class="login-aside">
       <div class="brand-lockup">
-        <img :src="logo" class="brand-mark" alt="BiomassAdmin">
-        <div class="brand-name">BiomassAdmin</div>
+        <img :src="logo" class="brand-mark" alt="澳琴空间预约系统">
+        <div class="brand-name">澳琴空间预约系统</div>
       </div>
       <div class="aside-copy">
-        <h1>BiomassAdmin</h1>
-        <p>面向生物质能源场景的后台管理系统。</p>
+        <h1>澳琴空间预约系统</h1>
+        <p>面向澳琴国际教育大学城的空间预约、审核与占用查看工作台。</p>
+      </div>
+      <div class="space-visual" aria-hidden="true">
+        <div class="building-card">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+        <div class="calendar-card">
+          <strong>09:00</strong>
+          <em>Room A-301</em>
+        </div>
+        <div class="route-line"></div>
       </div>
     </section>
 
     <section class="login-panel">
       <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form">
         <div class="form-brand">
-          <img :src="logo" class="form-logo" alt="BiomassAdmin">
+          <img :src="logo" class="form-logo" alt="澳琴空间预约系统">
         </div>
         <div class="form-heading">
           <h2>{{ title }}</h2>
-          <p>欢迎回来，请登录工作台。</p>
+          <p>欢迎回来，请登录预约管理工作台。</p>
         </div>
 
         <el-form-item prop="username">
@@ -63,7 +75,7 @@
 
         <div class="login-options">
           <el-checkbox v-model="loginForm.rememberMe">记住登录信息</el-checkbox>
-          <span>仅限授权用户</span>
+          <button type="button" class="forgot-link" @click="goForgotPassword">忘记密码</button>
         </div>
 
         <el-button
@@ -96,7 +108,7 @@ export default {
   name: "Login",
   data() {
     return {
-      title: 'BiomassAdmin',
+      title: '澳琴空间预约系统',
       footerContent: defaultSettings.footerContent,
       logo,
       codeUrl: "",
@@ -178,6 +190,9 @@ export default {
           })
         }
       })
+    },
+    goForgotPassword() {
+      this.$router.push({ path: '/forgot-password' })
     }
   }
 }
@@ -187,13 +202,13 @@ export default {
 .login {
   position: relative;
   display: grid;
-  grid-template-columns: minmax(520px, 1fr) minmax(430px, 520px);
+  grid-template-columns: minmax(560px, 1fr) minmax(430px, 520px);
   width: 100%;
   min-height: 100%;
   background:
-    linear-gradient(118deg, rgba(210, 232, 190, .56) 0 28%, transparent 28% 100%),
-    linear-gradient(144deg, transparent 0 58%, rgba(220, 238, 205, .64) 58% 100%),
-    linear-gradient(135deg, #f7fbf3 0%, #eef7ee 48%, #f6f8fb 100%);
+    radial-gradient(circle at 18% 18%, rgba(29, 164, 216, .12), transparent 30%),
+    radial-gradient(circle at 74% 82%, rgba(22, 163, 116, .10), transparent 32%),
+    linear-gradient(135deg, #ffffff 0%, #f5fbff 48%, #f4fbf8 100%);
   overflow-x: hidden;
 
   *,
@@ -210,33 +225,33 @@ export default {
   justify-content: space-between;
   min-height: 100vh;
   padding: 58px 76px 64px;
-  border-right: 1px solid rgba(58, 125, 68, .12);
+  border-right: 1px solid rgba(23, 92, 140, .10);
   background:
-    linear-gradient(135deg, rgba(255, 255, 255, .88), rgba(255, 255, 255, .52)),
-    linear-gradient(155deg, rgba(224, 242, 204, .92), rgba(238, 247, 229, .74) 48%, rgba(241, 246, 240, .88));
-  color: #153426;
+    linear-gradient(142deg, rgba(255, 255, 255, .96), rgba(255, 255, 255, .70)),
+    linear-gradient(155deg, rgba(229, 246, 255, .90), rgba(239, 250, 246, .78) 50%, rgba(248, 251, 255, .92));
+  color: #123044;
   overflow: hidden;
 
   &::before {
     content: '';
     position: absolute;
-    right: -80px;
-    bottom: 86px;
-    width: 420px;
-    height: 170px;
-    border: 1px solid rgba(50, 91, 64, .08);
-    border-radius: 28px;
-    transform: rotate(-18deg);
+    right: -96px;
+    top: 118px;
+    width: 360px;
+    height: 360px;
+    border: 1px solid rgba(22, 119, 255, .08);
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(30, 136, 229, .08), transparent 64%);
   }
 
   &::after {
     content: '';
     position: absolute;
-    left: 78px;
-    bottom: 140px;
-    width: 320px;
+    left: 76px;
+    bottom: 168px;
+    width: 360px;
     height: 1px;
-    background: linear-gradient(90deg, rgba(63, 143, 77, .38), transparent);
+    background: linear-gradient(90deg, rgba(22, 119, 255, .34), rgba(20, 184, 166, .20), transparent);
   }
 }
 
@@ -257,7 +272,7 @@ export default {
 }
 
 .brand-name {
-  color: #17372a;
+  color: #123044;
   font-size: 17px;
   font-weight: 700;
   line-height: 24px;
@@ -272,19 +287,93 @@ export default {
 .aside-copy {
   h1 {
     margin: 0 0 18px;
-    color: #10291f;
-    font-size: 48px;
+    color: #0f2537;
+    font-size: 46px;
     font-weight: 760;
-    line-height: 1.12;
+    line-height: 1.16;
   }
 
   p {
     margin: 0;
-    max-width: 460px;
-    color: #52655b;
+    max-width: 500px;
+    color: #526778;
     font-size: 16px;
     line-height: 30px;
   }
+}
+
+.space-visual {
+  position: absolute;
+  right: 74px;
+  bottom: 86px;
+  width: 360px;
+  height: 230px;
+  pointer-events: none;
+}
+
+.building-card,
+.calendar-card {
+  position: absolute;
+  border: 1px solid rgba(22, 119, 255, .12);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, .82);
+  box-shadow: 0 22px 54px rgba(21, 62, 95, .10);
+  backdrop-filter: blur(10px);
+}
+
+.building-card {
+  left: 0;
+  bottom: 12px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  width: 230px;
+  height: 132px;
+  padding: 24px;
+  transform: rotate(-7deg);
+
+  span {
+    border-radius: 7px;
+    background: linear-gradient(180deg, rgba(29, 164, 216, .18), rgba(20, 184, 166, .16));
+  }
+}
+
+.calendar-card {
+  right: 8px;
+  top: 12px;
+  width: 154px;
+  padding: 18px 20px;
+  color: #123044;
+
+  strong,
+  em {
+    display: block;
+    font-style: normal;
+  }
+
+  strong {
+    font-size: 24px;
+    font-weight: 750;
+    line-height: 30px;
+  }
+
+  em {
+    margin-top: 6px;
+    color: #5a7182;
+    font-size: 12px;
+    line-height: 18px;
+  }
+}
+
+.route-line {
+  position: absolute;
+  right: 118px;
+  bottom: 68px;
+  width: 132px;
+  height: 74px;
+  border-right: 2px solid rgba(20, 184, 166, .34);
+  border-bottom: 2px solid rgba(20, 184, 166, .34);
+  border-radius: 0 0 18px 0;
 }
 
 .login-panel {
@@ -297,7 +386,7 @@ export default {
   min-width: 0;
   min-height: 100vh;
   padding: 42px 52px;
-  background: rgba(248, 250, 247, .72);
+  background: rgba(248, 251, 255, .76);
   overflow-x: hidden;
 }
 
@@ -307,10 +396,10 @@ export default {
   max-width: 398px;
   min-width: 0;
   padding: 36px;
-  border: 1px solid rgba(58, 125, 68, .11);
+  border: 1px solid rgba(23, 92, 140, .11);
   border-radius: 8px;
-  background: rgba(255, 255, 255, .94);
-  box-shadow: 0 22px 60px rgba(31, 64, 47, .12);
+  background: rgba(255, 255, 255, .96);
+  box-shadow: 0 24px 68px rgba(21, 62, 95, .12);
 
   .el-input {
     width: 100%;
@@ -319,18 +408,18 @@ export default {
 
     ::v-deep input {
       height: 44px;
-      border-color: #dce6d7;
+      border-color: #d9e6ee;
       border-radius: 8px;
-      color: #20342b;
-      background: #fbfdf9;
+      color: #173043;
+      background: #fbfdff;
 
       &:focus {
-        border-color: #6da447;
-        box-shadow: 0 0 0 3px rgba(109, 164, 71, .14);
+        border-color: #1d8ed6;
+        box-shadow: 0 0 0 3px rgba(29, 142, 214, .14);
       }
 
       &::placeholder {
-        color: #93a29a;
+        color: #93a6b3;
       }
     }
   }
@@ -339,7 +428,7 @@ export default {
     width: 15px;
     height: 44px;
     margin-left: 4px;
-    color: #8da094;
+    color: #879ead;
   }
 
   ::v-deep .el-form-item__content {
@@ -351,12 +440,12 @@ export default {
   }
 
   ::v-deep .el-checkbox__input.is-checked .el-checkbox__inner {
-    border-color: #3f8f4d;
-    background-color: #3f8f4d;
+    border-color: #1687c7;
+    background-color: #1687c7;
   }
 
   ::v-deep .el-checkbox__input.is-checked + .el-checkbox__label {
-    color: #315640;
+    color: #17445f;
   }
 }
 
@@ -367,10 +456,10 @@ export default {
   width: 58px;
   height: 58px;
   margin-bottom: 18px;
-  border: 1px solid rgba(58, 125, 68, .1);
+  border: 1px solid rgba(23, 92, 140, .10);
   border-radius: 14px;
   background: #ffffff;
-  box-shadow: 0 10px 24px rgba(46, 88, 56, .12);
+  box-shadow: 0 10px 24px rgba(21, 62, 95, .12);
 }
 
 .form-logo {
@@ -385,15 +474,15 @@ export default {
 
   h2 {
     margin: 0;
-    color: #12251c;
-    font-size: 26px;
+    color: #10283b;
+    font-size: 25px;
     font-weight: 760;
-    line-height: 32px;
+    line-height: 34px;
   }
 
   p {
     margin: 8px 0 0;
-    color: #6d7b72;
+    color: #677b89;
     font-size: 13px;
     line-height: 20px;
   }
@@ -414,16 +503,16 @@ export default {
   min-width: 0;
   height: 44px;
   padding: 0;
-  border: 1px solid #dce6d7;
+  border: 1px solid #d9e6ee;
   border-radius: 8px;
-  background: #fbfdf9;
+  background: #fbfdff;
   cursor: pointer;
   overflow: hidden;
   transition: border-color .18s ease, box-shadow .18s ease;
 
   &:hover {
-    border-color: #8ab46a;
-    box-shadow: 0 0 0 3px rgba(109, 164, 71, .1);
+    border-color: #66b5df;
+    box-shadow: 0 0 0 3px rgba(29, 142, 214, .10);
   }
 }
 
@@ -439,8 +528,24 @@ export default {
   align-items: center;
   justify-content: space-between;
   margin: 2px 0 22px;
-  color: #58675f;
+  color: #586b78;
   font-size: 13px;
+}
+
+.forgot-link {
+  padding: 0;
+  border: none;
+  color: #1687c7;
+  background: transparent;
+  font-size: 13px;
+  line-height: 20px;
+  cursor: pointer;
+
+  &:hover,
+  &:focus {
+    color: #0f6fa7;
+    text-decoration: underline;
+  }
 }
 
 .login-submit {
@@ -448,16 +553,16 @@ export default {
   height: 44px;
   border: none;
   border-radius: 8px;
-  background: linear-gradient(135deg, #3f8f4d 0%, #77a835 100%);
-  box-shadow: 0 14px 26px rgba(63, 143, 77, .24);
+  background: linear-gradient(135deg, #1687c7 0%, #18a999 100%);
+  box-shadow: 0 14px 26px rgba(22, 135, 199, .24);
   font-size: 14px;
   font-weight: 600;
   transition: transform .18s ease, box-shadow .18s ease, opacity .18s ease;
 
   &:hover,
   &:focus {
-    background: linear-gradient(135deg, #367f44 0%, #6c9f2f 100%);
-    box-shadow: 0 16px 30px rgba(63, 143, 77, .28);
+    background: linear-gradient(135deg, #0f78b4 0%, #129887 100%);
+    box-shadow: 0 16px 30px rgba(22, 135, 199, .28);
     transform: translateY(-1px);
   }
 
@@ -468,7 +573,7 @@ export default {
 
 .el-login-footer {
   margin-top: 24px;
-  color: #7a887f;
+  color: #788b98;
   text-align: center;
   font-size: 12px;
   line-height: 20px;
@@ -499,6 +604,10 @@ export default {
     p {
       max-width: 560px;
     }
+  }
+
+  .space-visual {
+    display: none;
   }
 
   .login-panel {
@@ -540,7 +649,7 @@ export default {
     margin-top: 30px;
 
     h1 {
-      font-size: 30px;
+      font-size: 28px;
     }
   }
 

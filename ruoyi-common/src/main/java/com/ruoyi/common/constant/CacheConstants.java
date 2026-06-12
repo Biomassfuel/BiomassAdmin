@@ -41,4 +41,19 @@ public class CacheConstants
      * 登录账户密码错误次数 redis key
      */
     public static final String PWD_ERR_CNT_KEY = "pwd_err_cnt:";
+
+    /**
+     * Password reset verification code redis key.
+     */
+    public static final String PWD_RESET_CODE_KEY = "pwd_reset_code:";
+
+    /**
+     * Password reset send cooldown redis key.
+     */
+    public static final String PWD_RESET_SEND_KEY = "pwd_reset_send:";
+
+    /**
+     * Password reset verification error count redis key.
+     */
+    public static final String PWD_RESET_ERR_CNT_KEY = "pwd_reset_err_cnt:";
 }

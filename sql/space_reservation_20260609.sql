@@ -385,7 +385,7 @@ create table space_import_batch (
 -- ----------------------------
 -- 初始化RuoYi部门数据
 -- 说明：
--- 1. 200为澳琴国际教育大学城根部门，挂在RuoYi默认根部门BiomassAdmin(100)下。
+-- 1. 200为澳琴国际教育大学城根部门，挂在系统根部门(100)下。
 -- 2. 201-203为三所学校部门，用户管理中老师/学生账号建议挂到对应学校部门。
 -- 3. 不把楼层、房间放入sys_dept，房间资源仍由space_room维护。
 -- ----------------------------
@@ -600,7 +600,7 @@ insert into sys_menu values(2014, '我的预约', '2010', 5, 'my', 'space/reserv
 insert into sys_menu values(2015, '预约详情', '2010', 6, 'detail', 'space/reservation/detail', '', 'SpaceReservationDetail', 1, 0, 'C', '1', '0', 'space:reservation:query', 'eye-open', 'admin', sysdate(), '', null, '预约详情');
 insert into sys_menu values(2016, '房间占用详情', '2010', 7, 'occupancy-detail/index/:roomId', 'space/reservation/occupancyDetail', '', 'SpaceOccupancyDetail', 1, 0, 'C', '1', '0', 'space:reservationItem:publicList', 'eye-open', 'admin', sysdate(), '', null, '房间占用详情');
 
-insert into sys_menu values(2020, '审核管理模块', '0', 6, 'space-audit', null, '', 'SpaceAuditManage', 1, 0, 'M', '0', '0', '', 'audit', 'admin', sysdate(), '', null, '空间预约-审核管理模块');
+insert into sys_menu values(2020, '审核管理模块', '0', 6, 'space-audit', null, '', 'SpaceAuditManage', 1, 0, 'M', '0', '0', '', 'clipboard', 'admin', sysdate(), '', null, '空间预约-审核管理模块');
 insert into sys_menu values(2021, '待审核预约', '2020', 1, 'pending', 'space/audit/pending', '', 'SpaceAuditPending', 1, 0, 'C', '0', '0', 'space:audit:list', 'validCode', 'admin', sysdate(), '', null, '待审核预约');
 insert into sys_menu values(2022, '待取消审核', '2020', 2, 'cancel-pending', 'space/audit/cancelPending', '', 'SpaceCancelAuditPending', 1, 0, 'C', '0', '0', 'space:cancelAudit:list', 'validCode', 'admin', sysdate(), '', null, '待取消审核');
 insert into sys_menu values(2023, '预约记录', '2020', 3, 'record', 'space/audit/record', '', 'SpaceReservationRecord', 1, 0, 'C', '0', '0', 'space:reservation:list', 'documentation', 'admin', sysdate(), '', null, '预约记录');
@@ -651,6 +651,38 @@ insert into sys_role_menu(role_id, menu_id) values
 
 insert into sys_role_menu(role_id, menu_id) values
 (102, 2010), (102, 2011), (102, 2017), (102, 2016), (102, 2054), (102, 2055), (102, 2056), (102, 2057), (102, 2061);
+
+-- ----------------------------
+-- 初始化空间预约定时任务
+-- ----------------------------
+insert into sys_job (
+  job_name,
+  job_group,
+  invoke_target,
+  cron_expression,
+  misfire_policy,
+  concurrent,
+  status,
+  create_by,
+  create_time,
+  remark
+)
+select
+  '空间预约已结束刷新',
+  'DEFAULT',
+  'spaceReservationTask.refreshFinishedReservations',
+  '0 * * * * ?',
+  '3',
+  '1',
+  '0',
+  'admin',
+  sysdate(),
+  '每分钟刷新已结束预约状态'
+where not exists (
+  select 1
+  from sys_job
+  where invoke_target = 'spaceReservationTask.refreshFinishedReservations'
+);
 
 -- ----------------------------
 -- 精简RuoYi默认部门和岗位数据

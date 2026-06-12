@@ -1,8 +1,10 @@
+const systemTitle = '澳琴空间预约系统'
+
 module.exports = {
   /**
    * 网页标题
    */
-  title: process.env.VUE_APP_TITLE,
+  title: systemTitle,
 
   /**
    * 侧边栏主题，当前重构统一使用浅色后台风格
@@ -62,5 +64,5 @@ module.exports = {
   /**
    * 底部版权文本内容
    */
-  footerContent: 'Copyright © 2026 BiomassAdmin. All Rights Reserved.'
+  footerContent: 'Copyright © 2026 澳琴空间预约系统. All Rights Reserved.'
 }

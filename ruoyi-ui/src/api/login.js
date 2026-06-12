@@ -55,3 +55,40 @@ export function getCodeImg() {
     timeout: 20000
   })
 }
+
+// 获取找回密码配置
+export function getPasswordResetConfig() {
+  return request({
+    url: '/password/reset/config',
+    headers: {
+      isToken: false
+    },
+    method: 'get'
+  })
+}
+
+// 发送找回密码验证码
+export function sendPasswordResetCode(data) {
+  return request({
+    url: '/password/reset/code',
+    headers: {
+      isToken: false,
+      repeatSubmit: false
+    },
+    method: 'post',
+    data
+  })
+}
+
+// 重置登录密码
+export function resetPassword(data) {
+  return request({
+    url: '/password/reset',
+    headers: {
+      isToken: false,
+      repeatSubmit: false
+    },
+    method: 'post',
+    data
+  })
+}

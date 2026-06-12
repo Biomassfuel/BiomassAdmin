@@ -16,6 +16,8 @@
 import variables from '@/assets/styles/variables.scss'
 import logo from '@/assets/logo/logo.png'
 
+const systemTitle = '澳琴空间预约系统'
+
 export default {
   name: 'SidebarLogo',
   props: {
@@ -38,7 +40,7 @@ export default {
   data() {
     return {
       logo,
-      title: process.env.VUE_APP_TITLE
+      title: systemTitle
     }
   }
 }
@@ -82,12 +84,12 @@ export default {
     & .sidebar-title {
       display: block;
       margin: 0;
-      max-width: 152px;
+      max-width: 170px;
       overflow: hidden;
       color: #1f2329;
       font-weight: 700;
       line-height: 20px;
-      font-size: 15px;
+      font-size: 14px;
       font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", PingFang SC, Microsoft YaHei, sans-serif;
       text-overflow: ellipsis;
       white-space: nowrap;
