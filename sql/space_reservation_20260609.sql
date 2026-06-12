@@ -638,9 +638,12 @@ insert into sys_menu values(2058, '待取消审核查询', '2022', 1, '', '', ''
 insert into sys_menu values(2059, '同意取消', '2022', 2, '', '', '', '', 1, 0, 'F', '0', '0', 'space:cancelAudit:approve', '#', 'admin', sysdate(), '', null, '');
 insert into sys_menu values(2060, '驳回取消', '2022', 3, '', '', '', '', 1, 0, 'F', '0', '0', 'space:cancelAudit:reject', '#', 'admin', sysdate(), '', null, '');
 insert into sys_menu values(2061, '所有预约公开查询', '2017', 1, '', '', '', '', 1, 0, 'F', '0', '0', 'space:reservationItem:publicList', '#', 'admin', sysdate(), '', null, '所有预约页面加载已通过预约房间与记录权限');
+insert into sys_menu values(2070, '数据统计模块', '0', 7, 'space-statistics', null, '', 'SpaceStatisticsManage', 1, 0, 'M', '0', '0', '', 'chart', 'admin', sysdate(), '', null, '空间预约-数据统计模块');
+insert into sys_menu values(2071, '房间预约数据统计', '2070', 1, 'index', 'space/statistics/index', '', 'SpaceStatistics', 1, 0, 'C', '0', '0', 'space:statistics:list', 'dashboard', 'admin', sysdate(), '', null, '自动统计各房间预约频次、占用率、预约成功/驳回数量，支持日期、房间筛选统计');
+insert into sys_menu values(2072, '数据统计导出', '2071', 1, '', '', '', '', 1, 0, 'F', '0', '0', 'space:statistics:export', '#', 'admin', sysdate(), '', null, '');
 
 insert into sys_role_menu(role_id, menu_id)
-select 100, menu_id from sys_menu where menu_id between 2000 and 2061;
+select 100, menu_id from sys_menu where menu_id between 2000 and 2072;
 
 insert into sys_role_menu(role_id, menu_id) values
 (101, 2010), (101, 2011), (101, 2017), (101, 2012), (101, 2013), (101, 2014), (101, 2015), (101, 2016),
